@@ -7,7 +7,6 @@ namespace LogisticsCompany.Data
 {
     public class LogisticsCompanyContext
     {
-
         internal IConfiguration _configuration { get; set; }
 
         public LogisticsCompanyContext(IConfiguration configuration)
@@ -15,6 +14,12 @@ namespace LogisticsCompany.Data
             _configuration = configuration;
         }
 
+        /// <summary>
+        /// Database constructor for context for an SQL Server.
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <param name="dbFactory"></param>
+        /// <param name="tableFactory"></param>
         public LogisticsCompanyContext(IConfiguration configuration, SqlDbInitializerFactory dbFactory, SqlTableInitializerFactory tableFactory)
         {
             _configuration = configuration;
@@ -24,7 +29,6 @@ namespace LogisticsCompany.Data
             dbFactory
                 .CreateInitializer(connectionString)
                 .Init();
-
 
             tableFactory
                 .CreateInitializer(connectionString)

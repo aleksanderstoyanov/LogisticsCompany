@@ -1,6 +1,9 @@
 ﻿using Dapper;
 using LogisticsCompany.Data.Contracts;
+using LogisticsCompany.Data.Helpers;
 using Microsoft.Data.SqlClient;
+
+using static LogisticsCompany.Data.Helpers.SqlConstraintHelper;
 
 namespace LogisticsCompany.Data.Initializers
 {
@@ -58,15 +61,15 @@ namespace LogisticsCompany.Data.Initializers
 
         private async Task InitUserRoles()
         {
-            var sql = """
+            var sql = $"""
                  IF OBJECT_ID('UserRoles', 'U') IS NULL
                       CREATE TABLE UserRoles(
                       UserId INT,
                  	 RoleId INT
 
-                 	 CONSTRAINT user_role_pk PRIMARY KEY (UserId, RoleId),
-                 	 CONSTRAINT fk_user FOREIGN KEY (UserId) REFERENCES dbo.Users(Id),
-                 	 CONSTRAINT fk_role FOREIGN KEY (RoleId) REFERENCES dbo.Roles(Id)
+                      {CompositePrimaryКeyConstraint("user_role_pk", "UserId", "RoleId")},
+                            {ForeignKeyConstraint("fk_user", "UserId", "dbo.Users", "Id")},
+                            {ForeignKeyConstraint("fk_role", "RoleId", "dbo.Roles", "Id")}
                  )
                  """;
 
