@@ -23,16 +23,30 @@ namespace LogisticsCompany.Data
         public LogisticsCompanyContext(IConfiguration configuration, SqlDbFactory dbFactory)
         {
             _configuration = configuration;
-
             var connectionString = GetConnectionString();
 
+            ConstructDatabase(dbFactory, connectionString);
+        }
+
+        private static void ConstructDatabase(SqlDbFactory dbFactory, string connectionString)
+        {
             dbFactory
                 .CreateDbInitializer(connectionString)
-                .Init();
+                .Init()
+                .GetAwaiter()
+                .GetResult();
 
             dbFactory
                 .CreateTableInitializer(connectionString)
-                .Init();
+                .Init()
+                .GetAwaiter()
+                .GetResult();
+
+            dbFactory
+                .CreateDbSeeder(connectionString)
+                .Seed()
+                .GetAwaiter()
+                .GetResult();
         }
 
         private string GetConnectionString()

@@ -15,12 +15,14 @@ namespace LogisticsCompany.Data.Initializers
 
         public async Task Init()
         {
-            using var connection = new SqlConnection(_connectionString);
-            var sql = $"IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'LogisticsCompany') CREATE DATABASE LogisticsCompany";
-            await connection.ExecuteAsync(sql);
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var sql = $"IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'LogisticsCompany') CREATE DATABASE LogisticsCompany";
+                await connection.ExecuteAsync(sql);
 
-            sql = "USE LogisticsCompany";
-            await connection.ExecuteAsync(sql);
+                sql = "USE LogisticsCompany";
+                await connection.ExecuteAsync(sql);
+            }
         }
     }
 }

@@ -11,12 +11,9 @@ namespace LogisticsCompany.Data.Initializers
     {
         internal string _connectionString { get; set; }
 
-        internal SqlConnection _sqlConnection { get; set; }
-
         public SqlTableInitializer(string connectionString)
         {
             _connectionString = connectionString;
-            _sqlConnection = new SqlConnection(_connectionString);
         }
         public async Task Init()
         {
@@ -24,12 +21,13 @@ namespace LogisticsCompany.Data.Initializers
             await InitRoles();
             await InitUserRoles();
 
-            _sqlConnection.Dispose();
         }
 
         private async Task InitUsers()
         {
-            var sql = """
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var sql = """
                 IF OBJECT_ID('Users', 'U') IS NULL
                 CREATE TABLE Users (
                     Id INT NOT NULL PRIMARY KEY IDENTITY(1,1),
@@ -40,28 +38,34 @@ namespace LogisticsCompany.Data.Initializers
                 )
                 """;
 
-            await _sqlConnection.ExecuteAsync(sql);
+                await connection.ExecuteAsync(sql);
+            }
         }
 
 
         private async Task InitRoles()
         {
 
-            using var connection = new SqlConnection(_connectionString);
-            var sql = """
-                 IF OBJECT_ID('Roles', 'U') IS NULL
-                 CREATE TABLE Roles(
-                    Id INT NOT NULL PRIMARY KEY IDENTITY (1, 1),
-                    Name NVARCHAR(MAX)
-                 )
-                 """;
+            using (var connection = new SqlConnection(_connectionString))
+            {
 
-            await _sqlConnection.ExecuteAsync(sql);
+                var sql = """
+                      IF OBJECT_ID('Roles', 'U') IS NULL
+                      CREATE TABLE Roles(
+                         Id INT NOT NULL PRIMARY KEY IDENTITY (1, 1),
+                         Name NVARCHAR(MAX)
+                      )
+                      """;
+
+                await connection.ExecuteAsync(sql);
+            }
         }
 
         private async Task InitUserRoles()
         {
-            var sql = $"""
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var sql = $"""
                  IF OBJECT_ID('UserRoles', 'U') IS NULL
                       CREATE TABLE UserRoles(
                       UserId INT,
@@ -73,7 +77,8 @@ namespace LogisticsCompany.Data.Initializers
                  )
                  """;
 
-            await _sqlConnection.ExecuteAsync(sql);
+                await connection.ExecuteAsync(sql);
+            }
         }
     }
 }
