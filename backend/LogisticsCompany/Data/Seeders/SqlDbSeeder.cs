@@ -16,6 +16,7 @@ namespace LogisticsCompany.Data.Seeders
         public async Task Seed()
         {
             await SeedRoles();
+            await SeedUsers();
         }
 
         private string InsertCommand(string table, params string[] values)
@@ -30,6 +31,21 @@ namespace LogisticsCompany.Data.Seeders
                 var count = sqlConnection.QuerySingle<int>(query);
 
                 return count > 0;
+            }
+        }
+
+        private async Task SeedUsers()
+        {
+
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
+            {
+                var table = "Users";
+
+                if (!Exists(table))
+                {
+                    var password = PasswordHasher.HashPassword("123123");
+                    await sqlConnection.ExecuteAsync(InsertCommand(table, "'admin'", "'admin@gmail.com'", "3" , $"'{password}'"));
+                }
             }
         }
 
