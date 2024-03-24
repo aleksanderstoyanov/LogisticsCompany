@@ -44,6 +44,7 @@ namespace LogisticsCompany.Data.Seeders
                 {
                     await sqlConnection.ExecuteAsync(InsertCommand(table, "'Employee'"));
                     await sqlConnection.ExecuteAsync(InsertCommand(table, "'Client'"));
+                    await sqlConnection.ExecuteAsync(InsertCommand(table, "'Admin'"));
                 }
             }
         }

@@ -49,7 +49,7 @@ namespace LogisticsCompany.Data
                 .GetResult();
         }
 
-        private string GetConnectionString()
+        public string GetConnectionString()
                 => _configuration.GetConnectionString("DefaultConnectionString");
     }
 }

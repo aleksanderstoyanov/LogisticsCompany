@@ -17,31 +17,29 @@ namespace LogisticsCompany.Data.Initializers
         }
         public async Task Init()
         {
-            await InitUsers();
             await InitRoles();
-            await InitUserRoles();
-
+            await InitUsers();
         }
 
         private async Task InitUsers()
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                var sql = """
+                var sql = $"""
                 IF OBJECT_ID('Users', 'U') IS NULL
                 CREATE TABLE Users (
                     Id INT NOT NULL PRIMARY KEY IDENTITY(1,1),
                     Username NVARCHAR(MAX) NOT NULL,
                     Email NVARCHAR(MAX) NOT NULL,
-                    Role INT,
-                    PasswordHash NVARCHAR(MAX) NOT NULL
+                    RoleId INT,
+                    PasswordHash NVARCHAR(MAX) NOT NULL,
+                    {ForeignKeyConstraint("fk_role", "RoleId", "dbo.Roles", "Id")}
                 )
                 """;
 
                 await connection.ExecuteAsync(sql);
             }
         }
-
 
         private async Task InitRoles()
         {
@@ -56,26 +54,6 @@ namespace LogisticsCompany.Data.Initializers
                          Name NVARCHAR(MAX)
                       )
                       """;
-
-                await connection.ExecuteAsync(sql);
-            }
-        }
-
-        private async Task InitUserRoles()
-        {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var sql = $"""
-                 IF OBJECT_ID('UserRoles', 'U') IS NULL
-                      CREATE TABLE UserRoles(
-                      UserId INT,
-                 	 RoleId INT
-
-                      {CompositePrimaryКeyConstraint("user_role_pk", "UserId", "RoleId")},
-                            {ForeignKeyConstraint("fk_user", "UserId", "dbo.Users", "Id")},
-                            {ForeignKeyConstraint("fk_role", "RoleId", "dbo.Roles", "Id")}
-                 )
-                 """;
 
                 await connection.ExecuteAsync(sql);
             }
