@@ -26,5 +26,14 @@ namespace LogisticsCompany.Data.Helpers
         public static string CompositePrimaryКeyConstraint(string name, string compositeColumn1, string compositeColumn2)
             => string.Format("CONSTRAINT  {0} PRIMARY KEY ({1}, {2})", name, compositeColumn1, compositeColumn2);
 
+        /// <summary>
+        /// Composes a SQL Unique Constraint for a singular column.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="column"></param>
+        /// <returns></returns>
+        public static string UniqueConstraint(string name, string column)
+            => string.Format("CONSTRAINT {0} UNIQUE ({1})", name, column);
+
     }
 }
