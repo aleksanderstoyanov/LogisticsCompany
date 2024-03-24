@@ -52,7 +52,7 @@ namespace LogisticsCompany.Data.Initializers
                  IF OBJECT_ID('Roles', 'U') IS NULL
                  CREATE TABLE Roles(
                     Id INT NOT NULL PRIMARY KEY IDENTITY (1, 1),
-                    Name NVARCHAR(MAX),
+                    Name NVARCHAR(MAX)
                  )
                  """;
 

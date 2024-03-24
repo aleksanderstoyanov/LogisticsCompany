@@ -1,5 +1,7 @@
 using LogisticsCompany.Data;
 using LogisticsCompany.Data.Factory;
+using LogisticsCompany.Services;
+using LogisticsCompany.Services.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,8 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddSingleton<LogisticsCompanyContext>();
-builder.Services.AddSingleton<SqlDbInitializerFactory>();
-builder.Services.AddSingleton<SqlTableInitializerFactory>();
+builder.Services.AddSingleton<SqlDbFactory>();
 
 var app = builder.Build();
 

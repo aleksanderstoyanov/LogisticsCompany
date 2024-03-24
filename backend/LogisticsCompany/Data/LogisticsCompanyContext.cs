@@ -20,18 +20,18 @@ namespace LogisticsCompany.Data
         /// <param name="configuration"></param>
         /// <param name="dbFactory"></param>
         /// <param name="tableFactory"></param>
-        public LogisticsCompanyContext(IConfiguration configuration, SqlDbInitializerFactory dbFactory, SqlTableInitializerFactory tableFactory)
+        public LogisticsCompanyContext(IConfiguration configuration, SqlDbFactory dbFactory)
         {
             _configuration = configuration;
 
             var connectionString = GetConnectionString();
 
             dbFactory
-                .CreateInitializer(connectionString)
+                .CreateDbInitializer(connectionString)
                 .Init();
 
-            tableFactory
-                .CreateInitializer(connectionString)
+            dbFactory
+                .CreateTableInitializer(connectionString)
                 .Init();
         }
 
