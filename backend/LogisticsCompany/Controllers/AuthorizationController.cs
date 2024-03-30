@@ -1,12 +1,8 @@
 ﻿using AutoMapper;
-using LogisticsCompany.Data;
 using LogisticsCompany.Dto;
-using LogisticsCompany.Entity;
 using LogisticsCompany.Request;
 using LogisticsCompany.Services.Contracts;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 
 namespace LogisticsCompany.Controllers
 {

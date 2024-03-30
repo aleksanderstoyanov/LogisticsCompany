@@ -8,7 +8,7 @@ using Microsoft.Data.SqlClient;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 
-namespace LogisticsCompany.Services
+namespace LogisticsCompany.Services.Users
 {
     public class UserService : IUserService
     {
@@ -17,8 +17,8 @@ namespace LogisticsCompany.Services
 
         public UserService(LogisticsCompanyContext dbContext, IRoleService roleService)
         {
-            this._dbContext = dbContext;
-            this._roleService = roleService;
+            _dbContext = dbContext;
+            _roleService = roleService;
         }
         public async Task Login()
         {
@@ -33,12 +33,12 @@ namespace LogisticsCompany.Services
 
             dto.Password = PasswordHasher.HashPassword(dto.Password);
             var roleId = await _roleService.GetIdByName(dto.Role);
-            
+
             if (roleId != 0)
             {
                 using (var sqlConnection = new SqlConnection(connectionString))
                 {
-                    var insertCommand = SqlCommandHelper.InsertCommand("Users", $"'{dto.Username}'", $"'{dto.Email}'", $"{roleId}" ,$"'{dto.Password}'");
+                    var insertCommand = SqlCommandHelper.InsertCommand("Users", $"'{dto.Username}'", $"'{dto.Email}'", $"{roleId}", $"'{dto.Password}'");
                     await sqlConnection.ExecuteAsync(insertCommand);
                 }
             }

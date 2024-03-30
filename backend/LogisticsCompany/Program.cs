@@ -4,7 +4,7 @@ using LogisticsCompany.Data.Factory;
 using LogisticsCompany.Mapping.Profiles;
 using LogisticsCompany.Services;
 using LogisticsCompany.Services.Contracts;
-using Microsoft.Extensions.DependencyInjection;
+using LogisticsCompany.Services.Users;
 
 var builder = WebApplication.CreateBuilder(args);
 

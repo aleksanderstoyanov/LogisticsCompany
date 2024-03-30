@@ -1,7 +1,5 @@
-﻿using Dapper;
-using LogisticsCompany.Data.Factory;
-using Microsoft.Data.SqlClient;
-using System.Data;
+﻿using LogisticsCompany.Data.Factory;
+using Microsoft.Extensions.Configuration;
 
 namespace LogisticsCompany.Data
 {
