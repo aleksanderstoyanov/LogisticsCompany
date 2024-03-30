@@ -20,18 +20,19 @@ namespace LogisticsCompany.Services.Users
             _roleService = roleService;
         }
 
-        public async Task<RegisterDto> GetUserByEmail(string email)
+        public async Task<string> GetRegisterEmail(string email)
         {
             using (var sqlConnection = new SqlConnection(_dbContext.GetConnectionString()))
             {
-                var user = await sqlConnection
-                   .QuerySingleAsync<RegisterDto>
+                var query = SelectBySingleCriteria("Users", "Email");
+                var queryResult = await sqlConnection
+                   .QueryFirstOrDefaultAsync<string>
                    (
-                       SelectBySingleCriteria("Users", "Email"),
-                       new { criteriaValue = email }
+                       query,
+                       new { criteriaValue = email}
                    );
 
-                return user;
+                return queryResult ?? string.Empty;
             }
         }
 
@@ -50,7 +51,9 @@ namespace LogisticsCompany.Services.Users
 
             if (roleId != 0)
             {
-                if (GetUserByEmail(dto.Email) == null)
+                var registerEmail = await GetRegisterEmail(dto.Email);
+
+                if (string.IsNullOrEmpty(registerEmail))
                 {
                     using (var sqlConnection = new SqlConnection(connectionString))
                     {

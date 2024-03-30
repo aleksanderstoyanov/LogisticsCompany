@@ -26,7 +26,7 @@
         /// <param name="criteriaField"></param>
         /// <returns></returns>
         public static string SelectBySingleCriteria(string table, string criteriaField)
-            => string.Format("SELECT * FROM {0} WHERE {1} = @criteriaValue", table, criteriaField);
+            => string.Format("SELECT {1} FROM {0} WHERE {1} = @criteriaValue", table, criteriaField);
 
         /// <summary>
         /// Constructs an SQL query for retrieving id based on single criteria.
