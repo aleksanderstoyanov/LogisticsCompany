@@ -3,10 +3,9 @@ using LogisticsCompany.Data;
 using LogisticsCompany.Data.Helpers;
 using LogisticsCompany.Dto;
 using LogisticsCompany.Services.Contracts;
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.Data.SqlClient;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
+
+using static LogisticsCompany.Data.Helpers.SqlQueryHelper;
 
 namespace LogisticsCompany.Services.Users
 {
@@ -20,15 +19,30 @@ namespace LogisticsCompany.Services.Users
             _dbContext = dbContext;
             _roleService = roleService;
         }
+
+        public async Task<RegisterDto> GetUserByEmail(string email)
+        {
+            using (var sqlConnection = new SqlConnection(_dbContext.GetConnectionString()))
+            {
+                var user = await sqlConnection
+                   .QuerySingleAsync<RegisterDto>
+                   (
+                       SelectBySingleCriteria("Users", "Email"),
+                       new { criteriaValue = email }
+                   );
+
+                return user;
+            }
+        }
+
         public async Task Login()
         {
+            // TODO: Add Login Logic
             throw new NotImplementedException();
         }
 
         public async Task Register(RegisterDto dto)
         {
-            // TODO: Add Arguments Validation
-
             var connectionString = _dbContext.GetConnectionString();
 
             dto.Password = PasswordHasher.HashPassword(dto.Password);
@@ -36,11 +50,17 @@ namespace LogisticsCompany.Services.Users
 
             if (roleId != 0)
             {
-                using (var sqlConnection = new SqlConnection(connectionString))
+                if (GetUserByEmail(dto.Email) == null)
                 {
-                    var insertCommand = SqlCommandHelper.InsertCommand("Users", $"'{dto.Username}'", $"'{dto.Email}'", $"{roleId}", $"'{dto.Password}'");
-                    await sqlConnection.ExecuteAsync(insertCommand);
+                    using (var sqlConnection = new SqlConnection(connectionString))
+                    {
+                        var insertCommand = SqlCommandHelper.InsertCommand("Users", $"'{dto.Username}'", $"'{dto.Email}'", $"{roleId}", $"'{dto.Password}'");
+                        await sqlConnection.ExecuteAsync(insertCommand);
+                    }
                 }
+
+                // TO DO: Add descriptive exception.
+                return;
             }
         }
     }
