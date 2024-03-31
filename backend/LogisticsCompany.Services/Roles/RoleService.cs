@@ -9,17 +9,17 @@ namespace LogisticsCompany.Services
     public class RoleService : IRoleService
     {
         private readonly LogisticsCompanyContext _dbContext;
+        private readonly string _connectionString;
 
         public RoleService(LogisticsCompanyContext _dbContext)
         {
             this._dbContext = _dbContext;
+            this._connectionString = this._dbContext.GetConnectionString();
         }
         
         public async Task<int> GetIdByName(string name)
         {
-            var connectionString = _dbContext.GetConnectionString();
-
-            using (var connection = new SqlConnection(connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 var query = SqlQueryHelper.SelectIdBySingleCriteria("Roles", "Name");
                 var id = await connection.QuerySingleAsync<int>(query, new { criteriaValue = name });
@@ -31,6 +31,18 @@ namespace LogisticsCompany.Services
         public Task Create(string roleName)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<string?> GetRoleNameById(int id)
+        {
+            using (var connection = new SqlConnection(this._connectionString))
+            {
+                var query = SqlQueryHelper.SelectSingleColumnById("Roles", "Name");
+
+                var roleName = await connection.QueryFirstOrDefaultAsync<string>(query, new { criteriaValue = id });
+
+                return roleName;
+            }
         }
     }
 }

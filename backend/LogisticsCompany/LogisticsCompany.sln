@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogisticsCompany", "LogisticsCompany.csproj", "{E50E1F11-8BE5-458A-ACB9-43F043A1BCDD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogisticsCompany", "LogisticsCompany.csproj", "{E50E1F11-8BE5-458A-ACB9-43F043A1BCDD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogisticsCompany.Data", "..\LogisticsCompany.Data\LogisticsCompany.Data.csproj", "{C9585EF9-B1C9-4EFC-B932-22583A73917D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogisticsCompany.Data", "..\LogisticsCompany.Data\LogisticsCompany.Data.csproj", "{C9585EF9-B1C9-4EFC-B932-22583A73917D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogisticsCompany.Services", "..\LogisticsCompany.Services\LogisticsCompany.Services.csproj", "{5EC60F20-B0FF-4018-9193-79305FD3D068}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{C9585EF9-B1C9-4EFC-B932-22583A73917D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C9585EF9-B1C9-4EFC-B932-22583A73917D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C9585EF9-B1C9-4EFC-B932-22583A73917D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5EC60F20-B0FF-4018-9193-79305FD3D068}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5EC60F20-B0FF-4018-9193-79305FD3D068}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5EC60F20-B0FF-4018-9193-79305FD3D068}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5EC60F20-B0FF-4018-9193-79305FD3D068}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

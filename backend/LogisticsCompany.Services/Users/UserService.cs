@@ -2,34 +2,52 @@
 using LogisticsCompany.Data;
 using LogisticsCompany.Data.Helpers;
 using LogisticsCompany.Dto;
+using LogisticsCompany.Entity;
 using LogisticsCompany.Services.Contracts;
+using LogisticsCompany.Services.Dto;
 using Microsoft.Data.SqlClient;
-
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using static LogisticsCompany.Data.Helpers.SqlQueryHelper;
 
 namespace LogisticsCompany.Services.Users
 {
     public class UserService : IUserService
     {
+        private readonly string _connectionString;
         private readonly LogisticsCompanyContext _dbContext;
         private readonly IRoleService _roleService;
 
         public UserService(LogisticsCompanyContext dbContext, IRoleService roleService)
         {
             _dbContext = dbContext;
+            _connectionString = dbContext.GetConnectionString();
             _roleService = roleService;
         }
 
+        public async Task<LoginDto?> GetUserByEmailAndPassword(string email, string password)
+        {
+            using (var connection = new SqlConnection(this._connectionString))
+            {
+                var query = SelectEntityBySingleCriteria("Users", "Email");
+
+                var user = await connection.QuerySingleOrDefaultAsync<LoginDto?>(query, new { criteriaValue = email });
+
+                return user;
+            }
+        }
         public async Task<string> GetRegisterEmail(string email)
         {
             using (var sqlConnection = new SqlConnection(_dbContext.GetConnectionString()))
             {
-                var query = SelectBySingleCriteria("Users", "Email");
+                var query = SelectSingleColumnBySingleCriteria("Users", "Email");
                 var queryResult = await sqlConnection
                    .QueryFirstOrDefaultAsync<string>
                    (
                        query,
-                       new { criteriaValue = email}
+                       new { criteriaValue = email }
                    );
 
                 return queryResult ?? string.Empty;
@@ -42,10 +60,38 @@ namespace LogisticsCompany.Services.Users
             throw new NotImplementedException();
         }
 
+        public async Task<string> Login(LoginDto dto, string issuer, string key)
+        {
+            var user = await GetUserByEmailAndPassword(dto.Email, dto.PasswordHash);
+
+            if (user != null && PasswordHasher.VerifyPassword(dto.PasswordHash, user.PasswordHash))
+            {
+                var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key));
+                var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
+
+                var role = await _roleService.GetRoleNameById(user.RoleId) ?? string.Empty;
+
+                var claims = new Claim[]
+                {
+                    new Claim("Email", user.Email),
+                    new Claim("Role", role),
+                };
+
+                var Sectoken = new JwtSecurityToken(issuer,
+                 issuer,
+                 claims,
+                 expires: DateTime.Now.AddMinutes(120),
+                 signingCredentials: credentials);
+
+                var token = new JwtSecurityTokenHandler().WriteToken(Sectoken);
+
+                return token;
+            }
+
+            return "";
+        }
         public async Task Register(RegisterDto dto)
         {
-            var connectionString = _dbContext.GetConnectionString();
-
             dto.Password = PasswordHasher.HashPassword(dto.Password);
             var roleId = await _roleService.GetIdByName(dto.Role);
 
@@ -55,7 +101,7 @@ namespace LogisticsCompany.Services.Users
 
                 if (string.IsNullOrEmpty(registerEmail))
                 {
-                    using (var sqlConnection = new SqlConnection(connectionString))
+                    using (var sqlConnection = new SqlConnection(_connectionString))
                     {
                         var insertCommand = SqlCommandHelper.InsertCommand("Users", $"'{dto.Username}'", $"'{dto.Email}'", $"{roleId}", $"'{dto.Password}'");
                         await sqlConnection.ExecuteAsync(insertCommand);

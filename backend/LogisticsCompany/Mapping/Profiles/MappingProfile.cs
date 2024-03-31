@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LogisticsCompany.Dto;
 using LogisticsCompany.Request;
+using LogisticsCompany.Services.Dto;
 
 namespace LogisticsCompany.Mapping.Profiles
 {
@@ -9,6 +10,7 @@ namespace LogisticsCompany.Mapping.Profiles
         public MappingProfile()
         {
             CreateMap<RegisterRequestModel, RegisterDto>();
+            CreateMap<LoginRequestModel, LoginDto>();
         }
     }
 }
