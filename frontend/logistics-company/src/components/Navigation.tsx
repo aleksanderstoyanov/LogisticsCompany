@@ -12,6 +12,11 @@ export function Navigation() {
                         </Link>
                     </Typography>
                     <Typography variant="h6" component="div">
+                    <Link variant="h6" href="login" underline="none">
+                            <Button color="inherit">
+                                Login
+                            </Button>
+                        </Link>
                         <Link variant="h6" href="register" underline="none">
                             <Button color="inherit">
                                 Register
