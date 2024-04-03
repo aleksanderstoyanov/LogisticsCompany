@@ -27,12 +27,23 @@ namespace LogisticsCompany.Services.Users
             _roleService = roleService;
         }
 
+
+        public async Task<IEnumerable<UserDto>> GetUsers()
+        {
+            using (var connection = new SqlConnection(this._connectionString))
+            {
+                var query = SelectAll("Users");
+                var users = await connection.QueryAsync<UserDto>(query);
+
+                return users;
+            }
+        }
+
         public async Task<LoginDto?> GetUserByEmailAndPassword(string email, string password)
         {
             using (var connection = new SqlConnection(this._connectionString))
             {
                 var query = SelectEntityBySingleCriteria("Users", "Email");
-
                 var user = await connection.QuerySingleOrDefaultAsync<LoginDto?>(query, new { criteriaValue = email });
 
                 return user;
