@@ -1,4 +1,4 @@
-import { Box, Button, Container, Grid, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, Container, Grid, TextField, Typography } from "@mui/material";
 import Person2OutlinedIcon from '@mui/icons-material/Person2Outlined';
 
 import '../Register.css';
@@ -17,29 +17,45 @@ const IDS = ["email", "password"] as const;
 const [EMAIL_ID, PASSWORD_ID] = IDS;
 
 export function Login() {
-    const [loginModel, changeLoginModel] = useState<LoginModel>(new LoginModel("", ""));
+    const [loginModel, setLoginModel] = useState<LoginModel>(new LoginModel("", ""));
+    const [isErrorVisible, setErrorVisiblitiy] = useState<boolean>(false);
 
     function onCancel(event: SyntheticEvent) {
         IDS.forEach((id) => {
             let element = document.getElementById(id) as HTMLInputElement;
             element.value = "";
         })
-  
-        changeLoginModel(new LoginModel("", ""));
+
+        setLoginModel(new LoginModel("", ""));
     }
     function onLogin(event: SyntheticEvent) {
         axios({
-          method: 'POST',
-          url: `${API_URL}/api/Authorization/Login`,
-          data: loginModel
+            method: 'POST',
+            url: `${API_URL}/api/Authorization/Login`,
+            data: loginModel
         })
-        .then((response) => {
+            .then((response) => {
+                debugger;
+                let jwt = response.data;
+                if (jwt != "Invalid Credentials") {
+                    sessionStorage['jwt'] = response.data;
+                    if (isErrorVisible) {
+                        setErrorVisiblitiy(false);
+                    }
+                    window.location.href = "/";
+                }
+            })
+            .catch(() => {
+                setErrorVisiblitiy(true);
 
-            if(response != null){
-                sessionStorage['jwt'] = response.data;
-                console.log(jwtDecode<string>(response.data.toString()));
-            }
-        });
+                setLoginModel(new LoginModel("", ""));
+                let cancelBtn = document.getElementById("cancelBtn") as HTMLButtonElement;
+                cancelBtn.click();
+
+                setTimeout(async function(){
+                    await setErrorVisiblitiy(false);
+                }, 1000)
+            });
     }
 
     function onChange(event: SyntheticEvent) {
@@ -49,13 +65,13 @@ export function Login() {
 
         switch (id) {
             case EMAIL_ID:
-                changeLoginModel((loginModel: LoginModel) => {
+                setLoginModel((loginModel: LoginModel) => {
                     loginModel.email = value;
                     return loginModel;
                 })
                 break;
             case PASSWORD_ID:
-                changeLoginModel((loginModel: LoginModel) => {
+                setLoginModel((loginModel: LoginModel) => {
                     loginModel.passwordHash = value;
                     return loginModel;
                 })
@@ -96,18 +112,21 @@ export function Login() {
                     />
                     <Grid container justifyContent="center" spacing={2} style={{ marginTop: 24 }}>
                         <Grid item>
-                            <Button variant="outlined" onClick={onCancel}>
+                            <Button id="cancelBtn" variant="outlined" onClick={onCancel}>
                                 Cancel
                             </Button>
                         </Grid>
                         <Grid item>
-                            <Button variant="outlined" color="primary" onClick={onLogin}>
+                            <Button id="loginBtn" variant="outlined" color="primary" onClick={onLogin}>
                                 Login
                             </Button>
                         </Grid>
                     </Grid>
                 </Grid>
             </Grid>
+            <Alert style={{ display: isErrorVisible ? "block" : "none" }} severity="error">
+                Credentials are invalid.
+            </Alert>
         </Container>
     )
 }

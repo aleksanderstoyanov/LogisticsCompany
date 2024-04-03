@@ -54,12 +54,6 @@ namespace LogisticsCompany.Services.Users
             }
         }
 
-        public async Task Login()
-        {
-            // TODO: Add Login Logic
-            throw new NotImplementedException();
-        }
-
         public async Task<string> Login(LoginDto dto, string issuer, string key)
         {
             var user = await GetUserByEmailAndPassword(dto.Email, dto.PasswordHash);
@@ -88,7 +82,7 @@ namespace LogisticsCompany.Services.Users
                 return token;
             }
 
-            return "";
+            return string.Empty;
         }
         public async Task Register(RegisterDto dto)
         {

@@ -58,6 +58,11 @@ namespace LogisticsCompany.Controllers
 
             var token = await _userService.Login(dto, issuer, key);
 
+            if (token.IsNullOrEmpty())
+            {
+                return BadRequest("Invalid Crendetials");
+            }
+
             return Ok(token);
         }
     }
