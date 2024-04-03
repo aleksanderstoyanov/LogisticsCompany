@@ -2,11 +2,11 @@ import { Box, Container, Grid, TextField, Typography, Button } from "@mui/materi
 import Person2OutlinedIcon from '@mui/icons-material/Person2Outlined';
 
 
-import '../Register.css';
-import "../models/RegisterModel";
+import '../../styles/Register.css';
+import "../../models/RegisterModel";
 
 import { SyntheticEvent, useState } from "react";
-import { RegisterModel } from "../models/RegisterModel";
+import { RegisterModel } from "../../models/RegisterModel";
 import axios, { Axios } from "axios";
 
 const API_URL = "https://localhost:7209";

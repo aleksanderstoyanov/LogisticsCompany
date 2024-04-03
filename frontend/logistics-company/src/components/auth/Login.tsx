@@ -1,16 +1,14 @@
 import { Alert, Box, Button, Container, Grid, TextField, Typography } from "@mui/material";
 import Person2OutlinedIcon from '@mui/icons-material/Person2Outlined';
 
-import '../Register.css';
-import "../models/RegisterModel";
+import "../../models/RegisterModel";
+import '../../styles/Register.css';
 
 import { SyntheticEvent, useState } from "react";
-import { RegisterModel } from "../models/RegisterModel";
-import { LoginModel } from "../models/LoginModel";
+import { LoginModel } from "../../models/LoginModel";
 
 
-import axios, { Axios } from "axios";
-import { jwtDecode } from "jwt-decode";
+import axios from "axios";
 
 const API_URL = "https://localhost:7209";
 const IDS = ["email", "password"] as const;

@@ -6,11 +6,11 @@ import { jwtDecode } from "jwt-decode";
 export function Home() {
     const jwt = sessionStorage["jwt"];
     const [userModel, setUserModel] = useState<UserModel>(new UserModel("Anonymous", "None"));
+
     let message = `Welcome ${userModel.email}, to Logistics Company!`;
+    
     useEffect(() => {
-        debugger;
         if (jwt != null) {
-            debugger;
             const { Email, Role } = jwtDecode(jwt.toString()) as any;
             setUserModel((userModel: UserModel) => {
                 userModel.email = Email;
@@ -20,7 +20,7 @@ export function Home() {
 
             let title = document.getElementById("title") as HTMLElement;
             message = `Welcome ${userModel.email}, to Logistics Company!`;
-            
+
             title.textContent = message;
         }
     })
