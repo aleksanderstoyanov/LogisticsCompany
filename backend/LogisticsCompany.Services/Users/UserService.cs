@@ -32,7 +32,10 @@ namespace LogisticsCompany.Services.Users
         {
             using (var connection = new SqlConnection(this._connectionString))
             {
-                var query = SelectAll("Users");
+                var query = """
+                    SELECT u.Id, u.Email, u.Username, r.Name as RoleName FROM Users AS u
+                        INNER JOIN Roles as r ON r.Id = u.RoleId
+                    """;
                 var users = await connection.QueryAsync<UserDto>(query);
 
                 return users;
