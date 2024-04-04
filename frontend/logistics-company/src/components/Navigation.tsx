@@ -1,8 +1,14 @@
 import { AppBar, Box, Button, Icon, IconButton, Link, Toolbar, Typography } from "@mui/material";
+import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
+import { UserModel } from "../models/UserModel";
 
 export function Navigation() {
+
+    const [userModel, setUserModel] = useState<UserModel>(new UserModel("Anonymous", "None"));
+
     const [isRegisterVisible, setRegisterVisible] = useState<boolean>(true);
+    const [isAdminPanelVisible, setAdminPanelVisible] = useState<boolean>(false);
     const [isLoginVisible, setLoginVisible] = useState<boolean>(true);
     const [isLogoutVisible, setLogoutVisible] = useState<boolean>(false);
 
@@ -13,6 +19,21 @@ export function Navigation() {
             setRegisterVisible(false);
             setLoginVisible(false);
             setLogoutVisible(true);
+
+
+            const { Email, Role } = jwtDecode(jwt) as any;
+
+            if (Role == "Admin") {
+                setAdminPanelVisible(true);
+            }
+            setUserModel((userModel: UserModel) => {
+
+                userModel.email = Email;
+                userModel.role = Role;
+                return userModel;
+            })
+
+            console.log(userModel);
         }
     });
 
@@ -35,9 +56,14 @@ export function Navigation() {
                         <Link underline="none" href="/">
                             Logistics Company
                         </Link>
+                        <Link variant="h6" underline="none" href="/adminPanel" style={{ display: isVisible(isAdminPanelVisible), marginLeft: "7%"  }}>
+                            <Button color="inherit">
+                                Admin Panel
+                            </Button>
+                        </Link>
                     </Typography>
                     <Typography variant="h6" component="div">
-                        <Link variant="h6" href="login" underline="none"  style={{ display: isVisible(isLoginVisible) }}>
+                        <Link variant="h6" href="login" underline="none" style={{ display: isVisible(isLoginVisible) }}>
                             <Button color="inherit">
                                 Login
                             </Button>
