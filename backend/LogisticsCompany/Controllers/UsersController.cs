@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using LogisticsCompany.Helpers;
+using LogisticsCompany.Request;
 using LogisticsCompany.Response;
 using LogisticsCompany.Services.Contracts;
 using LogisticsCompany.Services.Dto;
@@ -33,7 +35,8 @@ namespace LogisticsCompany.Controllers
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var parsedToken = tokenHandler.ReadJwtToken(authorization);
-            var roleClaim = parsedToken.Claims
+            var roleClaim = parsedToken
+                    .Claims
                     .FirstOrDefault(claim => claim.Type == "Role")
                     .Value;
 
@@ -46,6 +49,54 @@ namespace LogisticsCompany.Controllers
             var users = await this._userService.GetUsers();
 
             return Ok(users);
+        }
+
+        [HttpPut]
+        [Authorize]
+        [Route("update")]
+        public async Task<IActionResult> Update(UserRequestModel requestModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var header = HttpContext.Request.Headers["Authorization"];
+
+            if (!AuthorizationRequestHelper.IsAuthorized("Admin", header))
+            {
+                return Unauthorized();
+            }
+
+            var dto = _mapper.Map<UserRequestModel, UserDto>(requestModel);
+
+            await _userService.Update(dto);
+
+            return Ok("");
+            
+        }
+
+        [HttpDelete]
+        [Authorize]
+        [Route("delete")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var header = HttpContext.Request.Headers["Authorization"];
+
+            if (!AuthorizationRequestHelper.IsAuthorized("Admin",  header))
+            {
+                return Unauthorized();
+            }
+
+            await _userService.Delete(id);
+
+            return Ok("");
+
         }
     }
 }

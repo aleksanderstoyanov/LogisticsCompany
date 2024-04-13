@@ -27,6 +27,47 @@ namespace LogisticsCompany.Services.Users
             _roleService = roleService;
         }
 
+        public async Task Update(UserDto userDto)
+        {
+            var roleId = await _roleService.GetIdByName(userDto.RoleName);
+
+            Dictionary<string, string> keyValuePairs = new Dictionary<string, string>()
+            {
+                { "Username", userDto.Username },
+                { "Email", userDto.Email },
+                { "RoleId", roleId.ToString()},
+            };
+
+            var updateCommand = SqlCommandHelper.UpdateCommand("Users", typeof(User), keyValuePairs, userDto.Id);
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(updateCommand);
+            }
+        }
+
+        public async Task Delete(int id)
+        {
+            var user = GetById(id);
+
+            if (user == null) return;
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var query = SqlCommandHelper.DeleteCommand("Users", "Id");
+                await connection.ExecuteAsync(query, new {criteriaValue = id});
+            }
+        }
+
+        public async Task<LoginDto?> GetById(int id)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var query = SelectEntityBySingleCriteria("Users", "Id");
+                var user = await connection.QuerySingleOrDefaultAsync<LoginDto?>(query, new { criteriaValue = id });
+                return user;
+            }
+        }
 
         public async Task<IEnumerable<UserDto>> GetUsers()
         {

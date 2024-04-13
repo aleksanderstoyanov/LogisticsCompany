@@ -12,6 +12,7 @@ namespace LogisticsCompany.Mapping.Profiles
         {
             CreateMap<RegisterRequestModel, RegisterDto>();
             CreateMap<LoginRequestModel, LoginDto>();
+            CreateMap<UserRequestModel, UserDto>();
         }
     }
 }
