@@ -1,5 +1,7 @@
 ﻿using Dapper;
 using LogisticsCompany.Data;
+using LogisticsCompany.Data.Builders;
+using LogisticsCompany.Data.Common;
 using LogisticsCompany.Data.Helpers;
 using LogisticsCompany.Services.Contracts;
 using Microsoft.Data.SqlClient;
@@ -16,13 +18,31 @@ namespace LogisticsCompany.Services
             this._dbContext = _dbContext;
             this._connectionString = this._dbContext.GetConnectionString();
         }
-        
+
         public async Task<int> GetIdByName(string name)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                var query = SqlQueryHelper.SelectIdBySingleCriteria("Roles", "Name");
-                var id = await connection.QuerySingleAsync<int>(query, new { criteriaValue = name });
+                var clauseContainer = new ClauseDescriptorContainer()
+                {
+                    ClauseDescriptors = new HashSet<ClauseDescriptor>()
+                    {
+                       new ClauseDescriptor
+                       {
+                           Field = "Name",
+                           EqualityOperator = EqualityOperator.EQUALS,
+                           FieldValue = name
+                       }
+                    }
+                };
+
+                var query = new SqlQueryBuilder()
+                    .Select(columns: "Id")
+                    .From(table: "Roles")
+                    .Where(clauseContainer)
+                    .GetQuery();
+
+                var id = await connection.QuerySingleAsync<int>(query);
 
                 return id;
             }
@@ -37,9 +57,26 @@ namespace LogisticsCompany.Services
         {
             using (var connection = new SqlConnection(this._connectionString))
             {
-                var query = SqlQueryHelper.SelectSingleColumnById("Roles", "Name");
+                var clauseContainer = new ClauseDescriptorContainer()
+                {
+                    ClauseDescriptors = new List<ClauseDescriptor>()
+                    {
+                       new ClauseDescriptor
+                       {
+                           Field = "Id",
+                           EqualityOperator = EqualityOperator.EQUALS,
+                           FieldValue = id
+                       }
+                    }
+                };
 
-                var roleName = await connection.QueryFirstOrDefaultAsync<string>(query, new { criteriaValue = id });
+                var query = new SqlQueryBuilder()
+                   .Select(columns: "Name")
+                   .From(table: "Roles")
+                   .Where(clauseContainer)
+                   .GetQuery();
+
+                var roleName = await connection.QueryFirstOrDefaultAsync<string>(query);
 
                 return roleName;
             }

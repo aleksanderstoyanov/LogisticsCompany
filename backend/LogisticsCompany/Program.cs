@@ -7,6 +7,7 @@ using LogisticsCompany.Services.Contracts;
 using LogisticsCompany.Services.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -61,6 +62,11 @@ app.UseCors(options =>
     options.AllowAnyOrigin();
 
 });
+
+using (var scope = app.Services.CreateScope())
+{
+   var dbFactory = scope.ServiceProvider.GetRequiredService<LogisticsCompanyContext>();
+}
 
 app.UseHttpsRedirection();
 

@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using LogisticsCompany.Data.Builders;
 using LogisticsCompany.Data.Contracts;
 using LogisticsCompany.Data.Helpers;
 using Microsoft.Data.SqlClient;
@@ -26,7 +27,10 @@ namespace LogisticsCompany.Data.Seeders
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
-                var query = SqlQueryHelper.SelectAllCount(table);
+                var query = new SqlQueryBuilder()
+                    .Select(columns: "COUNT(Id)")
+                    .From(table)
+                    .GetQuery();
 
                 var count = sqlConnection.QuerySingle<int>(query);
 

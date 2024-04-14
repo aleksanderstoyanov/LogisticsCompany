@@ -1,5 +1,7 @@
 ﻿using Dapper;
 using LogisticsCompany.Data;
+using LogisticsCompany.Data.Builders;
+using LogisticsCompany.Data.Common;
 using LogisticsCompany.Data.Helpers;
 using LogisticsCompany.Dto;
 using LogisticsCompany.Entity;
@@ -10,7 +12,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using static LogisticsCompany.Data.Helpers.SqlQueryHelper;
 
 namespace LogisticsCompany.Services.Users
 {
@@ -38,7 +39,12 @@ namespace LogisticsCompany.Services.Users
                 { "RoleId", roleId.ToString()},
             };
 
-            var updateCommand = SqlCommandHelper.UpdateCommand("Users", typeof(User), keyValuePairs, userDto.Id);
+            var updateCommand = SqlCommandHelper.UpdateCommand(
+                    table: "Users",
+                    entityType: typeof(User),
+                    entityValues: keyValuePairs,
+                    primaryKey: userDto.Id
+            );
 
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -54,8 +60,8 @@ namespace LogisticsCompany.Services.Users
 
             using (var connection = new SqlConnection(_connectionString))
             {
-                var query = SqlCommandHelper.DeleteCommand("Users", "Id");
-                await connection.ExecuteAsync(query, new {criteriaValue = id});
+                var query = SqlCommandHelper.DeleteCommand(table: "Users", primaryKey: "Id");
+                await connection.ExecuteAsync(query, new { criteriaValue = id });
             }
         }
 
@@ -63,8 +69,26 @@ namespace LogisticsCompany.Services.Users
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                var query = SelectEntityBySingleCriteria("Users", "Id");
-                var user = await connection.QuerySingleOrDefaultAsync<LoginDto?>(query, new { criteriaValue = id });
+                var clauseContainer = new ClauseDescriptorContainer()
+                {
+                    ClauseDescriptors = new HashSet<ClauseDescriptor>()
+                    {
+                        new ClauseDescriptor
+                        {
+                            Field = "Id",
+                            EqualityOperator = EqualityOperator.EQUALS,
+                            FieldValue = id
+                        }
+                    }
+                };
+
+                var query = new SqlQueryBuilder()
+                        .Select(columns: "*")
+                        .From("Users")
+                        .Where(clauseContainer)
+                        .GetQuery();
+
+                var user = await connection.QuerySingleOrDefaultAsync<LoginDto?>(query);
                 return user;
             }
         }
@@ -73,10 +97,36 @@ namespace LogisticsCompany.Services.Users
         {
             using (var connection = new SqlConnection(this._connectionString))
             {
-                var query = """
-                    SELECT u.Id, u.Email, u.Username, r.Name as RoleName FROM Users AS u
-                        INNER JOIN Roles as r ON r.Id = u.RoleId
-                    """;
+                var clauseContainer = new ClauseDescriptorContainer()
+                {
+                    ClauseDescriptors = new HashSet<ClauseDescriptor>()
+                    {
+                        new ClauseDescriptor
+                        {
+                            Field = "r.Id",
+                            EqualityOperator = EqualityOperator.EQUALS,
+                            FieldValue = "u.RoleId"
+                        }
+                    }
+                };
+
+                var query = new SqlQueryBuilder()
+                    .Select
+                    (
+                        columns: new[] { "u.Id", "u.Username", "u.Email", "r.Name AS RoleName" }
+                    )
+                    .From(
+                        table: "Users",
+                        @as: "u"
+                    )
+                    .Join(
+                        table: "Roles",
+                        @as: "r",
+                        joinOperator: JoinOperator.INNER,
+                        container: clauseContainer
+                     )
+                     .GetQuery();
+
                 var users = await connection.QueryAsync<UserDto>(query);
 
                 return users;
@@ -87,8 +137,26 @@ namespace LogisticsCompany.Services.Users
         {
             using (var connection = new SqlConnection(this._connectionString))
             {
-                var query = SelectEntityBySingleCriteria("Users", "Email");
-                var user = await connection.QuerySingleOrDefaultAsync<LoginDto?>(query, new { criteriaValue = email });
+                var clauseContainer = new ClauseDescriptorContainer()
+                {
+                    ClauseDescriptors = new HashSet<ClauseDescriptor>()
+                    {
+                        new ClauseDescriptor
+                        {
+                            Field = "Email",
+                            EqualityOperator = EqualityOperator.EQUALS,
+                            FieldValue = email
+                        }
+                    }
+                };
+
+                var query = new SqlQueryBuilder()
+                    .Select(columns: "*")
+                    .From(table: "Users")
+                    .Where(clauseContainer)
+                    .GetQuery();
+
+                var user = await connection.QuerySingleOrDefaultAsync<LoginDto?>(query);
 
                 return user;
             }
@@ -97,13 +165,26 @@ namespace LogisticsCompany.Services.Users
         {
             using (var sqlConnection = new SqlConnection(_dbContext.GetConnectionString()))
             {
-                var query = SelectSingleColumnBySingleCriteria("Users", "Email");
-                var queryResult = await sqlConnection
-                   .QueryFirstOrDefaultAsync<string>
-                   (
-                       query,
-                       new { criteriaValue = email }
-                   );
+                var clauseContainer = new ClauseDescriptorContainer()
+                {
+                    ClauseDescriptors = new HashSet<ClauseDescriptor>
+                    {
+                        new ClauseDescriptor
+                        {
+                            Field = "Email",
+                            EqualityOperator = EqualityOperator.EQUALS,
+                            FieldValue = email
+                        }
+                    }
+                };
+
+                var query = new SqlQueryBuilder()
+                      .Select(columns: "Email")
+                      .From("Users")
+                      .Where(clauseContainer)
+                      .GetQuery();
+
+                var queryResult = await sqlConnection.QueryFirstOrDefaultAsync<string>(query);
 
                 return queryResult ?? string.Empty;
             }
