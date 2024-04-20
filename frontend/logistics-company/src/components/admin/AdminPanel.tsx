@@ -41,18 +41,28 @@ export default function AdminPanel() {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } })
   }
 
+  function deepEqual(x: any, y: any): boolean {
+    return (x && y && typeof x === 'object' && typeof y === 'object') ?
+      (Object.keys(x).length === Object.keys(y).length) &&
+      Object.keys(x).reduce(function (isEqual: boolean, key: any) {
+        return isEqual && deepEqual(x[key], y[key]);
+      }, true) : (x === y);
+  }
   const processRowUpdate = (newRow: GridRowModel) => {
+    const foundRow = rows.find((row) => row.id === newRow.id) as GridRowModel;
     const updatedRow = { ...newRow, isNew: false };
+    if (foundRow != null && !deepEqual(foundRow, newRow)) {
+      axios({
+        method: "PUT",
+        data: updatedRow,
+        url: `${API_URL}/Users/Update`,
+        headers: {
+          "Authorization": `Bearer ${jwt}`
+        }
+      })
+    }
     setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
 
-    axios({
-      method: "PUT",
-      data: updatedRow,
-      url: `${API_URL}/Users/Update`,
-      headers: {
-        "Authorization": `Bearer ${jwt}`
-      }
-    })
     return updatedRow;
   };
 
@@ -61,16 +71,16 @@ export default function AdminPanel() {
   }
 
   function onDelete(id: GridRowId) {
-     axios({
-        method: "DELETE",
-        url: `${API_URL}/Users/Delete?id=${id}`,
-        headers: {
-            "Authorization": `Bearer ${jwt}`
-        } 
-     })
-     .then(() => {
+    axios({
+      method: "DELETE",
+      url: `${API_URL}/Users/Delete?id=${id}`,
+      headers: {
+        "Authorization": `Bearer ${jwt}`
+      }
+    })
+      .then(() => {
         setRows(rows.filter(row => row.id != id))
-     })
+      })
   }
   const columns: GridColDef[] = [
     {
@@ -90,7 +100,7 @@ export default function AdminPanel() {
       width: 200,
       headerName: 'Role',
       type: 'singleSelect',
-      valueOptions: ['Admin', 'Client', 'Employee'],
+      valueOptions: ['Client', 'OfficeEmployee', 'Courier'],
       editable: true,
     },
     {
