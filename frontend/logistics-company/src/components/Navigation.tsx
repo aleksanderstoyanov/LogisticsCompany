@@ -56,9 +56,14 @@ export function Navigation() {
                         <Link underline="none" href="/">
                             Logistics Company
                         </Link>
-                        <Link variant="h6" underline="none" href="/adminPanel" style={{ display: isVisible(isAdminPanelVisible), marginLeft: "7%"  }}>
+                        <Link variant="h6" underline="none" href="/adminPanel" style={{ display: isVisible(isAdminPanelVisible), marginLeft: "3%"  }}>
                             <Button color="inherit">
                                 Admin Panel
+                            </Button>
+                        </Link>
+                        <Link variant="h6" underline="none" href="/officePanel" style={{ display: isVisible(isAdminPanelVisible), marginLeft: "2%"  }}>
+                            <Button color="inherit">
+                                Office Panel
                             </Button>
                         </Link>
                     </Typography>

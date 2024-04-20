@@ -9,7 +9,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
 import axios from "axios";
 
-export default function AdminPanel() {
+export default function OfficePanel() {
 
   const API_URL = "https://localhost:7209/api";
 
@@ -48,14 +48,14 @@ export default function AdminPanel() {
     const foundRow = rows.find((row) => row.id === newRow.id) as GridRowModel;
     const updatedRow = { ...newRow, isNew: false };
     if (foundRow != null && !deepEqual(foundRow, newRow)) {
-      axios({
-        method: "PUT",
-        data: updatedRow,
-        url: `${API_URL}/Users/Update`,
-        headers: {
-          "Authorization": `Bearer ${jwt}`
-        }
-      })
+        axios({
+          method: "PUT",
+          url: `${API_URL}/Offices/Update`,
+          data: updatedRow,
+          headers: {
+            "Authorization": `Bearer ${jwt}`
+          }
+        })
     }
     setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
 
@@ -67,17 +67,17 @@ export default function AdminPanel() {
   }
 
   function onDelete(id: GridRowId) {
-    axios({
-      method: "DELETE",
-      url: `${API_URL}/Users/Delete?id=${id}`,
-      headers: {
-        "Authorization": `Bearer ${jwt}`
-      }
-    })
-      .then((response) => {
-        if(response.status == 200){
-            setRows(rows.filter(row => row.id != id))
+      axios({
+        method: "DELETE",
+        url: `${API_URL}/Offices/Delete?id=${id}`,
+        headers: {
+          "Authorization": `Bearer ${jwt}`
         }
+      })
+      .then(function(response){
+         if(response.status == 200){
+            setRows(rows.filter(row => row.id != id));
+         }
       })
   }
   const columns: GridColDef[] = [
@@ -88,17 +88,9 @@ export default function AdminPanel() {
       editable: false
     },
     {
-      field: 'email',
+      field: 'address',
       width: 200,
-      headerName: 'Email Address',
-      editable: true,
-    },
-    {
-      field: 'roleName',
-      width: 200,
-      headerName: 'Role',
-      type: 'singleSelect',
-      valueOptions: ['Client', 'OfficeEmployee', 'Courier'],
+      headerName: 'Address',
       editable: true,
     },
     {
@@ -165,7 +157,7 @@ export default function AdminPanel() {
       if (Role == "Admin") {
         axios({
           method: "GET",
-          url: `${API_URL}/Users/GetAll`,
+          url: `${API_URL}/Offices/GetAll`,
           headers: {
             "Authorization": `Bearer ${jwt}`
           }

@@ -9,6 +9,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import '../../logistics-company/src/styles/App.css';
 import AdminPanel from './components/admin/AdminPanel';
+import OfficePanel from './components/admin/OfficePanel';
 
 const darkTheme = createTheme({
   palette: {
@@ -27,6 +28,7 @@ function App() {
           <Route path="login" element={<Login />}></Route>
           <Route path="register" element={<Register />}></Route>
           <Route path="adminPanel" element={<AdminPanel />}></Route>
+          <Route path="officePanel" element={<OfficePanel />}></Route>
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
