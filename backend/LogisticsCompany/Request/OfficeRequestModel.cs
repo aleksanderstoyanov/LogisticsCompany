@@ -1,6 +1,6 @@
-﻿namespace LogisticsCompany.Services.Dto
+﻿namespace LogisticsCompany.Request
 {
-    public class OfficeDto
+    public class OfficeRequestModel
     {
         public int Id { get; set; }
         public string Address { get; set; }

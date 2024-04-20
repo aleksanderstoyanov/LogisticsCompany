@@ -4,7 +4,7 @@ using LogisticsCompany.Data.Factory;
 using LogisticsCompany.Mapping.Profiles;
 using LogisticsCompany.Services;
 using LogisticsCompany.Services.Contracts;
-using LogisticsCompany.Services.Office;
+using LogisticsCompany.Services.Offices;
 using LogisticsCompany.Services.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;

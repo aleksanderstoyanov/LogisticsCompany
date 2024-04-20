@@ -1,6 +1,6 @@
-﻿namespace LogisticsCompany.Services.Dto
+﻿namespace LogisticsCompany.Entity
 {
-    public class OfficeDto
+    public class Office
     {
         public int Id { get; set; }
         public string Address { get; set; }
