@@ -4,6 +4,7 @@ using LogisticsCompany.Data.Factory;
 using LogisticsCompany.Mapping.Profiles;
 using LogisticsCompany.Services;
 using LogisticsCompany.Services.Contracts;
+using LogisticsCompany.Services.Office;
 using LogisticsCompany.Services.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -30,6 +31,7 @@ builder.Services.AddSingleton<SqlDbFactory>();
 // Register Database Services
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IRoleService, RoleService>();
+builder.Services.AddTransient<IOfficeService, OfficeService>();
 
 
 // Register JWT Services
