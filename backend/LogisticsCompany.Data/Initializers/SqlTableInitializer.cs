@@ -18,6 +18,7 @@ namespace LogisticsCompany.Data.Initializers
         public async Task Init()
         {
             await InitRoles();
+            await InitOffices();
             await InitUsers();
         }
 
@@ -32,8 +33,10 @@ namespace LogisticsCompany.Data.Initializers
                     Username NVARCHAR(MAX) NOT NULL,
                     Email NVARCHAR(MAX) NOT NULL,
                     RoleId INT,
+                    OfficeId INT NULL,
                     PasswordHash NVARCHAR(MAX) NOT NULL,
-                    {ForeignKeyConstraint("fk_role", "RoleId", "dbo.Roles", "Id")}
+                    {ForeignKeyConstraint("fk_role", "RoleId", "dbo.Roles", "Id")},
+                    {ForeignKeyConstraint("fk_office", "OfficeId", "dbo.Offices", "Id")}
                 )
                 """;
 
@@ -52,6 +55,22 @@ namespace LogisticsCompany.Data.Initializers
                       CREATE TABLE Roles(
                          Id INT NOT NULL PRIMARY KEY IDENTITY (1, 1),
                          Name NVARCHAR(MAX)
+                      )
+                      """;
+
+                await connection.ExecuteAsync(sql);
+            }
+        }
+
+        private async Task InitOffices()
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var sql = """
+                      IF OBJECT_ID('Offices', 'U') IS NULL
+                      CREATE TABLE Offices(
+                         Id INT NOT NULL PRIMARY KEY IDENTITY (1, 1),
+                         Address NVARCHAR(MAX)
                       )
                       """;
 

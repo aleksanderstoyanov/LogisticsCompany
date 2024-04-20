@@ -17,6 +17,7 @@ namespace LogisticsCompany.Data.Seeders
         public async Task Seed()
         {
             await SeedRoles();
+            await SeedOffices();
             await SeedUsers();
         }
 
@@ -38,6 +39,19 @@ namespace LogisticsCompany.Data.Seeders
             }
         }
 
+        private async Task SeedOffices()
+        {
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
+            {
+                var table = "Offices";
+
+                if (!Exists(table))
+                {
+                    await sqlConnection.ExecuteAsync(InsertCommand(table, "'ul.Geo Milev'"));
+                }
+            }
+        }
+
         private async Task SeedUsers()
         {
 
@@ -48,7 +62,8 @@ namespace LogisticsCompany.Data.Seeders
                 if (!Exists(table))
                 {
                     var password = PasswordHasher.HashPassword("123123");
-                    await sqlConnection.ExecuteAsync(InsertCommand(table, "'admin'", "'admin@gmail.com'", "3" , $"'{password}'"));
+                    await sqlConnection.ExecuteAsync(InsertCommand(table, "'admin'", "'admin@gmail.com'", "5", "NULL" , $"'{password}'"));
+                    await sqlConnection.ExecuteAsync(InsertCommand(table, "'test'", "'test@gmail.com'", "1" ,"NULL" , $"'{password}'"));
                 }
             }
         }
@@ -62,7 +77,9 @@ namespace LogisticsCompany.Data.Seeders
 
                 if (!Exists(table))
                 {
-                    await sqlConnection.ExecuteAsync(InsertCommand(table, "'Employee'"));
+                    await sqlConnection.ExecuteAsync(InsertCommand(table, "'None'"));
+                    await sqlConnection.ExecuteAsync(InsertCommand(table, "'OfficeEmployee'"));
+                    await sqlConnection.ExecuteAsync(InsertCommand(table, "'Courier'"));
                     await sqlConnection.ExecuteAsync(InsertCommand(table, "'Client'"));
                     await sqlConnection.ExecuteAsync(InsertCommand(table, "'Admin'"));
                 }
