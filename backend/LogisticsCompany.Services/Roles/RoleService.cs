@@ -8,15 +8,11 @@ using Microsoft.Data.SqlClient;
 
 namespace LogisticsCompany.Services
 {
-    public class RoleService : IRoleService
+    public class RoleService : BaseService, IRoleService
     {
-        private readonly LogisticsCompanyContext _dbContext;
-        private readonly string _connectionString;
-
-        public RoleService(LogisticsCompanyContext _dbContext)
+        public RoleService(LogisticsCompanyContext dbContext)
+            : base(dbContext)
         {
-            this._dbContext = _dbContext;
-            this._connectionString = this._dbContext.GetConnectionString();
         }
 
         public async Task<int> GetIdByName(string name)

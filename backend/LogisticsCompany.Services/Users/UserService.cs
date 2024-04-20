@@ -15,16 +15,13 @@ using System.Text;
 
 namespace LogisticsCompany.Services.Users
 {
-    public class UserService : IUserService
+    public class UserService : BaseService, IUserService
     {
-        private readonly string _connectionString;
-        private readonly LogisticsCompanyContext _dbContext;
         private readonly IRoleService _roleService;
 
         public UserService(LogisticsCompanyContext dbContext, IRoleService roleService)
+            :base(dbContext)
         {
-            _dbContext = dbContext;
-            _connectionString = dbContext.GetConnectionString();
             _roleService = roleService;
         }
 
@@ -128,7 +125,7 @@ namespace LogisticsCompany.Services.Users
                      .GetQuery();
 
                 var users = await connection.QueryAsync<UserDto>(query);
-
+                users = users.Where(user => user.RoleName != "Admin");
                 return users;
             }
         }
