@@ -38,7 +38,7 @@ namespace LogisticsCompany.Data.Initializers
                     OfficeId INT NULL,
                     PasswordHash NVARCHAR(MAX) NOT NULL,
                     {ForeignKeyConstraint("fk_role", "RoleId", "dbo.Roles", "Id")},
-                    {ForeignKeyConstraint("fk_office", "OfficeId", "dbo.Offices", "Id")}
+                    {ForeignKeyConstraint("fk_office", "OfficeId", "dbo.Offices", "Id")} ON DELETE SET NULL
                 )
                 """;
 
