@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { UserModel } from "../../models/UserModel";
 import { jwtDecode } from "jwt-decode";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { DataGrid, GridActionsCellItem, GridColDef, GridEventListener, GridRowEditStopReasons, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridRowsProp } from "@mui/x-data-grid";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
@@ -180,6 +180,46 @@ export default function AdminPanel() {
 
     }
   });
+
+  if (jwt != null) {
+
+        const { Role } = jwtDecode(jwt) as any;
+
+        if(Role != "Admin"){
+          return(
+            <Box sx={{
+               height: 400,
+               width: "100%",
+               marginTop:"7%"
+            }}>
+              <Typography variant="h4" sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignContent: "center"
+              }}>
+                  You do not have permisson for this page!
+              </Typography>
+            </Box>
+          )
+        }
+  }
+  else if(jwt == null){
+    return(
+      <Box sx={{
+         height: 400,
+         width: "100%",
+         marginTop:"7%"
+      }}>
+        <Typography variant="h4" sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignContent: "center"
+        }}>
+            You do not have permisson for this page!
+        </Typography>
+      </Box>
+    )
+  }
 
   return (
     <Box sx={{

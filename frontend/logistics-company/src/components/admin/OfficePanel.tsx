@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { UserModel } from "../../models/UserModel";
 import { jwtDecode } from "jwt-decode";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { DataGrid, GridActionsCellItem, GridColDef, GridEventListener, GridRowEditStopReasons, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridRowsProp } from "@mui/x-data-grid";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
@@ -48,14 +48,14 @@ export default function OfficePanel() {
     const foundRow = rows.find((row) => row.id === newRow.id) as GridRowModel;
     const updatedRow = { ...newRow, isNew: false };
     if (foundRow != null && !deepEqual(foundRow, newRow)) {
-        axios({
-          method: "PUT",
-          url: `${API_URL}/Offices/Update`,
-          data: updatedRow,
-          headers: {
-            "Authorization": `Bearer ${jwt}`
-          }
-        })
+      axios({
+        method: "PUT",
+        url: `${API_URL}/Offices/Update`,
+        data: updatedRow,
+        headers: {
+          "Authorization": `Bearer ${jwt}`
+        }
+      })
     }
     setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
 
@@ -67,17 +67,17 @@ export default function OfficePanel() {
   }
 
   function onDelete(id: GridRowId) {
-      axios({
-        method: "DELETE",
-        url: `${API_URL}/Offices/Delete?id=${id}`,
-        headers: {
-          "Authorization": `Bearer ${jwt}`
+    axios({
+      method: "DELETE",
+      url: `${API_URL}/Offices/Delete?id=${id}`,
+      headers: {
+        "Authorization": `Bearer ${jwt}`
+      }
+    })
+      .then(function (response) {
+        if (response.status == 200) {
+          setRows(rows.filter(row => row.id != id));
         }
-      })
-      .then(function(response){
-         if(response.status == 200){
-            setRows(rows.filter(row => row.id != id));
-         }
       })
   }
   const columns: GridColDef[] = [
@@ -172,6 +172,46 @@ export default function OfficePanel() {
 
     }
   });
+
+  if (jwt != null) {
+
+    const { Role } = jwtDecode(jwt) as any;
+
+    if (Role != "Admin") {
+      return (
+        <Box sx={{
+          height: 400,
+          width: "100%",
+          marginTop: "7%"
+        }}>
+          <Typography variant="h4" sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignContent: "center"
+          }}>
+            You do not have permisson for this page!
+          </Typography>
+        </Box>
+      )
+    }
+  }
+  else if (jwt == null) {
+    return (
+      <Box sx={{
+        height: 400,
+        width: "100%",
+        marginTop: "7%"
+      }}>
+        <Typography variant="h4" sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignContent: "center"
+        }}>
+          You do not have permisson for this page!
+        </Typography>
+      </Box>
+    )
+  }
 
   return (
     <Box sx={{
