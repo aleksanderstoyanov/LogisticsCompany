@@ -31,6 +31,8 @@ namespace LogisticsCompany.Data.Initializers
                 CREATE TABLE Users (
                     Id INT NOT NULL PRIMARY KEY IDENTITY(1,1),
                     Username NVARCHAR(MAX) NOT NULL,
+                    FirstName NVARCHAR(MAX) NOT NULL,
+                    LastName NVARCHAR(MAX) NOT NULL,
                     Email NVARCHAR(MAX) NOT NULL,
                     RoleId INT,
                     OfficeId INT NULL,
