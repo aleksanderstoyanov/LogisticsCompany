@@ -20,7 +20,7 @@ namespace LogisticsCompany.Services.Users
         private readonly IRoleService _roleService;
 
         public UserService(LogisticsCompanyContext dbContext, IRoleService roleService)
-            :base(dbContext)
+            : base(dbContext)
         {
             _roleService = roleService;
         }
@@ -32,6 +32,8 @@ namespace LogisticsCompany.Services.Users
             Dictionary<string, string> keyValuePairs = new Dictionary<string, string>()
             {
                 { "Username", userDto.Username },
+                { "FirstName", userDto.FirstName },
+                { "LastName", userDto.LastName},
                 { "Email", userDto.Email },
                 { "RoleId", roleId.ToString()},
             };
@@ -110,7 +112,7 @@ namespace LogisticsCompany.Services.Users
                 var query = new SqlQueryBuilder()
                     .Select
                     (
-                        columns: new[] { "u.Id", "u.Username", "u.Email", "r.Name AS RoleName" }
+                        columns: new[] { "u.Id", "u.Username", "u.FirstName", "u.LastName", "u.Email", "r.Name AS RoleName" }
                     )
                     .From(
                         table: "Users",
@@ -177,7 +179,7 @@ namespace LogisticsCompany.Services.Users
 
                 var query = new SqlQueryBuilder()
                       .Select(columns: "Email")
-                      .From("Users")
+                      .From(table: "Users")
                       .Where(clauseContainer)
                       .GetQuery();
 
@@ -230,7 +232,7 @@ namespace LogisticsCompany.Services.Users
                 {
                     using (var sqlConnection = new SqlConnection(_connectionString))
                     {
-                        var insertCommand = SqlCommandHelper.InsertCommand("Users", $"'{dto.Username}'", $"'{dto.Email}'", $"{roleId}", $"'{dto.Password}'");
+                        var insertCommand = SqlCommandHelper.InsertCommand("Users", $"'{dto.Username}'", $"'{dto.FirstName}'", $"'{dto.LastName}'", $"'{dto.Email}'", $"{roleId}", "NULL" ,$"'{dto.Password}'");
                         await sqlConnection.ExecuteAsync(insertCommand);
                     }
                 }
