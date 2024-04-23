@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { UserModel } from "../../models/UserModel";
 import { jwtDecode } from "jwt-decode";
-import { Box, Typography } from "@mui/material";
-import { DataGrid, GridActionsCellItem, GridColDef, GridEventListener, GridRowEditStopReasons, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridRowsProp } from "@mui/x-data-grid";
+import { Box, Button, Typography } from "@mui/material";
+import { DataGrid, GridActionsCellItem, GridColDef, GridEventListener, GridRowEditStopReasons, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridRowsProp, GridSlots, GridToolbarContainer } from "@mui/x-data-grid";
+import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
@@ -10,7 +11,6 @@ import CancelIcon from '@mui/icons-material/Close';
 import axios from "axios";
 
 export default function OfficePanel() {
-
   const API_URL = "https://localhost:7209/api";
 
   const [userModel, setUserModel] = useState<UserModel>(new UserModel("Anonymous", "None"));
@@ -44,10 +44,46 @@ export default function OfficePanel() {
         return isEqual && deepEqual(x[key], y[key]);
       }, true) : (x === y);
   }
+  function getRandomInt(min: number, max: number) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
   const processRowUpdate = (newRow: GridRowModel) => {
+
     const foundRow = rows.find((row) => row.id === newRow.id) as GridRowModel;
-    const updatedRow = { ...newRow, isNew: false };
-    if (foundRow != null && !deepEqual(foundRow, newRow)) {
+    let updatedRow = { ...newRow, isNew: newRow.isNew ? true : false };
+    var isCreated = false;
+    if (newRow.isNew) {
+      axios({
+        method: "POST",
+        url: `${API_URL}/Offices/Create`,
+        data: updatedRow,
+        headers: {
+          "Authorization": `Bearer ${jwt}`
+        }
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.status == 200) {
+
+            setRows(rows.map((row) => {
+              if (row.id === newRow.id) {
+                row.id = response.data.id;
+                row.address = newRow.address;
+                return row;
+              }
+              else {
+                return (row.id === newRow.id ? updatedRow : row)
+              }
+            }));
+          }
+        })
+
+    }
+
+    else if (foundRow != null && !deepEqual(foundRow, newRow)) {
       axios({
         method: "PUT",
         url: `${API_URL}/Offices/Update`,
@@ -56,10 +92,13 @@ export default function OfficePanel() {
           "Authorization": `Bearer ${jwt}`
         }
       })
-    }
-    setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
 
+      setRows(rows.map((row) => {
+        return (row.id === newRow.id ? updatedRow : row)
+      }));
+    }
     return updatedRow;
+
   };
 
   function onSave(id: GridRowId) {
@@ -212,6 +251,32 @@ export default function OfficePanel() {
       </Box>
     )
   }
+  interface EditToolbarProps {
+    setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
+    setRowModesModel: (
+      newModel: (oldModel: GridRowModesModel) => GridRowModesModel,
+    ) => void;
+  }
+  function EditToolbar(props: EditToolbarProps) {
+    const { setRows, setRowModesModel } = props;
+
+    const handleClick = () => {
+      const id = getRandomInt(rows.length, Number.MAX_VALUE);
+      setRows((oldRows) => [...oldRows, { id, address: '', isNew: true }]);
+      setRowModesModel((oldModel) => ({
+        ...oldModel,
+        [id]: { mode: GridRowModes.Edit, fieldToFocus: 'name' },
+      }));
+    };
+
+    return (
+      <GridToolbarContainer>
+        <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
+          Add record
+        </Button>
+      </GridToolbarContainer>
+    );
+  }
 
   return (
     <Box sx={{
@@ -227,6 +292,12 @@ export default function OfficePanel() {
         onRowEditStop={handleRowEditStop}
         processRowUpdate={processRowUpdate}
         rowModesModel={rowModesModel}
+        slots={{
+          toolbar: EditToolbar as GridSlots['toolbar'],
+        }}
+        slotProps={{
+          toolbar: { setRows, setRowModesModel },
+        }}
         initialState={{
           pagination: {
             paginationModel: {
