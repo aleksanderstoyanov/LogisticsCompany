@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LogisticsCompany.Helpers;
 using LogisticsCompany.Request;
+using LogisticsCompany.Response;
 using LogisticsCompany.Services.Contracts;
 using LogisticsCompany.Services.Dto;
 using Microsoft.AspNetCore.Authorization;
@@ -29,6 +30,32 @@ namespace LogisticsCompany.Controllers
         {
             var offices = await _officeService.GetAll();
             return Ok(offices);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("create")]
+        public async Task<IActionResult> Create(OfficeCreateRequestModel requestModel)
+        {
+            var header = this.HttpContext.Request.Headers["Authorization"];
+
+            if (!AuthorizationRequestHelper.IsAuthorized("Admin", header))
+            {
+                return Unauthorized();
+            }
+
+            var dto = this._mapper.Map<OfficeCreateRequestModel, OfficeDto>(requestModel);
+
+            var office = await _officeService.Create(dto);
+
+            if (office == null)
+            {
+                return BadRequest();
+            }
+
+            var response = _mapper.Map<OfficeDto, OfficeResponseModel>(office);
+
+            return Ok(response);
         }
 
         [HttpPut]

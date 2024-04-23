@@ -46,6 +46,34 @@ namespace LogisticsCompany.Services.Offices
                 return office;
             }
         }
+
+        public async Task<OfficeDto?> GetByAddress(string name)
+        {
+            var clauseDescriptorContainer = new ClauseDescriptorContainer()
+            {
+                ClauseDescriptors = new HashSet<ClauseDescriptor>
+                {
+                    new ClauseDescriptor
+                    {
+                        EqualityOperator = EqualityOperator.EQUALS,
+                        Field = "Address",
+                        FieldValue = name
+                    }
+                }
+            };
+
+            var query = new SqlQueryBuilder()
+                .Select(columns: "*")
+                .From(table: "Offices")
+                .Where(clauseDescriptorContainer)
+                .GetQuery();
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var office = await connection.QuerySingleOrDefaultAsync<OfficeDto>(query);
+                return office;
+            }
+        }
         public async Task<IEnumerable<OfficeDto>> GetAll()
         {
             using (var connection = new SqlConnection(this._connectionString))
@@ -57,6 +85,24 @@ namespace LogisticsCompany.Services.Offices
 
                 var offices = await connection.QueryAsync<OfficeDto>(query);
                 return offices;
+            }
+        }
+
+        public async Task<OfficeDto?> Create(OfficeDto dto)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var command = SqlCommandHelper.InsertCommand
+                (
+                    table: "Offices",
+                    values: new[] { $"'{dto.Address}'" }
+                );
+
+                await connection.ExecuteAsync(command);
+
+                var office = await GetByAddress(dto.Address);
+
+                return office ?? null;
             }
         }
 
