@@ -88,6 +88,18 @@ export default function AdminPanel() {
       editable: false
     },
     {
+      field: 'firstName',
+      width: 200,
+      headerName: 'First Name',
+      editable: true
+    },
+    {
+      field: 'lastName',
+      width: 200,
+      headerName: 'Last Name',
+      editable: true
+    },
+    {
       field: 'email',
       width: 200,
       headerName: 'Email Address',

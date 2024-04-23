@@ -10,11 +10,11 @@ import { RegisterModel } from "../../models/RegisterModel";
 import axios, { Axios } from "axios";
 
 const API_URL = "https://localhost:7209";
-const IDS = ["user", "email", "password"] as const;
-const [USERNAME_ID, EMAIL_ID, PASSWORD_ID] = IDS;
+const IDS = ["user", "firstName", "lastName", "email", "password"] as const;
+const [USERNAME_ID, FIRSTNAME_ID, LASTNAME_ID, EMAIL_ID, PASSWORD_ID] = IDS;
 
 export function Register() {
-  const [registerModel, changeRegisterModel] = useState<RegisterModel>(new RegisterModel("", "", ""));
+  const [registerModel, changeRegisterModel] = useState<RegisterModel>(new RegisterModel("", "", "", "", ""));
 
   function onChange(event: SyntheticEvent) {
     let target = event.target as HTMLInputElement;
@@ -25,6 +25,18 @@ export function Register() {
       case USERNAME_ID:
         changeRegisterModel((registerModel: RegisterModel) => {
           registerModel.username = value;
+          return registerModel;
+        })
+        break;
+      case FIRSTNAME_ID:
+        changeRegisterModel((registerModel: RegisterModel) => {
+          registerModel.firstName = value;
+          return registerModel;
+        })
+        break;
+      case LASTNAME_ID:
+        changeRegisterModel((registerModel: RegisterModel) => {
+          registerModel.lastName = value;
           return registerModel;
         })
         break;
@@ -45,19 +57,24 @@ export function Register() {
   }
 
   function onCancel(event: SyntheticEvent) {
-      IDS.forEach((id) => {
-          let element = document.getElementById(id) as HTMLInputElement;
-          element.value = "";
-      })
+    IDS.forEach((id) => {
+      let element = document.getElementById(id) as HTMLInputElement;
+      element.value = "";
+    })
 
-      changeRegisterModel(new RegisterModel("", "", ""));
+    changeRegisterModel(new RegisterModel("", "", "", "", ""));
   }
   function onRegister(event: SyntheticEvent) {
-      axios({
-        method: 'POST',
-        url: `${API_URL}/api/Authorization/Register`,
-        data: registerModel
-      });
+    axios({
+      method: 'POST',
+      url: `${API_URL}/api/Authorization/Register`,
+      data: registerModel
+    })
+    .then((response) => {
+       if(response.status == 200){
+          window.location.href = "/login";
+       }
+    });
   }
 
   return (
@@ -79,6 +96,22 @@ export function Register() {
             fullWidth
             margin="normal"
             label="User Name"
+            variant="outlined"
+            onChange={onChange}
+          />
+          <TextField
+            id={FIRSTNAME_ID}
+            fullWidth
+            margin="normal"
+            label="First Name"
+            variant="outlined"
+            onChange={onChange}
+          />
+          <TextField
+            id={LASTNAME_ID}
+            fullWidth
+            margin="normal"
+            label="Last Name"
             variant="outlined"
             onChange={onChange}
           />
