@@ -2,12 +2,14 @@ import { AppBar, Box, Button, Icon, IconButton, Link, Toolbar, Typography } from
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { UserModel } from "../models/UserModel";
+import { BreakfastDiningOutlined } from "@mui/icons-material";
 
 export function Navigation() {
 
-    const [userModel, setUserModel] = useState<UserModel>(new UserModel("Anonymous", "None"));
+    const [userModel, setUserModel] = useState<UserModel>(new UserModel(0, "Anonymous", "None"));
 
     const [isRegisterVisible, setRegisterVisible] = useState<boolean>(true);
+    const [isOfficesVisible, setOfficesVisible] = useState<boolean>(false);
     const [isAdminPanelVisible, setAdminPanelVisible] = useState<boolean>(false);
     const [isLoginVisible, setLoginVisible] = useState<boolean>(true);
     const [isLogoutVisible, setLogoutVisible] = useState<boolean>(false);
@@ -23,8 +25,13 @@ export function Navigation() {
 
             const { Email, Role } = jwtDecode(jwt) as any;
 
-            if (Role == "Admin") {
-                setAdminPanelVisible(true);
+            switch (Role) {
+                case "Admin":
+                    setAdminPanelVisible(true);
+                    break;
+                case "Client":
+                    setOfficesVisible(true);
+                    break;
             }
             setUserModel((userModel: UserModel) => {
 
@@ -32,8 +39,6 @@ export function Navigation() {
                 userModel.role = Role;
                 return userModel;
             })
-
-            console.log(userModel);
         }
     });
 
@@ -56,14 +61,19 @@ export function Navigation() {
                         <Link underline="none" href="/">
                             Logistics Company
                         </Link>
-                        <Link variant="h6" underline="none" href="/adminPanel" style={{ display: isVisible(isAdminPanelVisible), marginLeft: "3%"  }}>
+                        <Link variant="h6" underline="none" href="/adminPanel" style={{ display: isVisible(isAdminPanelVisible), marginLeft: "3%" }}>
                             <Button color="inherit">
                                 Admin Panel
                             </Button>
                         </Link>
-                        <Link variant="h6" underline="none" href="/officePanel" style={{ display: isVisible(isAdminPanelVisible), marginLeft: "2%"  }}>
+                        <Link variant="h6" underline="none" href="/officePanel" style={{ display: isVisible(isAdminPanelVisible), marginLeft: "2%" }}>
                             <Button color="inherit">
                                 Office Panel
+                            </Button>
+                        </Link>
+                        <Link variant="h6" underline="none" href="/offices" style={{ display: isVisible(isOfficesVisible), marginLeft: "2%" }}>
+                            <Button color="inherit">
+                                Offices
                             </Button>
                         </Link>
                     </Typography>

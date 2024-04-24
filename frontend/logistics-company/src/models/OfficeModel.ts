@@ -1,7 +1,9 @@
 export class OfficeModel{
+    id: number;
     address: string;
 
-    constructor(address: string) {
+    constructor(id: number, address: string) {
+        this.id = id;
         this.address = address;
     }
 }
