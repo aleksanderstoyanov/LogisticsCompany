@@ -70,14 +70,29 @@ namespace LogisticsCompany.Data.Helpers
                 {
                     if (entityValues.TryGetValue(field.Name, out entityfieldValue))
                     {
-                        sb.Append(string.Format("{0} = '{1}'", field.Name, entityfieldValue));
+                        if(entityfieldValue == "NULL")
+                        {
+                            sb.Append(string.Format("{0} = {1}", field.Name, entityfieldValue));
+                        }
+                        else
+                        {
+                            sb.Append(string.Format("{0} = '{1}'", field.Name, entityfieldValue));
+                        }
+
                     }
                 }
                 else
                 {
                     if (entityValues.TryGetValue(field.Name, out entityfieldValue))
                     {
-                        sb.Append(string.Format("{0} = '{1}', ", field.Name, entityfieldValue));
+                        if (entityfieldValue == "NULL")
+                        {
+                            sb.Append(string.Format("{0} = {1}", field.Name, entityfieldValue));
+                        }
+                        else
+                        {
+                            sb.Append(string.Format("{0} = '{1}', ", field.Name, entityfieldValue));
+                        }
                     }
                 }
 
