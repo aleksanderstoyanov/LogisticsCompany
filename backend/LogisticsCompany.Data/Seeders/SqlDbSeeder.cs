@@ -48,6 +48,7 @@ namespace LogisticsCompany.Data.Seeders
                 if (!Exists(table))
                 {
                     await sqlConnection.ExecuteAsync(InsertCommand(table, "'ul.Geo Milev'"));
+                    await sqlConnection.ExecuteAsync(InsertCommand(table, "'ul.Shipchenski Prohod'"));
                 }
             }
         }

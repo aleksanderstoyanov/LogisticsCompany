@@ -18,16 +18,20 @@ namespace LogisticsCompany.Services.Users
     public class UserService : BaseService, IUserService
     {
         private readonly IRoleService _roleService;
+        private readonly IOfficeService _officeService;
 
-        public UserService(LogisticsCompanyContext dbContext, IRoleService roleService)
+        public UserService(LogisticsCompanyContext dbContext, IRoleService roleService, IOfficeService officeService)
             : base(dbContext)
         {
             _roleService = roleService;
+            _officeService = officeService;
         }
 
         public async Task Update(UserDto userDto)
         {
             var roleId = await _roleService.GetIdByName(userDto.RoleName);
+            var officeId = await _officeService.GetIdByName(userDto.OfficeName);
+
 
             Dictionary<string, string> keyValuePairs = new Dictionary<string, string>()
             {
@@ -35,7 +39,8 @@ namespace LogisticsCompany.Services.Users
                 { "FirstName", userDto.FirstName },
                 { "LastName", userDto.LastName},
                 { "Email", userDto.Email },
-                { "RoleId", roleId.ToString()},
+                { "RoleId", roleId != null ? roleId.ToString() : "NULL"},
+                { "OfficeId", officeId != null ? officeId.ToString() : "NULL"},
             };
 
             var updateCommand = SqlCommandHelper.UpdateCommand(
@@ -96,7 +101,7 @@ namespace LogisticsCompany.Services.Users
         {
             using (var connection = new SqlConnection(this._connectionString))
             {
-                var clauseContainer = new ClauseDescriptorContainer()
+                var rolesClauseContainer = new ClauseDescriptorContainer()
                 {
                     ClauseDescriptors = new HashSet<ClauseDescriptor>()
                     {
@@ -109,10 +114,23 @@ namespace LogisticsCompany.Services.Users
                     }
                 };
 
+                var officesClauseContainer = new ClauseDescriptorContainer()
+                {
+                    ClauseDescriptors = new HashSet<ClauseDescriptor>()
+                    {
+                        new ClauseDescriptor
+                        {
+                            Field = "o.Id",
+                            EqualityOperator = EqualityOperator.EQUALS,
+                            FieldValue = "u.OfficeId"
+                        }
+                    }
+                };
+
                 var query = new SqlQueryBuilder()
                     .Select
                     (
-                        columns: new[] { "u.Id", "u.Username", "u.FirstName", "u.LastName", "u.Email", "r.Name AS RoleName" }
+                        columns: new[] { "u.Id", "u.Username", "u.FirstName", "u.LastName", "u.Email", "r.Name AS RoleName", "o.Address AS OfficeName" }
                     )
                     .From(
                         table: "Users",
@@ -122,9 +140,15 @@ namespace LogisticsCompany.Services.Users
                         table: "Roles",
                         @as: "r",
                         joinOperator: JoinOperator.INNER,
-                        container: clauseContainer
+                        container: rolesClauseContainer
                      )
-                     .GetQuery();
+                    .Join(
+                        table: "Offices",
+                        @as: "o",
+                        joinOperator: JoinOperator.LEFT,
+                        container: officesClauseContainer
+                    )
+                    .GetQuery();
 
                 var users = await connection.QueryAsync<UserDto>(query);
                 users = users.Where(user => user.RoleName != "Admin");

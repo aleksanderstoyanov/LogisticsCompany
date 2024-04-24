@@ -18,6 +18,34 @@ namespace LogisticsCompany.Services.Offices
         {
         }
 
+        public async Task<int?> GetIdByName(string name)
+        {
+            var clauseContainer = new ClauseDescriptorContainer()
+            {
+                ClauseDescriptors = new HashSet<ClauseDescriptor>()
+                {
+                    new ClauseDescriptor
+                    {
+                        Field = "Address",
+                        EqualityOperator = EqualityOperator.EQUALS,
+                        FieldValue = name
+                    }
+                }
+            };
+
+            var query = new SqlQueryBuilder()
+                .Select(columns: "Id")
+                .From(table: "Offices")
+                .Where(clauseContainer)
+                .GetQuery();
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var result = await connection.QueryFirstAsync<int?>(query);
+
+                return result ?? null;
+            }
+        }
         public async Task<OfficeDto?> GetById(int id)
         {
             var clauseContainer = new ClauseDescriptorContainer()
