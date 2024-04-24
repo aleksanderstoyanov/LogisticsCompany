@@ -15,6 +15,7 @@ export default function AdminPanel() {
 
   const [userModel, setUserModel] = useState<UserModel>(new UserModel("Anonymous", "None"));
   const [rows, setRows] = useState<any[]>([]);
+  const [offices, setOffices] = useState<any[]>([]);
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
 
   const jwt = sessionStorage["jwt"];
@@ -114,6 +115,14 @@ export default function AdminPanel() {
       editable: true,
     },
     {
+      field: "officeName",
+      width: 200,
+      headerName: 'Office',
+      type: 'singleSelect',
+      valueOptions: offices,
+      editable: true,
+    },
+    {
       field: 'actions',
       type: 'actions',
       headerName: 'Actions',
@@ -188,6 +197,21 @@ export default function AdminPanel() {
               setRows(data);
             }
           })
+
+        axios({
+          method: "GET",
+          url: `${API_URL}/Offices/GetAll`,
+          headers: {
+            "Authorization": `Bearer ${jwt}`
+          }
+        })
+        .then(function(response){
+          var data = response.data;
+          if(offices.length == 0 && data.length > 0){
+              debugger;
+              setOffices(data.map((office: any) => office.address));
+          }
+        })
       }
 
     }
