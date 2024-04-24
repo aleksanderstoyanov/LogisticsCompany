@@ -5,7 +5,7 @@ import { jwtDecode } from "jwt-decode";
 
 export function Home() {
     const jwt = sessionStorage["jwt"];
-    const [userModel, setUserModel] = useState<UserModel>(new UserModel("Anonymous", "None"));
+    const [userModel, setUserModel] = useState<UserModel>(new UserModel(0, "Anonymous", "None"));
 
     let message = `Welcome ${userModel.email}, to Logistics Company!`;
     

@@ -13,7 +13,7 @@ export default function AdminPanel() {
 
   const API_URL = "https://localhost:7209/api";
 
-  const [userModel, setUserModel] = useState<UserModel>(new UserModel("Anonymous", "None"));
+  const [userModel, setUserModel] = useState<UserModel>(new UserModel(0,"Anonymous", "None"));
   const [rows, setRows] = useState<any[]>([]);
   const [offices, setOffices] = useState<any[]>([]);
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
