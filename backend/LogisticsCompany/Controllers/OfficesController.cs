@@ -6,6 +6,7 @@ using LogisticsCompany.Services.Contracts;
 using LogisticsCompany.Services.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection.PortableExecutable;
 
 namespace LogisticsCompany.Controllers
 {
@@ -28,6 +29,13 @@ namespace LogisticsCompany.Controllers
         [Route("getAll")]
         public async Task<IActionResult> GetAll()
         {
+            var header = HttpContext.Request.Headers.Authorization;
+
+            if (!AuthorizationRequestHelper.IsAuthorized("Admin", header) && !AuthorizationRequestHelper.IsAuthorized("Client", header))
+            {
+                return Unauthorized();
+            }
+
             var offices = await _officeService.GetAll();
             return Ok(offices);
         }

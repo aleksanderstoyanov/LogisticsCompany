@@ -9,8 +9,7 @@ namespace LogisticsCompany.Request
         [Required]
         public string RoleName { get; set; }
 
-        [Required]
-        public string OfficeName { get; set; }
+        public string? OfficeName { get; set; }
 
         [Required]
         public string FirstName { get; set; }

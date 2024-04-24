@@ -30,8 +30,12 @@ namespace LogisticsCompany.Services.Users
         public async Task Update(UserDto userDto)
         {
             var roleId = await _roleService.GetIdByName(userDto.RoleName);
-            var officeId = await _officeService.GetIdByName(userDto.OfficeName);
 
+            int? officeId = null;
+            if(userDto.OfficeName != null)
+            {
+                officeId = await _officeService.GetIdByName(userDto.OfficeName);
+            }
 
             Dictionary<string, string> keyValuePairs = new Dictionary<string, string>()
             {
