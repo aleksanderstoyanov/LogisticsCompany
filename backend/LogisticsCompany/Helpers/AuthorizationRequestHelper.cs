@@ -23,7 +23,7 @@ namespace LogisticsCompany.Helpers
                     .FirstOrDefault(claim => claim.Type == "Role")
                     .Value;
 
-            if (roleClaim != "Admin")
+            if (roleClaim != role)
             {
                 return false;
             }
