@@ -32,7 +32,7 @@ namespace LogisticsCompany.Services.Users
             var roleId = await _roleService.GetIdByName(userDto.RoleName);
 
             int? officeId = null;
-            if(userDto.OfficeName != null)
+            if (userDto.OfficeName != null)
             {
                 officeId = await _officeService.GetIdByName(userDto.OfficeName);
             }
@@ -70,6 +70,46 @@ namespace LogisticsCompany.Services.Users
             {
                 var query = SqlCommandHelper.DeleteCommand(table: "Users", primaryKey: "Id");
                 await connection.ExecuteAsync(query, new { criteriaValue = id });
+            }
+        }
+
+        public async Task<IEnumerable<UserDto>> GetDifferentUsersFromCurrent(int id)
+        {
+            var user = GetById(id);
+
+            if (user == null) new List<UserDto>();
+
+            var clauseDescriptorContainer = new ClauseDescriptorContainer()
+            {
+                ClauseDescriptors = new HashSet<ClauseDescriptor>()
+                {
+                    new ClauseDescriptor
+                    {
+                        Field = "Id",
+                        EqualityOperator = EqualityOperator.NOT_EQUALS,
+                        FieldValue = id,
+                        LogicalOperator = LogicalOperator.AND
+                    },
+                    new ClauseDescriptor
+                    {
+                        Field = "Username",
+                        EqualityOperator = EqualityOperator.NOT_EQUALS,
+                        FieldValue = "admin"
+                    }
+                }
+            };
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var query = new SqlQueryBuilder()
+                    .Select(columns: "*")
+                    .From(table: "Users")
+                    .Where(clauseDescriptorContainer)
+                    .GetQuery();
+
+                var result = await connection.QueryAsync<UserDto>(query);
+
+                return result;
             }
         }
 
@@ -230,6 +270,7 @@ namespace LogisticsCompany.Services.Users
 
                 var claims = new Claim[]
                 {
+                    new Claim("Id", user.Id.ToString()),
                     new Claim("Email", user.Email),
                     new Claim("Role", role),
                 };
@@ -260,7 +301,7 @@ namespace LogisticsCompany.Services.Users
                 {
                     using (var sqlConnection = new SqlConnection(_connectionString))
                     {
-                        var insertCommand = SqlCommandHelper.InsertCommand("Users", $"'{dto.Username}'", $"'{dto.FirstName}'", $"'{dto.LastName}'", $"'{dto.Email}'", $"{roleId}", "NULL" ,$"'{dto.Password}'");
+                        var insertCommand = SqlCommandHelper.InsertCommand("Users", $"'{dto.Username}'", $"'{dto.FirstName}'", $"'{dto.LastName}'", $"'{dto.Email}'", $"{roleId}", "NULL", $"'{dto.Password}'");
                         await sqlConnection.ExecuteAsync(insertCommand);
                     }
                 }

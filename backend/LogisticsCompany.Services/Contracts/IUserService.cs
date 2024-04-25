@@ -8,6 +8,7 @@ namespace LogisticsCompany.Services.Contracts
         Task Update(UserDto userDto);
         Task Delete(int id);
         Task<IEnumerable<UserDto>> GetUsers();
+        Task<IEnumerable<UserDto>> GetDifferentUsersFromCurrent(int id);
         Task<LoginDto?> GetById(int id);
         Task<string> GetRegisterEmail(string email);
         Task<LoginDto?> GetUserByEmailAndPassword(string email, string password);

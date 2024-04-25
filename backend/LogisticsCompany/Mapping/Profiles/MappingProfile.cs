@@ -15,6 +15,7 @@ namespace LogisticsCompany.Mapping.Profiles
             CreateMap<UserRequestModel, UserDto>();
             CreateMap<OfficeRequestModel, OfficeDto>();
             CreateMap<OfficeCreateRequestModel, OfficeDto>();
+            CreateMap<PackageRequestModel, PackageDto>();
             CreateMap<OfficeDto, OfficeResponseModel>();
         }
     }

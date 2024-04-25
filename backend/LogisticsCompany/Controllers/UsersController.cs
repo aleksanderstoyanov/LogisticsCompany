@@ -7,6 +7,7 @@ using LogisticsCompany.Services.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
+using System.Reflection.PortableExecutable;
 
 namespace LogisticsCompany.Controllers
 {
@@ -27,20 +28,9 @@ namespace LogisticsCompany.Controllers
         [Route("getAll")]
         public async Task <IActionResult> GetAll()
         {
-            var authorization = HttpContext.Request.Headers["Authorization"].ToString();
+            var header = HttpContext.Request.Headers["Authorization"];
 
-            authorization = authorization.Replace("Bearer", string.Empty);
-            authorization = authorization.Replace(" ", string.Empty);
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-
-            var parsedToken = tokenHandler.ReadJwtToken(authorization);
-            var roleClaim = parsedToken
-                    .Claims
-                    .FirstOrDefault(claim => claim.Type == "Role")
-                    .Value;
-
-            if(roleClaim != "Admin")
+            if(!AuthorizationRequestHelper.IsAuthorized("Admin", header))
             {
                 return Unauthorized();
             }
@@ -49,6 +39,24 @@ namespace LogisticsCompany.Controllers
             var users = await this._userService.GetUsers();
 
             return Ok(users);
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("getAllExcept")]
+        public async Task<IActionResult> GetAllExcept(int id)
+        {
+            var header = HttpContext.Request.Headers["Authorization"];
+
+            if (!AuthorizationRequestHelper.IsAuthorized("Client", header))
+            {
+                return Unauthorized();
+            }
+
+            var users = await this._userService.GetDifferentUsersFromCurrent(id);
+
+            return Ok(users);
+
         }
 
         [HttpPut]
