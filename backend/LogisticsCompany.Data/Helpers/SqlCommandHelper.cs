@@ -87,7 +87,7 @@ namespace LogisticsCompany.Data.Helpers
                     {
                         if (entityfieldValue == "NULL")
                         {
-                            sb.Append(string.Format("{0} = {1}", field.Name, entityfieldValue));
+                            sb.Append(string.Format("{0} = {1}, ", field.Name, entityfieldValue));
                         }
                         else
                         {
