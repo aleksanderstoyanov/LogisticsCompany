@@ -17,6 +17,7 @@ namespace LogisticsCompany.Data.Builders
             foreach (var clauseDescriptor in container.ClauseDescriptors)
             {
                 sb.Append(clauseDescriptor.ToString(isJoinClause));
+                sb.Append(" ");
             }
         }
 

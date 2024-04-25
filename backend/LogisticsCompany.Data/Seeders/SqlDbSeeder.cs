@@ -17,8 +17,10 @@ namespace LogisticsCompany.Data.Seeders
         public async Task Seed()
         {
             await SeedRoles();
+            await SeedPackageStatuses();
             await SeedOffices();
             await SeedUsers();
+            await SeedPackages();
         }
 
         private string InsertCommand(string table, params string[] values)
@@ -64,7 +66,9 @@ namespace LogisticsCompany.Data.Seeders
                 {
                     var password = PasswordHasher.HashPassword("123123");
                     await sqlConnection.ExecuteAsync(InsertCommand(table, "'admin'", "'Admin'", "'Adminov'" ,"'admin@gmail.com'", "5", "NULL" , $"'{password}'"));
-                    await sqlConnection.ExecuteAsync(InsertCommand(table, "'test'","'Test'", "'Testov'" ,"'test@gmail.com'", "1" ,"1" , $"'{password}'"));
+                    await sqlConnection.ExecuteAsync(InsertCommand(table, "'test'","'Test'", "'Testov'" ,"'test@gmail.com'", "4" ,"1" , $"'{password}'"));
+                    await sqlConnection.ExecuteAsync(InsertCommand(table, "'pesho'","'Pesho'", "'Peshov'" ,"'pesho@gmail.com'", "1" ,"1" , $"'{password}'"));
+                    await sqlConnection.ExecuteAsync(InsertCommand(table, "'gosho'","'Gosho'", "'Goshov'" ,"'goshov@gmail.com'", "1" ,"1" , $"'{password}'"));
                 }
             }
         }
@@ -85,6 +89,36 @@ namespace LogisticsCompany.Data.Seeders
                     await sqlConnection.ExecuteAsync(InsertCommand(table, "'Admin'"));
                 }
             }
+        }
+
+        private async Task SeedPackageStatuses()
+        {
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
+            {
+                var table = "PackageStatuses";
+
+                if (!Exists(table))
+                {
+                    await sqlConnection.ExecuteAsync(InsertCommand(table, "'NonRegistered'"));
+                    await sqlConnection.ExecuteAsync(InsertCommand(table, "'Registered'"));
+                    await sqlConnection.ExecuteAsync(InsertCommand(table, "'InDelivery'"));
+                    await sqlConnection.ExecuteAsync(InsertCommand(table, "'Delivered'"));
+                }
+            }
+        }
+
+        private async Task SeedPackages()
+        {
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
+            {
+                var table = "Packages";
+
+                if (!Exists(table))
+                {
+                    await sqlConnection.ExecuteAsync(InsertCommand(table, "3", "4", "1", "'Pesholandiq 12'", "0", "12.1"));
+                }
+            }
+
         }
     }
 }
