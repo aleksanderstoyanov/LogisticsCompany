@@ -116,7 +116,7 @@ namespace LogisticsCompany.Data.Seeders
 
                 if (!Exists(table))
                 {
-                    await sqlConnection.ExecuteAsync(InsertCommand(table, "3", "4", "1", "'Pesholandiq 12'", "0", "12.1"));
+                    await sqlConnection.ExecuteAsync(InsertCommand(table, "2", "3", "1", "'Pesholandiq 12'", "0", "12.1"));
                 }
             }
 
