@@ -11,6 +11,7 @@ import '../../logistics-company/src/styles/App.css';
 import AdminPanel from './components/admin/AdminPanel';
 import OfficePanel from './components/admin/OfficePanel';
 import Offices from './components/clients/Offices';
+import Packages from './components/employees/Packages';
 
 const darkTheme = createTheme({
   palette: {
@@ -31,6 +32,7 @@ function App() {
           <Route path="adminPanel" element={<AdminPanel />}></Route>
           <Route path="officePanel" element={<OfficePanel />}></Route>
           <Route path="offices" element={<Offices />}></Route>
+          <Route path="packages" element={<Packages />}></Route>
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

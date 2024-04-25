@@ -10,6 +10,7 @@ export function Navigation() {
 
     const [isRegisterVisible, setRegisterVisible] = useState<boolean>(true);
     const [isOfficesVisible, setOfficesVisible] = useState<boolean>(false);
+    const [isPackagesVisible, setPackagesVisible] = useState<boolean>(false);
     const [isAdminPanelVisible, setAdminPanelVisible] = useState<boolean>(false);
     const [isLoginVisible, setLoginVisible] = useState<boolean>(true);
     const [isLogoutVisible, setLogoutVisible] = useState<boolean>(false);
@@ -31,6 +32,12 @@ export function Navigation() {
                     break;
                 case "Client":
                     setOfficesVisible(true);
+                    break;
+                case "OfficeEmployee":
+                    setPackagesVisible(true);
+                    break;
+                case "Courier":
+                    setPackagesVisible(true);
                     break;
             }
             setUserModel((userModel: UserModel) => {
@@ -74,6 +81,11 @@ export function Navigation() {
                         <Link variant="h6" underline="none" href="/offices" style={{ display: isVisible(isOfficesVisible), marginLeft: "2%" }}>
                             <Button color="inherit">
                                 Offices
+                            </Button>
+                        </Link>
+                        <Link variant="h6" underline="none" href="/packages" style={{ display: isVisible(isPackagesVisible), marginLeft: "2%" }}>
+                            <Button color="inherit">
+                                Packages
                             </Button>
                         </Link>
                     </Typography>
