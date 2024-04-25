@@ -54,8 +54,7 @@ namespace LogisticsCompany.Data.Initializers
                     PackageStatusId INT NULL,
                     Address NVARCHAR(MAX) NOT NULL,
                     ToOffice BIT,
-                    Weight DECIMAL(2),
-                    CONSTRAINT chck_to CHECK (FromId != ToId),
+                    Weight INT,
                     {ForeignKeyConstraint("fk_from", "FromId", "dbo.Users", "Id")} ON DELETE NO ACTION,
                     {ForeignKeyConstraint("fk_to", "ToId", "dbo.Users", "Id")} ON DELETE NO ACTION,
                     {ForeignKeyConstraint("fk_packageStatus", "PackageStatusId", "dbo.PackageStatuses", "Id")} ON DELETE SET NULL

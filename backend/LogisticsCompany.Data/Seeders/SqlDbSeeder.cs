@@ -67,8 +67,9 @@ namespace LogisticsCompany.Data.Seeders
                     var password = PasswordHasher.HashPassword("123123");
                     await sqlConnection.ExecuteAsync(InsertCommand(table, "'admin'", "'Admin'", "'Adminov'" ,"'admin@gmail.com'", "5", "NULL" , $"'{password}'"));
                     await sqlConnection.ExecuteAsync(InsertCommand(table, "'test'","'Test'", "'Testov'" ,"'test@gmail.com'", "4" ,"1" , $"'{password}'"));
-                    await sqlConnection.ExecuteAsync(InsertCommand(table, "'pesho'","'Pesho'", "'Peshov'" ,"'pesho@gmail.com'", "1" ,"1" , $"'{password}'"));
-                    await sqlConnection.ExecuteAsync(InsertCommand(table, "'gosho'","'Gosho'", "'Goshov'" ,"'goshov@gmail.com'", "1" ,"1" , $"'{password}'"));
+                    await sqlConnection.ExecuteAsync(InsertCommand(table, "'client'","'Client'", "'Clientov'" ,"'client@gmail.com'", "4" ,"1" , $"'{password}'"));
+                    await sqlConnection.ExecuteAsync(InsertCommand(table, "'pesho'","'Pesho'", "'Peshov'" ,"'office@gmail.com'", "2" ,"1" , $"'{password}'"));
+                    await sqlConnection.ExecuteAsync(InsertCommand(table, "'gosho'","'Gosho'", "'Goshov'" ,"'courier@gmail.com'", "3" ,"1" , $"'{password}'"));
                 }
             }
         }
