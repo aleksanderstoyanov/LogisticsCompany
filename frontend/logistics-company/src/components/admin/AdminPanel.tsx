@@ -13,7 +13,7 @@ export default function AdminPanel() {
 
   const API_URL = "https://localhost:7209/api";
 
-  const [userModel, setUserModel] = useState<UserModel>(new UserModel(0,"Anonymous", "None"));
+  const [userModel, setUserModel] = useState<UserModel>(new UserModel(0, "Anonymous", "None"));
   const [rows, setRows] = useState<any[]>([]);
   const [offices, setOffices] = useState<any[]>([]);
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
@@ -76,8 +76,10 @@ export default function AdminPanel() {
       }
     })
       .then((response) => {
-        if(response.status == 200){
-            setRows(rows.filter(row => row.id != id))
+        if (response.status == 200) {
+            setTimeout(() => {
+              setRows(rows.filter(row => row.id != id));
+            });
         }
       })
   }
@@ -205,13 +207,13 @@ export default function AdminPanel() {
             "Authorization": `Bearer ${jwt}`
           }
         })
-        .then(function(response){
-          var data = response.data;
-          if(offices.length == 0 && data.length > 0){
+          .then(function (response) {
+            var data = response.data;
+            if (offices.length == 0 && data.length > 0) {
               debugger;
               setOffices(data.map((office: any) => office.address));
-          }
-        })
+            }
+          })
       }
 
     }
@@ -219,39 +221,39 @@ export default function AdminPanel() {
 
   if (jwt != null) {
 
-        const { Role } = jwtDecode(jwt) as any;
+    const { Role } = jwtDecode(jwt) as any;
 
-        if(Role != "Admin"){
-          return(
-            <Box sx={{
-               height: 400,
-               width: "100%",
-               marginTop:"7%"
-            }}>
-              <Typography variant="h4" sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignContent: "center"
-              }}>
-                  You do not have permisson for this page!
-              </Typography>
-            </Box>
-          )
-        }
+    if (Role != "Admin") {
+      return (
+        <Box sx={{
+          height: 400,
+          width: "100%",
+          marginTop: "7%"
+        }}>
+          <Typography variant="h4" sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignContent: "center"
+          }}>
+            You do not have permisson for this page!
+          </Typography>
+        </Box>
+      )
+    }
   }
-  else if(jwt == null){
-    return(
+  else if (jwt == null) {
+    return (
       <Box sx={{
-         height: 400,
-         width: "100%",
-         marginTop:"7%"
+        height: 400,
+        width: "100%",
+        marginTop: "7%"
       }}>
         <Typography variant="h4" sx={{
           display: "flex",
           justifyContent: "center",
           alignContent: "center"
         }}>
-            You do not have permisson for this page!
+          You do not have permisson for this page!
         </Typography>
       </Box>
     )
@@ -279,7 +281,6 @@ export default function AdminPanel() {
           },
         }}
         pageSizeOptions={[5]}
-        checkboxSelection
         disableRowSelectionOnClick
       />
     </Box>

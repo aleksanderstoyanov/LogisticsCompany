@@ -115,7 +115,9 @@ export default function OfficePanel() {
     })
       .then(function (response) {
         if (response.status == 200) {
-          setRows(rows.filter(row => row.id != id));
+          setTimeout(() => {
+            setRows(rows.filter(row => row.id != id));
+          });
         }
       })
   }
@@ -306,7 +308,6 @@ export default function OfficePanel() {
           },
         }}
         pageSizeOptions={[5]}
-        checkboxSelection
         disableRowSelectionOnClick
       />
     </Box>
