@@ -68,7 +68,7 @@ namespace LogisticsCompany.Data.Builders
             return this;
         }
 
-        public string GetQuery()
+        public string ToQuery()
             => sb.ToString().Trim();
     }
 }

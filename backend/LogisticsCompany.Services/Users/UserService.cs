@@ -192,7 +192,7 @@ namespace LogisticsCompany.Services.Users
                         @as: "o"
                     )
                     .Where(clauseDescriptorContainer)
-                    .GetQuery();
+                    .ToQuery();
 
                 var result = await connection.QueryAsync<UserDto>(query);
 
@@ -221,7 +221,7 @@ namespace LogisticsCompany.Services.Users
                         .Select(columns: "*")
                         .From("Users")
                         .Where(clauseContainer)
-                        .GetQuery();
+                        .ToQuery();
 
                 var user = await connection.QuerySingleOrDefaultAsync<LoginDto?>(query);
                 return user;
@@ -279,7 +279,7 @@ namespace LogisticsCompany.Services.Users
                         joinOperator: JoinOperator.LEFT,
                         container: officesClauseContainer
                     )
-                    .GetQuery();
+                    .ToQuery();
 
                 var users = await connection.QueryAsync<UserDto>(query);
                 users = users.Where(user => user.RoleName != "Admin");
@@ -308,7 +308,7 @@ namespace LogisticsCompany.Services.Users
                     .Select(columns: "*")
                     .From(table: "Users")
                     .Where(clauseContainer)
-                    .GetQuery();
+                    .ToQuery();
 
                 var user = await connection.QuerySingleOrDefaultAsync<LoginDto?>(query);
 
@@ -336,7 +336,7 @@ namespace LogisticsCompany.Services.Users
                       .Select(columns: "Email")
                       .From(table: "Users")
                       .Where(clauseContainer)
-                      .GetQuery();
+                      .ToQuery();
 
                 var queryResult = await sqlConnection.QueryFirstOrDefaultAsync<string>(query);
 

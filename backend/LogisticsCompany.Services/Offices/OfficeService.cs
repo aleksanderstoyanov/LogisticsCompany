@@ -37,7 +37,7 @@ namespace LogisticsCompany.Services.Offices
                 .Select(columns: "Id")
                 .From(table: "Offices")
                 .Where(clauseContainer)
-                .GetQuery();
+                .ToQuery();
 
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -67,7 +67,7 @@ namespace LogisticsCompany.Services.Offices
                         .Select(columns: "*")
                         .Where(clauseContainer)
                         .From(table: "Offices")
-                        .GetQuery();
+                        .ToQuery();
 
                 var office = await connection.QuerySingleOrDefaultAsync<OfficeDto>(query);
 
@@ -94,7 +94,7 @@ namespace LogisticsCompany.Services.Offices
                 .Select(columns: "*")
                 .From(table: "Offices")
                 .Where(clauseDescriptorContainer)
-                .GetQuery();
+                .ToQuery();
 
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -109,7 +109,7 @@ namespace LogisticsCompany.Services.Offices
                 var query = new SqlQueryBuilder()
                     .Select(columns: "*")
                     .From(table: "Offices")
-                    .GetQuery();
+                    .ToQuery();
 
                 var offices = await connection.QueryAsync<OfficeDto>(query);
                 return offices;

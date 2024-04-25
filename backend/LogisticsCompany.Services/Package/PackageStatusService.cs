@@ -41,7 +41,7 @@ namespace LogisticsCompany.Services.Package
                     .Select(columns: "Id")
                     .From("PackageStatuses")
                     .Where(clauseDescriptorContainer)
-                    .GetQuery();
+                    .ToQuery();
 
 
                 var result = await connection.QuerySingleOrDefaultAsync<int>(query);

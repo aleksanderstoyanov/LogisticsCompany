@@ -115,7 +115,7 @@ namespace LogisticsCompany.Services.Packages
                     .Select(columns: "*")
                     .From(table: "Packages")
                     .Where(clauseDescriptorContainer)
-                    .GetQuery();
+                    .ToQuery();
 
                 var result = await connection.QueryAsync<PackageDto>(query);
 
@@ -146,7 +146,7 @@ namespace LogisticsCompany.Services.Packages
                     .Select(columns: "*")
                     .From(table: "Packages")
                     .Where(clauseDescriptorContainer)
-                    .GetQuery();
+                    .ToQuery();
 
                 var result = await connection.QuerySingleOrDefaultAsync<PackageDto>(query);
 
@@ -192,7 +192,7 @@ namespace LogisticsCompany.Services.Packages
                     container: clauseContainerDescriptor,
                     @as: "status"
                 )
-                .GetQuery();
+                .ToQuery();
 
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -252,7 +252,7 @@ namespace LogisticsCompany.Services.Packages
                     @as: "status"
                 )
                 .Where(clauseDescriptorContainer)
-                .GetQuery();
+                .ToQuery();
 
                 var result = await connection.QueryAsync<PackageDto>(query);
 
@@ -311,7 +311,7 @@ namespace LogisticsCompany.Services.Packages
                     @as: "status"
                 )
                 .Where(clauseDescriptorContainer)
-                .GetQuery();
+                .ToQuery();
 
                 var result = await connection.QueryAsync<PackageDto>(query);
 
@@ -345,7 +345,7 @@ namespace LogisticsCompany.Services.Packages
                 .Select(columns: "COUNT(Id)")
                 .From(table: "Packages")
                 .Where(clauseDescriptorContainer)
-                .GetQuery();
+                .ToQuery();
 
             using (var connection = new SqlConnection(_connectionString))
             {

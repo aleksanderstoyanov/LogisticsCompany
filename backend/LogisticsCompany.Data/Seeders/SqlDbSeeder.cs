@@ -33,7 +33,7 @@ namespace LogisticsCompany.Data.Seeders
                 var query = new SqlQueryBuilder()
                     .Select(columns: "COUNT(Id)")
                     .From(table)
-                    .GetQuery();
+                    .ToQuery();
 
                 var count = sqlConnection.QuerySingle<int>(query);
 

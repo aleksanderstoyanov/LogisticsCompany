@@ -36,7 +36,7 @@ namespace LogisticsCompany.Services
                     .Select(columns: "Id")
                     .From(table: "Roles")
                     .Where(clauseContainer)
-                    .GetQuery();
+                    .ToQuery();
 
                 var id = await connection.QuerySingleAsync<int>(query);
 
@@ -70,7 +70,7 @@ namespace LogisticsCompany.Services
                    .Select(columns: "Name")
                    .From(table: "Roles")
                    .Where(clauseContainer)
-                   .GetQuery();
+                   .ToQuery();
 
                 var roleName = await connection.QueryFirstOrDefaultAsync<string>(query);
 
