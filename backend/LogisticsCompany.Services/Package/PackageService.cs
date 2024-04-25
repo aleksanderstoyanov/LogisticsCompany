@@ -201,6 +201,124 @@ namespace LogisticsCompany.Services.Packages
             }
         }
 
+        public async Task<IEnumerable<PackageDto>> GetReceivedPackages(int id)
+        {
+            var clauseDescriptorContainer = new ClauseDescriptorContainer()
+            {
+                ClauseDescriptors = new HashSet<ClauseDescriptor>()
+                {
+                    new ClauseDescriptor
+                    {
+                        Field = "ToId",
+                        FieldValue = id,
+                        EqualityOperator = EqualityOperator.EQUALS
+                    }
+                }
+            };
+
+            var joinClauseDescriptorContainer = new ClauseDescriptorContainer()
+            {
+                ClauseDescriptors = new HashSet<ClauseDescriptor>()
+                {
+                    new ClauseDescriptor
+                    {
+                        Field = "status.Id",
+                        FieldValue = "package.PackageStatusId",
+                        EqualityOperator = EqualityOperator.EQUALS
+                    }
+                }
+            };
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var query = new SqlQueryBuilder()
+                .Select(
+                    columns:
+                    new string[]
+                    {
+                        "package.Id",
+                        "package.Address",
+                        "package.Weight",
+                        "package.ToOffice",
+                        "status.Name as PackageStatusName"
+                    }
+                )
+                .From(table: "Packages", @as: "package")
+                .Join
+                (
+                    joinOperator: JoinOperator.INNER,
+                    table: "PackageStatuses",
+                    container: joinClauseDescriptorContainer,
+                    @as: "status"
+                )
+                .Where(clauseDescriptorContainer)
+                .GetQuery();
+
+                var result = await connection.QueryAsync<PackageDto>(query);
+
+                return result;
+            }
+        }
+
+        public async Task<IEnumerable<PackageDto>> GetSentPackages(int id)
+        {
+            var clauseDescriptorContainer = new ClauseDescriptorContainer()
+            {
+                ClauseDescriptors = new HashSet<ClauseDescriptor>()
+                {
+                    new ClauseDescriptor
+                    {
+                        Field = "FromId",
+                        FieldValue = id,
+                        EqualityOperator = EqualityOperator.EQUALS
+                    }
+                }
+            };
+
+            var joinClauseDescriptorContainer = new ClauseDescriptorContainer()
+            {
+                ClauseDescriptors = new HashSet<ClauseDescriptor>()
+                {
+                    new ClauseDescriptor
+                    {
+                        Field = "status.Id",
+                        FieldValue = "package.PackageStatusId",
+                        EqualityOperator = EqualityOperator.EQUALS
+                    }
+                }
+            };
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var query = new SqlQueryBuilder()
+                .Select(
+                    columns:
+                    new string[]
+                    {
+                        "package.Id",
+                        "package.Address",
+                        "package.Weight",
+                        "package.ToOffice",
+                        "status.Name as PackageStatusName"
+                    }
+                )
+                .From(table: "Packages", @as: "package")
+                .Join
+                (
+                    joinOperator: JoinOperator.INNER,
+                    table: "PackageStatuses",
+                    container: joinClauseDescriptorContainer,
+                    @as: "status"
+                )
+                .Where(clauseDescriptorContainer)
+                .GetQuery();
+
+                var result = await connection.QueryAsync<PackageDto>(query);
+
+                return result;
+            }
+        }
+
         public async Task<int> GetPackageCountByFromAndTo(int from, int to)
         {
             var clauseDescriptorContainer = new ClauseDescriptorContainer()
@@ -236,5 +354,6 @@ namespace LogisticsCompany.Services.Packages
                 return result;
             }
         }
+
     }
 }

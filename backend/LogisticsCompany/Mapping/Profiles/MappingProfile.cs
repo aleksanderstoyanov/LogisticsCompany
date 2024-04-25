@@ -13,10 +13,13 @@ namespace LogisticsCompany.Mapping.Profiles
             CreateMap<RegisterRequestModel, RegisterDto>();
             CreateMap<LoginRequestModel, LoginDto>();
             CreateMap<UserRequestModel, UserDto>();
+            
             CreateMap<OfficeRequestModel, OfficeDto>();
             CreateMap<OfficeCreateRequestModel, OfficeDto>();
-            CreateMap<PackageRequestModel, PackageDto>();
             CreateMap<OfficeDto, OfficeResponseModel>();
+
+            CreateMap<PackageDto, PackageClientResponseModel>();
+            CreateMap<PackageRequestModel, PackageDto>();
         }
     }
 }

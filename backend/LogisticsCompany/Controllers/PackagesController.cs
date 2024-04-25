@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LogisticsCompany.Helpers;
 using LogisticsCompany.Request;
+using LogisticsCompany.Response;
 using LogisticsCompany.Services.Contracts;
 using LogisticsCompany.Services.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +29,7 @@ namespace LogisticsCompany.Controllers
         {
             var header = HttpContext.Request.Headers["Authorization"];
 
-            if(!IsAuthorized("OfficeEmployee", header) && !IsAuthorized("Courier", header))
+            if (!IsAuthorized("OfficeEmployee", header) && !IsAuthorized("Courier", header))
             {
                 return Unauthorized();
             }
@@ -36,6 +37,39 @@ namespace LogisticsCompany.Controllers
             var result = await _packageService.GetAll();
 
             return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("getReceived")]
+        public async Task<IActionResult> GetReceived(int id)
+        {
+            var header = HttpContext.Request.Headers["Authorization"];
+
+            if (!IsAuthorized("Client", header))
+            {
+                return Unauthorized();
+            }
+
+            var result = await _packageService.GetReceivedPackages(id);
+            var response = _mapper.Map<IEnumerable<PackageDto>, IEnumerable<PackageClientResponseModel>>(result);
+            return Ok(response);
+        }
+
+        [HttpGet]
+        [Route("getSent")]
+        public async Task<IActionResult> GetSent(int id)
+        {
+            var header = HttpContext.Request.Headers["Authorization"];
+
+            if(!IsAuthorized("Client", header))
+            {
+                return Unauthorized();
+            }
+
+            var result = await _packageService.GetSentPackages(id);
+            var response = _mapper.Map<IEnumerable<PackageDto>, IEnumerable<PackageClientResponseModel>>(result);
+
+            return Ok(response);
         }
 
         [HttpPost]
@@ -62,7 +96,7 @@ namespace LogisticsCompany.Controllers
         {
             var header = HttpContext.Request.Headers["Authorization"];
 
-            if(!IsAuthorized("OfficeEmployee", header) && ! IsAuthorized("Courier", header))
+            if (!IsAuthorized("OfficeEmployee", header) && !IsAuthorized("Courier", header))
             {
                 return Unauthorized();
             }
@@ -76,7 +110,7 @@ namespace LogisticsCompany.Controllers
 
         [HttpDelete]
         [Route("delete")]
-        public async Task <IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var header = HttpContext.Request.Headers["Authorization"];
 
