@@ -5,6 +5,7 @@ using LogisticsCompany.Mapping.Profiles;
 using LogisticsCompany.Services;
 using LogisticsCompany.Services.Contracts;
 using LogisticsCompany.Services.Offices;
+using LogisticsCompany.Services.Package;
 using LogisticsCompany.Services.Packages;
 using LogisticsCompany.Services.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -33,6 +34,7 @@ builder.Services.AddSingleton<SqlDbFactory>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IRoleService, RoleService>();
 builder.Services.AddTransient<IOfficeService, OfficeService>();
+builder.Services.AddTransient<IPackageStatusService, PackageStatusService>();
 builder.Services.AddTransient<IPackageService, PackageService>();
 
 

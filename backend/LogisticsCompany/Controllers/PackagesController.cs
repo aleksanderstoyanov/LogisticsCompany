@@ -5,6 +5,8 @@ using LogisticsCompany.Services.Contracts;
 using LogisticsCompany.Services.Dto;
 using Microsoft.AspNetCore.Mvc;
 
+using static LogisticsCompany.Helpers.AuthorizationRequestHelper;
+
 namespace LogisticsCompany.Controllers
 {
     [ApiController]
@@ -20,13 +22,29 @@ namespace LogisticsCompany.Controllers
             this._packageService = packageService;
         }
 
+        [HttpGet]
+        [Route("getAll")]
+        public async Task<IActionResult> GetAll()
+        {
+            var header = HttpContext.Request.Headers["Authorization"];
+
+            if(!IsAuthorized("OfficeEmployee", header) && !IsAuthorized("Courier", header))
+            {
+                return Unauthorized();
+            }
+
+            var result = await _packageService.GetAll();
+
+            return Ok(result);
+        }
+
         [HttpPost]
         [Route("create")]
         public async Task<IActionResult> Create(PackageRequestModel requestModel)
         {
             var header = HttpContext.Request.Headers["Authorization"];
 
-            if (!AuthorizationRequestHelper.IsAuthorized("Client", header))
+            if (!IsAuthorized("Client", header))
             {
                 return Unauthorized();
             }
@@ -34,6 +52,40 @@ namespace LogisticsCompany.Controllers
             var dto = _mapper.Map<PackageRequestModel, PackageDto>(requestModel);
 
             await _packageService.Create(dto);
+
+            return Ok();
+        }
+
+        [HttpPut]
+        [Route("update")]
+        public async Task<IActionResult> Update(PackageRequestModel requestModel)
+        {
+            var header = HttpContext.Request.Headers["Authorization"];
+
+            if(!IsAuthorized("OfficeEmployee", header) && ! IsAuthorized("Courier", header))
+            {
+                return Unauthorized();
+            }
+
+            var dto = _mapper.Map<PackageRequestModel, PackageDto>(requestModel);
+
+            await _packageService.Update(dto);
+
+            return Ok();
+        }
+
+        [HttpDelete]
+        [Route("delete")]
+        public async Task <IActionResult> Delete(int id)
+        {
+            var header = HttpContext.Request.Headers["Authorization"];
+
+            if (!IsAuthorized("OfficeEmployee", header))
+            {
+                return Unauthorized();
+            }
+
+            await _packageService.Delete(id);
 
             return Ok();
         }

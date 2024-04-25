@@ -6,19 +6,19 @@ using LogisticsCompany.Data.Helpers;
 using LogisticsCompany.Services.Contracts;
 using LogisticsCompany.Services.Dto;
 using Microsoft.Data.SqlClient;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data;
+using static LogisticsCompany.Data.Helpers.SqlCommandHelper;
 
 namespace LogisticsCompany.Services.Packages
 {
     public class PackageService : BaseService, IPackageService
     {
-        public PackageService(LogisticsCompanyContext dbContext) :
+        private readonly IPackageStatusService _packageStatusService;
+
+        public PackageService(LogisticsCompanyContext dbContext, IPackageStatusService packageStatusService) :
             base(dbContext)
         {
+            this._packageStatusService = packageStatusService;
         }
 
         public async Task Create(PackageDto dto)
@@ -29,8 +29,8 @@ namespace LogisticsCompany.Services.Packages
                     table: "Packages",
                     values: new string[]
                     {
-                        dto.From != null ? dto.From.ToString() : "NULL",
-                        dto.To != null ? dto.To.ToString() : "NULL",
+                        dto.FromId != null ? dto.FromId.ToString() : "NULL",
+                        dto.ToId != null ? dto.ToId.ToString() : "NULL",
                         "1",
                         $"'{dto.Address}'",
                         dto.ToOffice ? "1" : "0",
@@ -39,6 +39,165 @@ namespace LogisticsCompany.Services.Packages
                 );
 
                 await connection.ExecuteAsync(command);
+            }
+        }
+
+        public async Task Update(PackageDto dto)
+        {
+            var packageStatusId = await _packageStatusService.GetIdByName(dto.PackageStatusName);
+
+            var keyValuePairs = new Dictionary<string, string>()
+            {
+                {"FromId", dto.FromId != null ?  dto.FromId.ToString() : "NULL" },
+                {"ToId", dto.ToId != null ?  dto.ToId.ToString() : "NULL"},
+                {"Address", $"{dto.Address}"},
+                {"PackageStatusId", packageStatusId != null ? packageStatusId.Value.ToString() :  "NULL"},
+                {"ToOffice", dto.ToOffice ? "1": "0"},
+                {"Weight", dto.Weight.ToString()},
+            };
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var command = UpdateCommand
+                (
+                    table: "Packages",
+                    entityType: typeof(Data.Entity.Package),
+                    entityValues: keyValuePairs,
+                    primaryKey: dto.Id
+                );
+
+                await connection.ExecuteAsync(command);
+            }
+        }
+
+        public async Task Delete(int id)
+        {
+            var package = GetById(id);
+
+            if (package == null)
+            {
+                return;
+            }
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var command = DeleteCommand(table: "Packages", primaryKey: "Id");
+                await connection.ExecuteAsync(command, new { criteriaValue = id });
+            }
+        }
+
+
+        public async Task<IEnumerable<PackageDto>> GetPackagesByUserId(int id)
+        {
+            var clauseDescriptorContainer = new ClauseDescriptorContainer()
+            {
+                ClauseDescriptors = new HashSet<ClauseDescriptor>()
+                {
+                    new ClauseDescriptor
+                    {
+                        Field = "FromId",
+                        FieldValue = id,
+                        EqualityOperator = EqualityOperator.EQUALS,
+                        LogicalOperator = LogicalOperator.OR
+                    },
+                    new ClauseDescriptor
+                    {
+                        Field = "ToId",
+                        FieldValue = id,
+                        EqualityOperator = EqualityOperator.EQUALS
+                    }
+                }
+            };
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var query = new SqlQueryBuilder()
+                    .Select(columns: "*")
+                    .From(table: "Packages")
+                    .Where(clauseDescriptorContainer)
+                    .GetQuery();
+
+                var result = await connection.QueryAsync<PackageDto>(query);
+
+                return result;
+            }
+
+
+        }
+
+        public async Task<PackageDto?> GetById(int id)
+        {
+            var clauseDescriptorContainer = new ClauseDescriptorContainer()
+            {
+                ClauseDescriptors = new HashSet<ClauseDescriptor>()
+                {
+                    new ClauseDescriptor
+                    {
+                        Field = "Id",
+                        FieldValue = id,
+                        EqualityOperator = EqualityOperator.EQUALS
+                    }
+                }
+            };
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var query = new SqlQueryBuilder()
+                    .Select(columns: "*")
+                    .From(table: "Packages")
+                    .Where(clauseDescriptorContainer)
+                    .GetQuery();
+
+                var result = await connection.QuerySingleOrDefaultAsync<PackageDto>(query);
+
+                return result;
+            }
+
+        }
+
+        public async Task<IEnumerable<PackageDto>> GetAll()
+        {
+            var clauseContainerDescriptor = new ClauseDescriptorContainer()
+            {
+                ClauseDescriptors = new HashSet<ClauseDescriptor>()
+                {
+                    new ClauseDescriptor
+                    {
+                        Field = "package.PackageStatusId",
+                        FieldValue = "status.Id",
+                        EqualityOperator = EqualityOperator.EQUALS
+                    }
+                }
+            };
+
+            var query = new SqlQueryBuilder()
+                .Select(
+                    columns:
+                    new string[]
+                    {
+                        "package.Id",
+                        "package.Address",
+                        "package.FromId",
+                        "package.ToId",
+                        "package.Weight",
+                        "package.PackageStatusId",
+                        "status.Name as PackageStatusName"
+                    }
+                )
+                .From(table: "Packages", @as: "package")
+                .Join
+                (
+                    joinOperator: JoinOperator.INNER,
+                    table: "PackageStatuses",
+                    container: clauseContainerDescriptor,
+                    @as: "status"
+                )
+                .GetQuery();
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var result = await connection.QueryAsync<PackageDto>(query);
+                return result;
             }
         }
 
