@@ -6,8 +6,8 @@ using LogisticsCompany.Services.Contracts;
 using LogisticsCompany.Services.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
-using System.Reflection.PortableExecutable;
+
+using static LogisticsCompany.Helpers.AuthorizationRequestHelper;
 
 namespace LogisticsCompany.Controllers
 {
@@ -26,11 +26,11 @@ namespace LogisticsCompany.Controllers
         [HttpGet]
         [Authorize]
         [Route("getAll")]
-        public async Task <IActionResult> GetAll()
+        public async Task<IActionResult> GetAll()
         {
             var header = HttpContext.Request.Headers["Authorization"];
 
-            if(!AuthorizationRequestHelper.IsAuthorized("Admin", header))
+            if (!IsAuthorized("Admin", header))
             {
                 return Unauthorized();
             }
@@ -44,16 +44,16 @@ namespace LogisticsCompany.Controllers
         [HttpGet]
         [Authorize]
         [Route("getAllExcept")]
-        public async Task<IActionResult> GetAllExcept(int id)
+        public async Task<IActionResult> GetAllExcept(int id, string role)
         {
             var header = HttpContext.Request.Headers["Authorization"];
 
-            if (!AuthorizationRequestHelper.IsAuthorized("Client", header))
+            if (!IsAuthorized("Client", header) && !IsAuthorized("OfficeEmployee", header) && !IsAuthorized("Courier", header))
             {
                 return Unauthorized();
             }
 
-            var users = await this._userService.GetDifferentUsersFromCurrent(id);
+            var users = await this._userService.GetDifferentUsersFromCurrent(id, role);
 
             return Ok(users);
 
@@ -71,7 +71,7 @@ namespace LogisticsCompany.Controllers
 
             var header = HttpContext.Request.Headers["Authorization"];
 
-            if (!AuthorizationRequestHelper.IsAuthorized("Admin", header))
+            if (!IsAuthorized("Admin", header))
             {
                 return Unauthorized();
             }
@@ -81,7 +81,7 @@ namespace LogisticsCompany.Controllers
             await _userService.Update(dto);
 
             return Ok("");
-            
+
         }
 
         [HttpDelete]
@@ -96,7 +96,7 @@ namespace LogisticsCompany.Controllers
 
             var header = HttpContext.Request.Headers["Authorization"];
 
-            if (!AuthorizationRequestHelper.IsAuthorized("Admin",  header))
+            if (!IsAuthorized("Admin", header))
             {
                 return Unauthorized();
             }

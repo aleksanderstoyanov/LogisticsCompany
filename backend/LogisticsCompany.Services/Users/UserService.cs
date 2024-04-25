@@ -19,12 +19,17 @@ namespace LogisticsCompany.Services.Users
     {
         private readonly IRoleService _roleService;
         private readonly IOfficeService _officeService;
+        private readonly IPackageService _packageService;
 
-        public UserService(LogisticsCompanyContext dbContext, IRoleService roleService, IOfficeService officeService)
+        public UserService(LogisticsCompanyContext dbContext,
+            IRoleService roleService,
+            IOfficeService officeService,
+            IPackageService packageService)
             : base(dbContext)
         {
             _roleService = roleService;
             _officeService = officeService;
+            _packageService = packageService;
         }
 
         public async Task Update(UserDto userDto)
@@ -68,42 +73,124 @@ namespace LogisticsCompany.Services.Users
 
             using (var connection = new SqlConnection(_connectionString))
             {
+                var keyValuePairs = new Dictionary<string, string>()
+                {
+                    {"FromId", "NULL"},
+                    {"ToId", "NULL"}
+                };
+
+
+                var packages = await _packageService.GetPackagesByUserId(id);
+
+                if (packages.Count() > 0)
+                {
+                    foreach (var package in packages)
+                    {
+                        var updatePackageCommand = SqlCommandHelper
+                            .UpdateCommand
+                            (
+                                table: "Packages",
+                                entityType: typeof(LogisticsCompany.Data.Entity.Package),
+                                entityValues: keyValuePairs,
+                                primaryKey: package.Id
+                            );
+
+                        await connection.ExecuteAsync(updatePackageCommand);
+                    }
+                }
+
                 var query = SqlCommandHelper.DeleteCommand(table: "Users", primaryKey: "Id");
                 await connection.ExecuteAsync(query, new { criteriaValue = id });
             }
         }
 
-        public async Task<IEnumerable<UserDto>> GetDifferentUsersFromCurrent(int id)
+        public async Task<IEnumerable<UserDto>> GetDifferentUsersFromCurrent(int id, string role)
         {
             var user = GetById(id);
 
             if (user == null) new List<UserDto>();
 
-            var clauseDescriptorContainer = new ClauseDescriptorContainer()
+            using (var connection = new SqlConnection(_connectionString))
             {
-                ClauseDescriptors = new HashSet<ClauseDescriptor>()
+
+                var clauseDescriptorContainer = new ClauseDescriptorContainer()
+                {
+                    ClauseDescriptors = new HashSet<ClauseDescriptor>()
                 {
                     new ClauseDescriptor
                     {
-                        Field = "Id",
+                        Field = "u.Id",
                         EqualityOperator = EqualityOperator.NOT_EQUALS,
                         FieldValue = id,
                         LogicalOperator = LogicalOperator.AND
                     },
                     new ClauseDescriptor
                     {
-                        Field = "Username",
+                        Field = "u.Username",
                         EqualityOperator = EqualityOperator.NOT_EQUALS,
-                        FieldValue = "admin"
+                        FieldValue = "admin",
+                        LogicalOperator = LogicalOperator.AND
+                    },
+                    new ClauseDescriptor
+                    {
+                        Field = "r.Name",
+                        EqualityOperator = EqualityOperator.EQUALS,
+                        FieldValue = role
                     }
                 }
-            };
+                };
 
-            using (var connection = new SqlConnection(_connectionString))
-            {
+                var roleClauseDescriptorContainer = new ClauseDescriptorContainer()
+                {
+                    ClauseDescriptors = new HashSet<ClauseDescriptor>()
+                    {
+                        new ClauseDescriptor
+                        {
+                            Field = "r.Id",
+                            EqualityOperator = EqualityOperator.EQUALS,
+                            FieldValue = "u.RoleId",
+                        }
+                    }
+                };
+
+                var officeClauseDescriptorContainer = new ClauseDescriptorContainer()
+                {
+                    ClauseDescriptors = new HashSet<ClauseDescriptor>()
+                    {
+                        new ClauseDescriptor
+                        {
+                            Field = "o.Id",
+                            EqualityOperator = EqualityOperator.EQUALS,
+                            FieldValue = "u.OfficeId"
+                        }
+                    }
+                };
+
                 var query = new SqlQueryBuilder()
-                    .Select(columns: "*")
-                    .From(table: "Users")
+                    .Select(columns: new string[]
+                    {
+                        "u.Id",
+                        "u.FirstName",
+                        "u.LastName",
+                        "r.Name as RoleName",
+                        "o.Address as OfficeName",
+                        "u.Username",
+                        "u.Email"
+                    })
+                    .From(table: "Users", @as: "u")
+                    .Join
+                    (
+                        joinOperator: JoinOperator.INNER,
+                        table: "Roles",
+                        container: roleClauseDescriptorContainer,
+                        @as: "r"
+                    )
+                    .Join(
+                        joinOperator: JoinOperator.INNER,
+                        table: "Offices",
+                        container: officeClauseDescriptorContainer,
+                        @as: "o"
+                    )
                     .Where(clauseDescriptorContainer)
                     .GetQuery();
 
