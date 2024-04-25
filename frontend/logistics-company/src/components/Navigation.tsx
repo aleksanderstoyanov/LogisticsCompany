@@ -10,8 +10,13 @@ export function Navigation() {
 
     const [isRegisterVisible, setRegisterVisible] = useState<boolean>(true);
     const [isOfficesVisible, setOfficesVisible] = useState<boolean>(false);
+
     const [isPackagesVisible, setPackagesVisible] = useState<boolean>(false);
+    const [isSentPackagesVisible, setSentPackagesVisible] = useState<boolean>(false);
+    const [isReceivedPackagesVisible, setReceivedPackagesVisible] = useState<boolean>(false);
+
     const [isAdminPanelVisible, setAdminPanelVisible] = useState<boolean>(false);
+
     const [isLoginVisible, setLoginVisible] = useState<boolean>(true);
     const [isLogoutVisible, setLogoutVisible] = useState<boolean>(false);
 
@@ -32,6 +37,8 @@ export function Navigation() {
                     break;
                 case "Client":
                     setOfficesVisible(true);
+                    setSentPackagesVisible(true);
+                    setReceivedPackagesVisible(true);
                     break;
                 case "OfficeEmployee":
                     setPackagesVisible(true);
@@ -40,8 +47,8 @@ export function Navigation() {
                     setPackagesVisible(true);
                     break;
             }
-            setUserModel((userModel: UserModel) => {
 
+            setUserModel((userModel: UserModel) => {
                 userModel.email = Email;
                 userModel.role = Role;
                 return userModel;
@@ -86,6 +93,16 @@ export function Navigation() {
                         <Link variant="h6" underline="none" href="/packages" style={{ display: isVisible(isPackagesVisible), marginLeft: "2%" }}>
                             <Button color="inherit">
                                 Packages
+                            </Button>
+                        </Link>
+                        <Link variant="h6" underline="none" href="/receivedPackages" style={{ display: isVisible(isReceivedPackagesVisible), marginLeft: "2%" }}>
+                            <Button color="inherit">
+                               Received Packages
+                            </Button>
+                        </Link>
+                        <Link variant="h6" underline="none" href="/sentPackages" style={{ display: isVisible(isSentPackagesVisible), marginLeft: "2%" }}>
+                            <Button color="inherit">
+                               Sent Packages
                             </Button>
                         </Link>
                     </Typography>
