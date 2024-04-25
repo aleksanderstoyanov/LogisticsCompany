@@ -17,7 +17,7 @@ export default function PackageForm(props: any) {
 
     useEffect(() => {
         changePackageModel((packageModel:PackageModel) => {
-            packageModel.from = props.userId;
+            packageModel.fromId = props.userId;
             return packageModel;
         })
     })
@@ -42,7 +42,7 @@ export default function PackageForm(props: any) {
                 break;
             case WEIGHT_ID:
                 changePackageModel((packageModel: PackageModel) => {
-                    packageModel.weight = parseFloat(value);
+                    packageModel.weight = parseInt(value);
                     return packageModel;
                 })
                 break;
@@ -62,7 +62,7 @@ export default function PackageForm(props: any) {
         const toValue = event.target.value;
 
         changePackageModel((packageModel: PackageModel) => {
-            packageModel.to = parseInt(toValue);
+            packageModel.toId = parseInt(toValue);
             return packageModel;
         })
 
@@ -78,6 +78,7 @@ export default function PackageForm(props: any) {
     }
 
     function onSubmit(event: SyntheticEvent) {
+        debugger;
         axios({
             method: "POST",
             url: `${API_URL}/Packages/Create`,
@@ -107,7 +108,6 @@ export default function PackageForm(props: any) {
                             <Inventory2OutlinedIcon></Inventory2OutlinedIcon>
                         </Typography>
                     </Box>
-                    <input id={USER_ID} type="hidden" value={props.userId}></input>
                     <TextField
                         id={ADDRESS_ID}
                         fullWidth
@@ -117,7 +117,7 @@ export default function PackageForm(props: any) {
                         onChange={onChange}
                     />
                     <TextField
-                        inputProps={{ type: 'number' }}
+                        inputProps={{ type: "number" }}
                         id={WEIGHT_ID}
                         fullWidth
                         margin="normal"

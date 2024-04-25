@@ -62,7 +62,7 @@ export default function Offices() {
 
                 axios({
                     method: "GET",
-                    url: `${API_URL}/Users/GetAllExcept?id=${user.id}`,
+                    url: `${API_URL}/Users/GetAllExcept?id=${user.id}&role=Client`,
                     headers: {
                         "Authorization": `Bearer ${jwt}`
                     }
