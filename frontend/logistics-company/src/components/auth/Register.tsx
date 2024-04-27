@@ -8,9 +8,8 @@ import "../../models/RegisterModel";
 import { SyntheticEvent, useState } from "react";
 import { RegisterModel } from "../../models/RegisterModel";
 import axios, { Axios } from "axios";
-import { DEFAULT_USER_EMAIL, DEFAULT_USER_PASSWORD, DEFAULT_USER_USERNAME } from "../../util/Constants";
+import { API_URL, DEFAULT_USER_EMAIL, DEFAULT_USER_PASSWORD, DEFAULT_USER_USERNAME } from "../../util/Constants";
 
-const API_URL = "https://localhost:7209";
 const IDS = ["user", "firstName", "lastName", "email", "password"] as const;
 const [USERNAME_ID, FIRSTNAME_ID, LASTNAME_ID, EMAIL_ID, PASSWORD_ID] = IDS;
 
@@ -85,7 +84,7 @@ export function Register() {
   function onRegister(event: SyntheticEvent) {
     axios({
       method: 'POST',
-      url: `${API_URL}/api/Authorization/Register`,
+      url: `${API_URL}/Authorization/Register`,
       data: registerModel
     })
       .then((response) => {

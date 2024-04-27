@@ -33,7 +33,7 @@ export function Login() {
     function onLogin(event: SyntheticEvent) {
         axios({
             method: 'POST',
-            url: `${API_URL}/api/Authorization/Login`,
+            url: `${API_URL}/Authorization/Login`,
             data: loginModel
         })
             .then((response) => {
