@@ -5,18 +5,24 @@ import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import axios from "axios";
 import { UserModel } from "../../models/UserModel";
+import { API_URL, DEFAULT_PACKAGE_ADDRESS, DEFAULT_PACKAGE_FROM_ID, DEFAULT_PACKAGE_TO_ID, DEFAULT_PACKAGE_TO_OFFICE, DEFAULT_PACKAGE_WEIGHT, PACKAGE_FORM_IDS } from "../../util/Constants";
 
 export default function PackageForm(props: any) {
-    const API_URL = "https://localhost:7209/api";
     const jwt = sessionStorage["jwt"];
-
-    const [packageModel, changePackageModel] = useState<PackageModel>(new PackageModel("", 0, 0, 0.0, false));
-
-    const IDS = ["address", "to", "weight", "userId", "toOffice"] as const;
-    const [ADDRESS_ID, TO_ID, WEIGHT_ID, USER_ID, TO_OFFICE] = IDS;
+    const [packageModel, changePackageModel] = useState<PackageModel>(
+        new PackageModel(
+            DEFAULT_PACKAGE_ADDRESS,
+            DEFAULT_PACKAGE_FROM_ID,
+            DEFAULT_PACKAGE_TO_ID,
+            DEFAULT_PACKAGE_WEIGHT,
+            DEFAULT_PACKAGE_TO_OFFICE
+        )
+    );
+    const IDS = PACKAGE_FORM_IDS;
+    const [ADDRESS_ID, TO_ID, WEIGHT_ID, TO_OFFICE] = IDS;
 
     useEffect(() => {
-        changePackageModel((packageModel:PackageModel) => {
+        changePackageModel((packageModel: PackageModel) => {
             packageModel.fromId = props.userId;
             return packageModel;
         })
@@ -87,11 +93,11 @@ export default function PackageForm(props: any) {
                 "Authorization": `Bearer ${jwt}`
             }
         })
-        .then((response) => {
-            if(response.status == 200){
-                window.location.href = "/offices";
-            }
-        })
+            .then((response) => {
+                if (response.status == 200) {
+                    window.location.href = "/offices";
+                }
+            })
     }
 
     return (

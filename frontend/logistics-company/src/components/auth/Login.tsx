@@ -7,19 +7,23 @@ import '../../styles/Register.css';
 import { SyntheticEvent, useState } from "react";
 import { LoginModel } from "../../models/LoginModel";
 
-
 import axios from "axios";
-
-const API_URL = "https://localhost:7209";
-const IDS = ["email", "password"] as const;
-const [EMAIL_ID, PASSWORD_ID] = IDS;
+import { API_URL, DEFAULT_USER_PASSWORD, DEFAULT_USER_USERNAME, LOGIN_FORM_IDS } from "../../util/Constants";
 
 export function Login() {
-    const [loginModel, setLoginModel] = useState<LoginModel>(new LoginModel("", ""));
+    const [EMAIL_ID, PASSWORD_ID] = LOGIN_FORM_IDS;
+    const [loginModel, setLoginModel] = useState<LoginModel>
+    (
+        new LoginModel
+        (
+             DEFAULT_USER_USERNAME,
+             DEFAULT_USER_PASSWORD
+        )
+    );
     const [isErrorVisible, setErrorVisiblitiy] = useState<boolean>(false);
 
     function onCancel(event: SyntheticEvent) {
-        IDS.forEach((id) => {
+        LOGIN_FORM_IDS.forEach((id) => {
             let element = document.getElementById(id) as HTMLInputElement;
             element.value = "";
         })

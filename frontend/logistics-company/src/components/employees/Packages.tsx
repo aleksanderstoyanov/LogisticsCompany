@@ -8,12 +8,20 @@ import { DataGrid, GridActionsCellItem, GridColDef, GridEventListener, GridRowEd
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { Box, Typography } from "@mui/material";
-import { log } from "console";
+import Unauthorized from "../auth/Unauthorized";
+import { API_URL, DEFAULT_USER_EMAIL, DEFAULT_USER_ID, DEFAULT_USER_Role, GRID_BOX_STYLE, PACKAGE_STATUSES } from "../../util/Constants";
+import { isAuthorized, isAuthorizedForRole } from "../../util/AuthorizationHelper";
+import { deepEqual, valueOptionMapper } from "../../util/Common";
+import { ColumnContainer } from "../../util/ColumnContainer";
 
 export default function Packages() {
-    const API_URL = "https://localhost:7209/api";
-
-    const [userModel, setUserModel] = useState<UserModel>(new UserModel(0, "Anonymous", "None"));
+    const [userModel, setUserModel] = useState<UserModel>(
+        new UserModel(
+            DEFAULT_USER_ID,
+            DEFAULT_USER_EMAIL,
+            DEFAULT_USER_Role
+        )
+    );
     const [users, setUsers] = useState<UserModel[]>([]);
     const [rows, setRows] = useState<any[]>([]);
     const [offices, setOffices] = useState<any[]>([]);
@@ -22,16 +30,18 @@ export default function Packages() {
     const [isEditable, setEditable] = useState<boolean>(false);
 
     const jwt = sessionStorage["jwt"];
+    
+    const { Id, Email, Role } = isAuthorized(jwt) ? jwtDecode(jwt) 
+        : { Id: null, Role: null, Email: null } as any;
 
-    const statuses = {
-        "Courier": ["InDelivery", "Delivered"],
-        "OfficeEmployee": ["NonRegistered", "Registered"]
-    };
+    const packageStatusValueOptions = PACKAGE_STATUSES[
+        userModel.role == "OfficeEmployee" ? "OfficeEmployee" : "Courier"
+    ];
+    
+    const userValueOptions = users.map((user) => { return valueOptionMapper(user, "id", "email") });
 
     useEffect(() => {
-        if (jwt != null) {
-
-            const { Id, Email, Role } = jwtDecode(jwt) as any;
+        if (isAuthorized(jwt)) {
 
             setUserModel((userModel: UserModel) => {
                 userModel.id = Id;
@@ -39,91 +49,53 @@ export default function Packages() {
                 userModel.role = Role;
                 return userModel;
             })
+        }
 
+        if (isAuthorizedForRole(Role, "OfficeEmployee")) {
+            setEditable(true);
+        }
 
-            if (Role == "OfficeEmployee") {
-                setEditable(true);
-            }
-            if (Role == "OfficeEmployee" || Role == "Courier") {
-                if (rows.length == 0) {
-                    axios({
-                        method: "GET",
-                        url: `${API_URL}/Packages/GetAll`,
-                        headers: {
-                            "Authorization": `Bearer ${jwt}`
+        if (isAuthorizedForRole(Role, "OfficeEmployee") || isAuthorizedForRole(Role, "Courier")) {
+            if (rows.length == 0) {
+                axios({
+                    method: "GET",
+                    url: `${API_URL}/Packages/GetAll`,
+                    headers: {
+                        "Authorization": `Bearer ${jwt}`
+                    }
+                })
+                    .then(function (response) {
+                        var data = response.data;
+                        if (rows.length == 0 && data.length > 0) {
+                            setRows(data);
                         }
                     })
-                        .then(function (response) {
-                            var data = response.data;
-                            if (rows.length == 0 && data.length > 0) {
-                                setRows(data);
-                            }
-                        })
-                }
-
-                if (users.length == 0) {
-                    axios({
-                        method: "GET",
-                        url: `${API_URL}/Users/GetAllExcept?id=${userModel.id}&role=Client`,
-                        headers: {
-                            "Authorization": `Bearer ${jwt}`
-                        }
-                    })
-                        .then((response) => {
-                            const data = response.data;
-
-                            if (users.length == 0 && data.length > 0) {
-                                data.filter((user: any) => {
-                                    return user.roleName = "Client"
-                                })
-                                console.log(data);
-
-                                setUsers(data);
-                            }
-                        })
-                }
             }
 
+            if (users.length === 0) {
+                axios({
+                    method: "GET",
+                    url: `${API_URL}/Users/GetAllExcept?id=${userModel.id}&role=Client`,
+                    headers: {
+                        "Authorization": `Bearer ${jwt}`
+                    }
+                })
+                    .then((response) => {
+                        const data = response.data;
+                        if (users.length == 0 && data.length > 0) {
+                            data.filter((user: any) => {
+                                return user.roleName = "Client"
+                            })
+                            setUsers(data);
+                        }
+                    })
+            }
         }
     });
 
-    if (jwt != null) {
-
-        const { Role } = jwtDecode(jwt) as any;
-
-        if (Role != "OfficeEmployee" && Role != "Courier") {
-            return (
-                <Box sx={{
-                    height: 400,
-                    width: "100%",
-                    marginTop: "7%"
-                }}>
-                    <Typography variant="h4" sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignContent: "center"
-                    }}>
-                        You do not have permisson for this page!
-                    </Typography>
-                </Box>
-            )
-        }
-    }
-    else if (jwt == null) {
+    if (!isAuthorized(jwt) || isAuthorized(jwt) && !isAuthorizedForRole(Role, "OfficeEmployee") && !isAuthorizedForRole(Role, "Courier")) {
         return (
-            <Box sx={{
-                height: 400,
-                width: "100%",
-                marginTop: "7%"
-            }}>
-                <Typography variant="h4" sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignContent: "center"
-                }}>
-                    You do not have permisson for this page!
-                </Typography>
-            </Box>
+            <Unauthorized />
         )
     }
 
@@ -145,14 +117,6 @@ export default function Packages() {
         setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } })
     }
 
-    function deepEqual(x: any, y: any): boolean {
-        return (x && y && typeof x === 'object' && typeof y === 'object') ?
-            (Object.keys(x).length === Object.keys(y).length) &&
-            Object.keys(x).reduce(function (isEqual: boolean, key: any) {
-                return isEqual && deepEqual(x[key], y[key]);
-            }, true) : (x === y);
-    }
-
     const processRowUpdate = (newRow: GridRowModel) => {
         const foundRow = rows.find((row) => row.id === newRow.id) as GridRowModel;
         const updatedRow = { ...newRow, isNew: false };
@@ -165,9 +129,6 @@ export default function Packages() {
                     "Authorization": `Bearer ${jwt}`
                 }
             })
-                .then((response) => {
-
-                })
         }
         setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
 
@@ -186,68 +147,24 @@ export default function Packages() {
                 "Authorization": `Bearer ${jwt}`
             }
         })
-        .then((response) => {
-            if(response.status == 200){
-                setTimeout(() => {
-                    setRows(rows.filter(row => row.id != id));
-                });
-            }
-        })
+            .then((response) => {
+                if (response.status == 200) {
+                    setTimeout(() => {
+                        setRows(rows.filter(row => row.id != id));
+                    });
+                }
+            })
     }
-    const columns: GridColDef[] = [
-        {
-            field: 'id',
-            headerName: 'ID',
-            width: 200,
-            editable: false
-        },
-        {
-            field: 'address',
-            width: 200,
-            headerName: 'Address',
-            editable: isEditable
-        },
-        {
-            field: 'fromId',
-            width: 200,
-            headerName: 'From',
-            type: "singleSelect",
-            valueOptions: users.map((user) => {
-                return {
-                    value: user.id,
-                    label: user.email
-                }
-            }),
-            editable: isEditable
-        },
-        {
-            field: 'toId',
-            width: 200,
-            headerName: 'To',
-            editable: isEditable,
-            type: "singleSelect",
-            valueOptions: users.map((user) => {
-                return {
-                    value: user.id,
-                    label: user.email
-                }
-            }),
-        },
-        {
-            field: 'packageStatusName',
-            width: 200,
-            headerName: 'Package Status',
-            type: 'singleSelect',
-            valueOptions: statuses[userModel.role == "OfficeEmployee" ? "OfficeEmployee" : "Courier"],
-            editable: true,
-        },
-        {
-            field: 'toOffice',
-            width: 200,
-            headerName: 'To Office',
-            type: 'boolean',
-            editable: userModel.role == "OfficeEmployee" ? true : false,
-        },
+
+    let columns = new ColumnContainer()
+        .Add("id", "ID", 200, false)
+        .Add("address", "Address", 200, isEditable)
+        .Add("fromId", "From", 200, isEditable, "singleSelect", userValueOptions)
+        .Add("toId", "To", 200, isEditable, "singleSelect", userValueOptions)
+        .Add("packageStatusName", "Status", 200, true, "singleSelect", packageStatusValueOptions)
+        .GetColumns();
+
+    columns.push(
         {
             field: 'actions',
             type: 'actions',
@@ -298,15 +215,10 @@ export default function Packages() {
                 ];
             },
         }
-    ];
-
+    )
 
     return (
-        <Box sx={{
-            height: 400,
-            width: '100%',
-            marginTop: "7%"
-        }}>
+        <Box sx={GRID_BOX_STYLE}>
             <DataGrid
                 rows={rows}
                 editMode="row"

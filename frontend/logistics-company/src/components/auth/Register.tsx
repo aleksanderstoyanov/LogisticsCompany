@@ -8,13 +8,24 @@ import "../../models/RegisterModel";
 import { SyntheticEvent, useState } from "react";
 import { RegisterModel } from "../../models/RegisterModel";
 import axios, { Axios } from "axios";
+import { DEFAULT_USER_EMAIL, DEFAULT_USER_PASSWORD, DEFAULT_USER_USERNAME } from "../../util/Constants";
 
 const API_URL = "https://localhost:7209";
 const IDS = ["user", "firstName", "lastName", "email", "password"] as const;
 const [USERNAME_ID, FIRSTNAME_ID, LASTNAME_ID, EMAIL_ID, PASSWORD_ID] = IDS;
 
 export function Register() {
-  const [registerModel, changeRegisterModel] = useState<RegisterModel>(new RegisterModel("", "", "", "", ""));
+  const [registerModel, changeRegisterModel] = useState<RegisterModel>
+    (
+        new RegisterModel
+        (
+          DEFAULT_USER_USERNAME,
+          DEFAULT_USER_USERNAME,
+          DEFAULT_USER_USERNAME,
+          DEFAULT_USER_EMAIL,
+          DEFAULT_USER_PASSWORD
+        )
+    );
 
   function onChange(event: SyntheticEvent) {
     let target = event.target as HTMLInputElement;
@@ -53,7 +64,6 @@ export function Register() {
         })
         break;
     }
-
   }
 
   function onCancel(event: SyntheticEvent) {
@@ -62,7 +72,15 @@ export function Register() {
       element.value = "";
     })
 
-    changeRegisterModel(new RegisterModel("", "", "", "", ""));
+    changeRegisterModel(new RegisterModel
+      (
+        DEFAULT_USER_USERNAME,
+        DEFAULT_USER_USERNAME,
+        DEFAULT_USER_USERNAME,
+        DEFAULT_USER_EMAIL,
+        DEFAULT_USER_PASSWORD
+      )
+    );
   }
   function onRegister(event: SyntheticEvent) {
     axios({
@@ -70,11 +88,11 @@ export function Register() {
       url: `${API_URL}/api/Authorization/Register`,
       data: registerModel
     })
-    .then((response) => {
-       if(response.status == 200){
+      .then((response) => {
+        if (response.status == 200) {
           window.location.href = "/login";
-       }
-    });
+        }
+      });
   }
 
   return (

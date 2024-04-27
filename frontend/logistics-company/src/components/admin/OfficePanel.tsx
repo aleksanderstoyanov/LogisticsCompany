@@ -9,15 +9,26 @@ import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
 import axios from "axios";
+import { ColumnContainer } from "../../util/ColumnContainer";
+import { isAuthorized, isAuthorizedForRole } from "../../util/AuthorizationHelper";
+import { API_URL, DEFAULT_USER_EMAIL, DEFAULT_USER_ID, DEFAULT_USER_Role, GRID_BOX_STYLE } from "../../util/Constants";
+import { deepEqual, getRandomInt } from "../../util/Common";
+import Unauthorized from "../auth/Unauthorized";
 
 export default function OfficePanel() {
-  const API_URL = "https://localhost:7209/api";
-
-  const [userModel, setUserModel] = useState<UserModel>(new UserModel(0, "Anonymous", "None"));
+  const [userModel, setUserModel] = useState<UserModel>(
+    new UserModel(
+      DEFAULT_USER_ID,
+      DEFAULT_USER_EMAIL,
+      DEFAULT_USER_Role
+    )
+  );
   const [rows, setRows] = useState<any[]>([]);
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
 
   const jwt = sessionStorage["jwt"];
+  const { Email, Role } = isAuthorized(jwt) ? jwtDecode(jwt)
+    : { Role: null, Email: null } as any;
 
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -36,25 +47,11 @@ export default function OfficePanel() {
   function onCancel(id: GridRowId) {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } })
   }
-
-  function deepEqual(x: any, y: any): boolean {
-    return (x && y && typeof x === 'object' && typeof y === 'object') ?
-      (Object.keys(x).length === Object.keys(y).length) &&
-      Object.keys(x).reduce(function (isEqual: boolean, key: any) {
-        return isEqual && deepEqual(x[key], y[key]);
-      }, true) : (x === y);
-  }
-  function getRandomInt(min: number, max: number) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
-
   const processRowUpdate = (newRow: GridRowModel) => {
 
     const foundRow = rows.find((row) => row.id === newRow.id) as GridRowModel;
     let updatedRow = { ...newRow, isNew: newRow.isNew ? true : false };
-    var isCreated = false;
+
     if (newRow.isNew) {
       axios({
         method: "POST",
@@ -65,7 +62,6 @@ export default function OfficePanel() {
         }
       })
         .then((response) => {
-          console.log(response);
           if (response.status == 200) {
 
             setRows(rows.map((row) => {
@@ -121,19 +117,13 @@ export default function OfficePanel() {
         }
       })
   }
-  const columns: GridColDef[] = [
-    {
-      field: 'id',
-      headerName: 'ID',
-      width: 200,
-      editable: false
-    },
-    {
-      field: 'address',
-      width: 200,
-      headerName: 'Address',
-      editable: true,
-    },
+
+  let columns = new ColumnContainer()
+    .Add("id", "ID", 200, false)
+    .Add("address", "Address", 200, true)
+    .GetColumns();
+
+  columns.push(
     {
       field: 'actions',
       type: 'actions',
@@ -180,22 +170,18 @@ export default function OfficePanel() {
           />,
         ];
       },
-    }
-  ];
+    });
 
   useEffect(() => {
-    if (jwt != null) {
-
-      const { Email, Role } = jwtDecode(jwt) as any;
+    if (isAuthorized(jwt)) {
 
       setUserModel((userModel: UserModel) => {
-
         userModel.email = Email;
         userModel.role = Role;
         return userModel;
       })
 
-      if (Role == "Admin") {
+      if (isAuthorizedForRole(Role, "Admin")) {
         axios({
           method: "GET",
           url: `${API_URL}/Offices/GetAll`,
@@ -214,45 +200,11 @@ export default function OfficePanel() {
     }
   });
 
-  if (jwt != null) {
-
-    const { Role } = jwtDecode(jwt) as any;
-
-    if (Role != "Admin") {
-      return (
-        <Box sx={{
-          height: 400,
-          width: "100%",
-          marginTop: "7%"
-        }}>
-          <Typography variant="h4" sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignContent: "center"
-          }}>
-            You do not have permisson for this page!
-          </Typography>
-        </Box>
-      )
-    }
-  }
-  else if (jwt == null) {
+  if (!isAuthorized(jwt) || !isAuthorizedForRole(Role, "Admin"))
     return (
-      <Box sx={{
-        height: 400,
-        width: "100%",
-        marginTop: "7%"
-      }}>
-        <Typography variant="h4" sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignContent: "center"
-        }}>
-          You do not have permisson for this page!
-        </Typography>
-      </Box>
+      <Unauthorized />
     )
-  }
+
   interface EditToolbarProps {
     setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
     setRowModesModel: (
@@ -281,11 +233,7 @@ export default function OfficePanel() {
   }
 
   return (
-    <Box sx={{
-      height: 400,
-      width: '100%',
-      marginTop: "7%"
-    }}>
+    <Box sx={GRID_BOX_STYLE}>
       <DataGrid
         rows={rows}
         editMode="row"

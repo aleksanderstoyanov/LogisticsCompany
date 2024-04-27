@@ -8,24 +8,9 @@ import EmojiTransportationIcon from '@mui/icons-material/EmojiTransportation';
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
 import PackageForm from "./PackageForm";
 import CloseIcon from '@mui/icons-material/Close';
+import { API_URL, GRID_CARD_CONTAINER_STYLE, OFFICE_MODAL_STYLE } from "../../util/Constants";
 
 export default function Offices() {
-    const API_URL = "https://localhost:7209/api";
-
-    const style = {
-        position: 'absolute' as 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 400,
-        bgcolor: 'background.paper',
-        border: '2px solid #000',
-        boxShadow: 24,
-        pt: 2,
-        px: 4,
-        pb: 3,
-    };
-
     const [open, setOpen] = useState<boolean>(false);
     const [offices, setOffices] = useState<OfficeModel[]>([]);
     const [users, setUsers] = useState<UserModel[]>([]);
@@ -59,7 +44,6 @@ export default function Offices() {
                     }
                 })
 
-
                 axios({
                     method: "GET",
                     url: `${API_URL}/Users/GetAllExcept?id=${user.id}&role=Client`,
@@ -78,7 +62,6 @@ export default function Offices() {
 
         }
     })
-    console.log(users);
     
     function onClick() {
         setOpen(true);
@@ -92,11 +75,7 @@ export default function Offices() {
                 container
                 spacing={2}
                 marginTop="5%"
-                sx={{
-                    direction: "row",
-                    justifyContent: "center",
-                    alignItems: "center"
-                }}
+                sx={GRID_CARD_CONTAINER_STYLE}
             >
                 {offices.map(function (office) {
                     return (
@@ -142,7 +121,7 @@ export default function Offices() {
                 aria-labelledby="parent-modal-title"
                 aria-describedby="parent-modal-description"
             >
-                <Box sx={{ ...style, width: 400 }}>
+                <Box sx={{ ...OFFICE_MODAL_STYLE, width: 400 }}>
                     <CloseIcon onClick={handleClose} sx={{
                         float: "right",
                         cursor: "pointer"

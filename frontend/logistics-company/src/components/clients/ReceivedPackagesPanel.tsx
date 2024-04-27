@@ -4,49 +4,34 @@ import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { Box } from "@mui/material";
+import { ColumnContainer } from "../../util/ColumnContainer";
+import { isAuthorized, isAuthorizedForRole } from "../../util/AuthorizationHelper";
+import Unauthorized from "../auth/Unauthorized";
+import { API_URL, DEFAULT_USER_EMAIL, DEFAULT_USER_ID, DEFAULT_USER_Role, GRID_BOX_STYLE } from "../../util/Constants";
 
 export default function ReceivedPackagesPanel() {
     const jwt = sessionStorage["jwt"];
-    const [user, setUser] = useState<UserModel>(new UserModel(0, "", "Anonymous"))
+    const [user, setUser] = useState<UserModel>(
+        new UserModel(
+            DEFAULT_USER_ID,
+            DEFAULT_USER_EMAIL,
+            DEFAULT_USER_Role
+        )
+    );
     const [rows, setRows] = useState<any[]>([]);
+    const { Id, Email, Role } = isAuthorized(jwt) ? jwtDecode(jwt)
+    : { Id: null, Role: null, Email: null } as any;
 
-    const columns: GridColDef[] = [
-        {
-            field: "id",
-            editable: false,
-            width: 200,
-            headerName: "Id"
-        },
-        {
-            field: "address",
-            headerName: "Address",
-            width: 200,
-            editable: false
-        },
-        {
-            field: "packageStatusName",
-            headerName: "Status",
-            width: 200,
-            editable: false
-        },
-        {
-            field: "weight",
-            headerName: "Weight",
-            width: 200,
-            editable: false
-        },
-        {
-            field: "toOffice",
-            headerName: "To Office",
-            type: "boolean",
-            editable: false
-        },
-    ]
+    let columns = new ColumnContainer()
+        .Add("id", "Id", 200, false)
+        .Add("address", "Address", 200, false)
+        .Add("packageStatusName", "Status", 200, false)
+        .Add("weight", "Weight", 200, false)
+        .Add("toOffice", "To Office", 200, false, "boolean")
+        .GetColumns()
 
     useEffect(() => {
-        if (jwt != null) {
-            const API_URL = "https://localhost:7209/api";
-
+        if (isAuthorized(jwt)) {
             const { Id, Role, Email } = jwtDecode(jwt) as any;
 
             setUser((userModel: UserModel) => {
@@ -57,7 +42,7 @@ export default function ReceivedPackagesPanel() {
                 return userModel;
             })
 
-            if (user.role == "Client") {
+            if (isAuthorizedForRole(user.role, "Client")) {
                 axios({
                     method: "GET",
                     url: `${API_URL}/Packages/GetReceived?id=${user.id}`,
@@ -75,12 +60,14 @@ export default function ReceivedPackagesPanel() {
 
         }
     })
+
+    if (!isAuthorizedForRole(Role, "Client") || !isAuthorized(jwt))
+        return (
+            <Unauthorized />
+        )
+
     return (
-        <Box sx={{
-            height: 400,
-            width: '100%',
-            marginTop: "7%"
-        }}>
+        <Box sx={GRID_BOX_STYLE}>
             <DataGrid rows={rows}
                 columns={columns}
                 initialState={{
