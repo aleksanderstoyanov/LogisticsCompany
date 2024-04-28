@@ -24,7 +24,6 @@ export default function Packages() {
     );
     const [users, setUsers] = useState<UserModel[]>([]);
     const [rows, setRows] = useState<any[]>([]);
-    const [offices, setOffices] = useState<any[]>([]);
 
     const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
     const [isEditable, setEditable] = useState<boolean>(false);

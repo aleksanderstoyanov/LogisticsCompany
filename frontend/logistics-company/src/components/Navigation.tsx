@@ -8,7 +8,6 @@ export function Navigation() {
 
     const [userModel, setUserModel] = useState<UserModel>(new UserModel(0, "Anonymous", "None"));
 
-    const [isRegisterVisible, setRegisterVisible] = useState<boolean>(true);
     const [isOfficesVisible, setOfficesVisible] = useState<boolean>(false);
 
     const [isPackagesVisible, setPackagesVisible] = useState<boolean>(false);
@@ -17,6 +16,7 @@ export function Navigation() {
 
     const [isAdminPanelVisible, setAdminPanelVisible] = useState<boolean>(false);
 
+    const [isRegisterVisible, setRegisterVisible] = useState<boolean>(true);
     const [isLoginVisible, setLoginVisible] = useState<boolean>(true);
     const [isLogoutVisible, setLogoutVisible] = useState<boolean>(false);
 
@@ -85,6 +85,11 @@ export function Navigation() {
                                 Office Panel
                             </Button>
                         </Link>
+                        <Link variant="h6" href="reports" underline="none" style={{ display: isVisible(isAdminPanelVisible), marginLeft: "2%" }}>
+                            <Button color="inherit">
+                                Reports
+                            </Button>
+                        </Link>
                         <Link variant="h6" underline="none" href="/offices" style={{ display: isVisible(isOfficesVisible), marginLeft: "2%" }}>
                             <Button color="inherit">
                                 Offices
@@ -97,12 +102,12 @@ export function Navigation() {
                         </Link>
                         <Link variant="h6" underline="none" href="/receivedPackages" style={{ display: isVisible(isReceivedPackagesVisible), marginLeft: "2%" }}>
                             <Button color="inherit">
-                               Received Packages
+                                Received Packages
                             </Button>
                         </Link>
                         <Link variant="h6" underline="none" href="/sentPackages" style={{ display: isVisible(isSentPackagesVisible), marginLeft: "2%" }}>
                             <Button color="inherit">
-                               Sent Packages
+                                Sent Packages
                             </Button>
                         </Link>
                     </Typography>

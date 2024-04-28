@@ -8,7 +8,7 @@ import EmojiTransportationIcon from '@mui/icons-material/EmojiTransportation';
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
 import PackageForm from "./PackageForm";
 import CloseIcon from '@mui/icons-material/Close';
-import { API_URL, GRID_CARD_CONTAINER_STYLE, OFFICE_MODAL_STYLE } from "../../util/Constants";
+import { API_URL, GRID_CARD_CONTAINER_STYLE, MODAL_STYLE } from "../../util/Constants";
 
 export default function Offices() {
     const [open, setOpen] = useState<boolean>(false);
@@ -121,7 +121,7 @@ export default function Offices() {
                 aria-labelledby="parent-modal-title"
                 aria-describedby="parent-modal-description"
             >
-                <Box sx={{ ...OFFICE_MODAL_STYLE, width: 400 }}>
+                <Box sx={{ ...MODAL_STYLE, width: 400 }}>
                     <CloseIcon onClick={handleClose} sx={{
                         float: "right",
                         cursor: "pointer"
