@@ -7,6 +7,7 @@ using LogisticsCompany.Services.Contracts;
 using LogisticsCompany.Services.Offices;
 using LogisticsCompany.Services.Package;
 using LogisticsCompany.Services.Packages;
+using LogisticsCompany.Services.Reports;
 using LogisticsCompany.Services.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -36,6 +37,7 @@ builder.Services.AddTransient<IRoleService, RoleService>();
 builder.Services.AddTransient<IOfficeService, OfficeService>();
 builder.Services.AddTransient<IPackageStatusService, PackageStatusService>();
 builder.Services.AddTransient<IPackageService, PackageService>();
+builder.Services.AddTransient<IReportService, ReportService>();
 
 
 // Register JWT Services
