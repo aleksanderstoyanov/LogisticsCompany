@@ -113,58 +113,42 @@ namespace LogisticsCompany.Services.Users
             using (var connection = new SqlConnection(_connectionString))
             {
 
-                var clauseDescriptorContainer = new ClauseDescriptorContainer()
-                {
-                    ClauseDescriptors = new HashSet<ClauseDescriptor>()
-                {
-                    new ClauseDescriptor
-                    {
-                        Field = "u.Id",
-                        EqualityOperator = EqualityOperator.NOT_EQUALS,
-                        FieldValue = id,
-                        LogicalOperator = LogicalOperator.AND
-                    },
-                    new ClauseDescriptor
-                    {
-                        Field = "u.Username",
-                        EqualityOperator = EqualityOperator.NOT_EQUALS,
-                        FieldValue = "admin",
-                        LogicalOperator = LogicalOperator.AND
-                    },
-                    new ClauseDescriptor
-                    {
-                        Field = "r.Name",
-                        EqualityOperator = EqualityOperator.EQUALS,
-                        FieldValue = role
-                    }
-                }
-                };
+                var clauseDescriptorContainer = new ClauseDescriptorContainer();
 
-                var roleClauseDescriptorContainer = new ClauseDescriptorContainer()
+                clauseDescriptorContainer.Descriptors(descriptors =>
                 {
-                    ClauseDescriptors = new HashSet<ClauseDescriptor>()
-                    {
-                        new ClauseDescriptor
-                        {
-                            Field = "r.Id",
-                            EqualityOperator = EqualityOperator.EQUALS,
-                            FieldValue = "u.RoleId",
-                        }
-                    }
-                };
+                    descriptors.Add(descriptor => descriptor
+                        .Field("u.Id")
+                        .EqualityOperator(EqualityOperator.NOT_EQUALS)
+                        .FieldValue(id)
+                        .LogicalOperator(LogicalOperator.AND)
+                    );
 
-                var officeClauseDescriptorContainer = new ClauseDescriptorContainer()
+                    descriptors.Add(descriptor => descriptor
+                        .Field("u.Username")
+                        .EqualityOperator(EqualityOperator.NOT_EQUALS)
+                        .FieldValue("admin")
+                        .LogicalOperator(LogicalOperator.AND)
+                    );
+
+                    descriptors.Add(descriptor => descriptor
+                        .Field("r.Name")
+                        .EqualityOperator(EqualityOperator.EQUALS)
+                        .FieldValue(role)
+                    );
+
+                });
+
+                var roleClauseDescriptorContainer = new ClauseDescriptorContainer();
+
+                roleClauseDescriptorContainer.Descriptors(descriptors =>
                 {
-                    ClauseDescriptors = new HashSet<ClauseDescriptor>()
-                    {
-                        new ClauseDescriptor
-                        {
-                            Field = "o.Id",
-                            EqualityOperator = EqualityOperator.EQUALS,
-                            FieldValue = "u.OfficeId"
-                        }
-                    }
-                };
+                    descriptors.Add(descriptor => descriptor
+                        .Field("r.Id")
+                        .EqualityOperator(EqualityOperator.EQUALS)
+                        .FieldValue("u.RoleId")
+                    );
+                });
 
                 var query = new SqlQueryBuilder()
                     .Select(columns: new string[]
@@ -173,7 +157,6 @@ namespace LogisticsCompany.Services.Users
                         "u.FirstName",
                         "u.LastName",
                         "r.Name as RoleName",
-                        "o.Address as OfficeName",
                         "u.Username",
                         "u.Email"
                     })
@@ -184,12 +167,6 @@ namespace LogisticsCompany.Services.Users
                         table: "Roles",
                         container: roleClauseDescriptorContainer,
                         @as: "r"
-                    )
-                    .Join(
-                        joinOperator: JoinOperator.INNER,
-                        table: "Offices",
-                        container: officeClauseDescriptorContainer,
-                        @as: "o"
                     )
                     .Where(clauseDescriptorContainer)
                     .ToQuery();
@@ -204,24 +181,22 @@ namespace LogisticsCompany.Services.Users
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                var clauseContainer = new ClauseDescriptorContainer()
+                var clauseDescriptorContainer = new ClauseDescriptorContainer();
+
+                clauseDescriptorContainer.Descriptors(descriptors =>
                 {
-                    ClauseDescriptors = new HashSet<ClauseDescriptor>()
-                    {
-                        new ClauseDescriptor
-                        {
-                            Field = "Id",
-                            EqualityOperator = EqualityOperator.EQUALS,
-                            FieldValue = id
-                        }
-                    }
-                };
+                    descriptors.Add(descriptor => descriptor
+                        .Field("Id")
+                        .EqualityOperator(EqualityOperator.EQUALS)
+                        .FieldValue(id)
+                    );
+                });
 
                 var query = new SqlQueryBuilder()
-                        .Select(columns: "*")
-                        .From("Users")
-                        .Where(clauseContainer)
-                        .ToQuery();
+                     .Select(columns: "*")
+                     .From("Users")
+                     .Where(clauseDescriptorContainer)
+                     .ToQuery();
 
                 var user = await connection.QuerySingleOrDefaultAsync<LoginDto?>(query);
                 return user;
@@ -232,31 +207,30 @@ namespace LogisticsCompany.Services.Users
         {
             using (var connection = new SqlConnection(this._connectionString))
             {
-                var rolesClauseContainer = new ClauseDescriptorContainer()
-                {
-                    ClauseDescriptors = new HashSet<ClauseDescriptor>()
-                    {
-                        new ClauseDescriptor
-                        {
-                            Field = "r.Id",
-                            EqualityOperator = EqualityOperator.EQUALS,
-                            FieldValue = "u.RoleId"
-                        }
-                    }
-                };
+                var rolesClauseContainer = new ClauseDescriptorContainer();
 
-                var officesClauseContainer = new ClauseDescriptorContainer()
-                {
-                    ClauseDescriptors = new HashSet<ClauseDescriptor>()
+                rolesClauseContainer
+                    .Descriptors(descriptors =>
                     {
-                        new ClauseDescriptor
-                        {
-                            Field = "o.Id",
-                            EqualityOperator = EqualityOperator.EQUALS,
-                            FieldValue = "u.OfficeId"
-                        }
-                    }
-                };
+                        descriptors.Add(descriptor => descriptor
+                            .Field("r.Id")
+                            .EqualityOperator(EqualityOperator.EQUALS)
+                            .FieldValue("u.RoleId")
+                        );
+                    });
+
+
+                var officesClauseContainer = new ClauseDescriptorContainer();
+
+                officesClauseContainer.Descriptors(descriptors =>
+                {
+                    descriptors.Add(descriptor => descriptor
+                        .Field("o.Id")
+                        .EqualityOperator(EqualityOperator.EQUALS)
+                        .FieldValue("u.OfficeId")
+                    );
+                });
+
 
                 var query = new SqlQueryBuilder()
                     .Select
@@ -291,18 +265,17 @@ namespace LogisticsCompany.Services.Users
         {
             using (var connection = new SqlConnection(this._connectionString))
             {
-                var clauseContainer = new ClauseDescriptorContainer()
+                var clauseContainer = new ClauseDescriptorContainer();
+
+                clauseContainer.Descriptors(descriptors =>
                 {
-                    ClauseDescriptors = new HashSet<ClauseDescriptor>()
-                    {
-                        new ClauseDescriptor
-                        {
-                            Field = "Email",
-                            EqualityOperator = EqualityOperator.EQUALS,
-                            FieldValue = email
-                        }
-                    }
-                };
+                    descriptors.Add(descriptor => descriptor
+                        .Field("Email")
+                        .EqualityOperator(EqualityOperator.EQUALS)
+                        .FieldValue(email)
+                    );
+                });
+
 
                 var query = new SqlQueryBuilder()
                     .Select(columns: "*")
@@ -319,18 +292,16 @@ namespace LogisticsCompany.Services.Users
         {
             using (var sqlConnection = new SqlConnection(_dbContext.GetConnectionString()))
             {
-                var clauseContainer = new ClauseDescriptorContainer()
+                var clauseContainer = new ClauseDescriptorContainer();
+
+                clauseContainer.Descriptors(descriptors =>
                 {
-                    ClauseDescriptors = new HashSet<ClauseDescriptor>
-                    {
-                        new ClauseDescriptor
-                        {
-                            Field = "Email",
-                            EqualityOperator = EqualityOperator.EQUALS,
-                            FieldValue = email
-                        }
-                    }
-                };
+                    descriptors.Add(descriptor => descriptor
+                        .Field("Email")
+                        .EqualityOperator(EqualityOperator.EQUALS)
+                        .FieldValue(email)
+                    );
+                });
 
                 var query = new SqlQueryBuilder()
                       .Select(columns: "Email")

@@ -19,18 +19,16 @@ namespace LogisticsCompany.Services
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                var clauseContainer = new ClauseDescriptorContainer()
+                var clauseContainer = new ClauseDescriptorContainer();
+
+                clauseContainer.Descriptors(descriptors =>
                 {
-                    ClauseDescriptors = new HashSet<ClauseDescriptor>()
-                    {
-                       new ClauseDescriptor
-                       {
-                           Field = "Name",
-                           EqualityOperator = EqualityOperator.EQUALS,
-                           FieldValue = name
-                       }
-                    }
-                };
+                    descriptors.Add(descriptor => descriptor
+                        .Field("Name")
+                        .EqualityOperator(EqualityOperator.EQUALS)
+                        .FieldValue(name)
+                    );
+                });
 
                 var query = new SqlQueryBuilder()
                     .Select(columns: "Id")
@@ -53,18 +51,16 @@ namespace LogisticsCompany.Services
         {
             using (var connection = new SqlConnection(this._connectionString))
             {
-                var clauseContainer = new ClauseDescriptorContainer()
+                var clauseContainer = new ClauseDescriptorContainer();
+
+                clauseContainer.Descriptors(descriptors =>
                 {
-                    ClauseDescriptors = new List<ClauseDescriptor>()
-                    {
-                       new ClauseDescriptor
-                       {
-                           Field = "Id",
-                           EqualityOperator = EqualityOperator.EQUALS,
-                           FieldValue = id
-                       }
-                    }
-                };
+                    descriptors.Add(descriptor => descriptor
+                        .Field("Id")
+                        .EqualityOperator(EqualityOperator.EQUALS)
+                        .FieldValue(id)
+                    );
+                });
 
                 var query = new SqlQueryBuilder()
                    .Select(columns: "Name")

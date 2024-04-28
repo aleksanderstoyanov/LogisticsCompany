@@ -89,25 +89,24 @@ namespace LogisticsCompany.Services.Packages
 
         public async Task<IEnumerable<PackageDto>> GetPackagesByUserId(int id)
         {
-            var clauseDescriptorContainer = new ClauseDescriptorContainer()
-            {
-                ClauseDescriptors = new HashSet<ClauseDescriptor>()
+            var clauseDescriptorContainer = new ClauseDescriptorContainer();
+
+            clauseDescriptorContainer
+                .Descriptors(descriptors =>
                 {
-                    new ClauseDescriptor
-                    {
-                        Field = "FromId",
-                        FieldValue = id,
-                        EqualityOperator = EqualityOperator.EQUALS,
-                        LogicalOperator = LogicalOperator.OR
-                    },
-                    new ClauseDescriptor
-                    {
-                        Field = "ToId",
-                        FieldValue = id,
-                        EqualityOperator = EqualityOperator.EQUALS
-                    }
-                }
-            };
+                    descriptors.Add(descriptor => descriptor
+                        .Field("FromId")
+                        .FieldValue(id)
+                        .EqualityOperator(EqualityOperator.EQUALS)
+                        .LogicalOperator(LogicalOperator.OR)
+                    );
+
+                    descriptors.Add(descriptor => descriptor
+                        .Field("ToId")
+                        .FieldValue(id)
+                        .EqualityOperator(EqualityOperator.EQUALS)
+                    );
+                });
 
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -127,18 +126,17 @@ namespace LogisticsCompany.Services.Packages
 
         public async Task<PackageDto?> GetById(int id)
         {
-            var clauseDescriptorContainer = new ClauseDescriptorContainer()
-            {
-                ClauseDescriptors = new HashSet<ClauseDescriptor>()
+            var clauseDescriptorContainer = new ClauseDescriptorContainer();
+
+            clauseDescriptorContainer
+                .Descriptors(descriptors =>
                 {
-                    new ClauseDescriptor
-                    {
-                        Field = "Id",
-                        FieldValue = id,
-                        EqualityOperator = EqualityOperator.EQUALS
-                    }
-                }
-            };
+                    descriptors.Add(descriptor => descriptor
+                        .Field("Id")
+                        .FieldValue(id)
+                        .EqualityOperator(EqualityOperator.EQUALS)
+                    );
+                });
 
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -157,18 +155,17 @@ namespace LogisticsCompany.Services.Packages
 
         public async Task<IEnumerable<PackageDto>> GetAll()
         {
-            var clauseContainerDescriptor = new ClauseDescriptorContainer()
-            {
-                ClauseDescriptors = new HashSet<ClauseDescriptor>()
+            var clauseContainerDescriptor = new ClauseDescriptorContainer();
+
+            clauseContainerDescriptor
+                .Descriptors(descriptors =>
                 {
-                    new ClauseDescriptor
-                    {
-                        Field = "package.PackageStatusId",
-                        FieldValue = "status.Id",
-                        EqualityOperator = EqualityOperator.EQUALS
-                    }
-                }
-            };
+                    descriptors.Add(descriptor => descriptor
+                            .Field("package.PackageStatusId")
+                            .FieldValue("status.Id")
+                            .EqualityOperator(EqualityOperator.EQUALS)
+                    );
+                });
 
             var query = new SqlQueryBuilder()
                 .Select(
@@ -203,31 +200,29 @@ namespace LogisticsCompany.Services.Packages
 
         public async Task<IEnumerable<PackageDto>> GetReceivedPackages(int id)
         {
-            var clauseDescriptorContainer = new ClauseDescriptorContainer()
-            {
-                ClauseDescriptors = new HashSet<ClauseDescriptor>()
-                {
-                    new ClauseDescriptor
-                    {
-                        Field = "ToId",
-                        FieldValue = id,
-                        EqualityOperator = EqualityOperator.EQUALS
-                    }
-                }
-            };
+            var clauseDescriptorContainer = new ClauseDescriptorContainer();
 
-            var joinClauseDescriptorContainer = new ClauseDescriptorContainer()
-            {
-                ClauseDescriptors = new HashSet<ClauseDescriptor>()
+            clauseDescriptorContainer
+                .Descriptors(descriptors =>
                 {
-                    new ClauseDescriptor
-                    {
-                        Field = "status.Id",
-                        FieldValue = "package.PackageStatusId",
-                        EqualityOperator = EqualityOperator.EQUALS
-                    }
-                }
-            };
+                    descriptors.Add(descriptor => descriptor
+                        .Field("ToId")
+                        .FieldValue(id)
+                        .EqualityOperator(EqualityOperator.EQUALS)
+                    );
+                });
+
+            var joinClauseDescriptorContainer = new ClauseDescriptorContainer();
+
+            joinClauseDescriptorContainer
+                .Descriptors(descriptors =>
+                {
+                    descriptors.Add(descriptor => descriptor
+                        .Field("status.Id")
+                        .FieldValue("package.PackageStatusId")
+                        .EqualityOperator(EqualityOperator.EQUALS)
+                    );
+                });
 
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -262,31 +257,27 @@ namespace LogisticsCompany.Services.Packages
 
         public async Task<IEnumerable<PackageDto>> GetSentPackages(int id)
         {
-            var clauseDescriptorContainer = new ClauseDescriptorContainer()
-            {
-                ClauseDescriptors = new HashSet<ClauseDescriptor>()
-                {
-                    new ClauseDescriptor
-                    {
-                        Field = "FromId",
-                        FieldValue = id,
-                        EqualityOperator = EqualityOperator.EQUALS
-                    }
-                }
-            };
+            var clauseDescriptorContainer = new ClauseDescriptorContainer();
 
-            var joinClauseDescriptorContainer = new ClauseDescriptorContainer()
+            clauseDescriptorContainer.Descriptors(descriptors =>
             {
-                ClauseDescriptors = new HashSet<ClauseDescriptor>()
-                {
-                    new ClauseDescriptor
-                    {
-                        Field = "status.Id",
-                        FieldValue = "package.PackageStatusId",
-                        EqualityOperator = EqualityOperator.EQUALS
-                    }
-                }
-            };
+                descriptors.Add(descriptor => descriptor
+                    .Field("FromId")
+                    .FieldValue(id)
+                    .EqualityOperator(EqualityOperator.EQUALS)
+                );
+            });
+
+            var joinClauseDescriptorContainer = new ClauseDescriptorContainer();
+
+            joinClauseDescriptorContainer.Descriptors(descriptors =>
+            {
+                descriptors.Add(descriptor => descriptor
+                    .Field("status.Id")
+                    .FieldValue("package.PackageStatusId")
+                    .EqualityOperator(EqualityOperator.EQUALS)
+                );
+            });
 
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -321,25 +312,23 @@ namespace LogisticsCompany.Services.Packages
 
         public async Task<int> GetPackageCountByFromAndTo(int from, int to)
         {
-            var clauseDescriptorContainer = new ClauseDescriptorContainer()
+            var clauseDescriptorContainer = new ClauseDescriptorContainer();
+
+            clauseDescriptorContainer.Descriptors(descriptors =>
             {
-                ClauseDescriptors = new HashSet<ClauseDescriptor>()
-                {
-                    new ClauseDescriptor
-                    {
-                        Field = "ToId",
-                        FieldValue = to,
-                        EqualityOperator = EqualityOperator.EQUALS,
-                        LogicalOperator = LogicalOperator.AND
-                    },
-                    new ClauseDescriptor
-                    {
-                        Field = "FromId",
-                        FieldValue = from,
-                        EqualityOperator = EqualityOperator.EQUALS
-                    }
-                }
-            };
+                descriptors.Add(descriptor => descriptor
+                    .Field("ToId")
+                    .FieldValue(to)
+                    .EqualityOperator(EqualityOperator.EQUALS)
+                    .LogicalOperator(LogicalOperator.AND)
+                );
+
+                descriptors.Add(descriptor => descriptor
+                    .Field("FromId")
+                    .FieldValue(from)
+                    .EqualityOperator(EqualityOperator.EQUALS)
+                );
+            });
 
             var query = new SqlQueryBuilder()
                 .Select(columns: "COUNT(Id)")

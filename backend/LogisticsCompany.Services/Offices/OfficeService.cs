@@ -20,18 +20,16 @@ namespace LogisticsCompany.Services.Offices
 
         public async Task<int?> GetIdByName(string name)
         {
-            var clauseContainer = new ClauseDescriptorContainer()
+            var clauseContainer = new ClauseDescriptorContainer();
+
+            clauseContainer.Descriptors(descriptors =>
             {
-                ClauseDescriptors = new HashSet<ClauseDescriptor>()
-                {
-                    new ClauseDescriptor
-                    {
-                        Field = "Address",
-                        EqualityOperator = EqualityOperator.EQUALS,
-                        FieldValue = name
-                    }
-                }
-            };
+                descriptors.Add(descriptor => descriptor
+                    .Field("Address")
+                    .EqualityOperator(EqualityOperator.EQUALS)
+                    .FieldValue(name)
+                );
+            });
 
             var query = new SqlQueryBuilder()
                 .Select(columns: "Id")
@@ -48,18 +46,17 @@ namespace LogisticsCompany.Services.Offices
         }
         public async Task<OfficeDto?> GetById(int id)
         {
-            var clauseContainer = new ClauseDescriptorContainer()
-            {
-                ClauseDescriptors = new HashSet<ClauseDescriptor>()
+            var clauseContainer = new ClauseDescriptorContainer();
+
+            clauseContainer
+                .Descriptors(descriptors =>
                 {
-                    new ClauseDescriptor
-                    {
-                        Field = "Id",
-                        EqualityOperator = EqualityOperator.EQUALS,
-                        FieldValue = id,
-                    }
-                }
-            };
+                    descriptors.Add(descriptor => descriptor
+                        .Field("Id")
+                        .FieldValue(id)
+                        .EqualityOperator(EqualityOperator.EQUALS)
+                    );
+                });
 
             using (var connection = new SqlConnection(this._connectionString))
             {
@@ -77,18 +74,17 @@ namespace LogisticsCompany.Services.Offices
 
         public async Task<OfficeDto?> GetByAddress(string name)
         {
-            var clauseDescriptorContainer = new ClauseDescriptorContainer()
-            {
-                ClauseDescriptors = new HashSet<ClauseDescriptor>
-                {
-                    new ClauseDescriptor
-                    {
-                        EqualityOperator = EqualityOperator.EQUALS,
-                        Field = "Address",
-                        FieldValue = name
-                    }
-                }
-            };
+            var clauseDescriptorContainer = new ClauseDescriptorContainer();
+
+            clauseDescriptorContainer
+               .Descriptors(descriptors =>
+               {
+                   descriptors.Add(descriptor => descriptor
+                       .Field("Address")
+                       .FieldValue(name)
+                       .EqualityOperator(EqualityOperator.EQUALS)
+                   );
+               });
 
             var query = new SqlQueryBuilder()
                 .Select(columns: "*")
