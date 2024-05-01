@@ -119,7 +119,7 @@ namespace LogisticsCompany.Services.Offices
                 var command = SqlCommandHelper.InsertCommand
                 (
                     table: "Offices",
-                    values: new[] { $"'{dto.Address}'", $"'{dto.PricePerWeight}'" }
+                    values: new[] { $"'{dto.Address}'", $"'{dto.PricePerWeight.ToString().Replace(",", ".")}'" }
                 );
 
                 await connection.ExecuteAsync(command);
@@ -134,7 +134,8 @@ namespace LogisticsCompany.Services.Offices
         {
             var entityValues = new Dictionary<string, string>()
             {
-                { "Address", dto.Address }
+                { "Address", dto.Address },
+                { "PricePerWeight", $"{dto.PricePerWeight.ToString().Replace(",", ".")}"},
             };
 
             using (var connection = new SqlConnection(this._connectionString))
