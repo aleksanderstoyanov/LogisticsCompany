@@ -6,6 +6,7 @@ import InventoryIcon from '@mui/icons-material/Inventory';
 import axios from "axios";
 import { UserModel } from "../../models/UserModel";
 import { API_URL, DEFAULT_PACKAGE_ADDRESS, DEFAULT_PACKAGE_FROM_ID, DEFAULT_PACKAGE_TO_ID, DEFAULT_PACKAGE_TO_OFFICE, DEFAULT_PACKAGE_WEIGHT, PACKAGE_FORM_IDS } from "../../util/Constants";
+import { OfficeModel } from "../../models/OfficeModel";
 
 export default function PackageForm(props: any) {
     const jwt = sessionStorage["jwt"];
@@ -15,7 +16,8 @@ export default function PackageForm(props: any) {
             DEFAULT_PACKAGE_FROM_ID,
             DEFAULT_PACKAGE_TO_ID,
             DEFAULT_PACKAGE_WEIGHT,
-            DEFAULT_PACKAGE_TO_OFFICE
+            DEFAULT_PACKAGE_TO_OFFICE,
+            props.officeId
         )
     );
     const IDS = PACKAGE_FORM_IDS;
@@ -62,7 +64,14 @@ export default function PackageForm(props: any) {
             element.value = "";
         })
 
-        changePackageModel(new PackageModel("", 0, 0, 0.0, false));
+        changePackageModel(new PackageModel(
+            DEFAULT_PACKAGE_ADDRESS,
+            DEFAULT_PACKAGE_FROM_ID,
+            DEFAULT_PACKAGE_TO_ID,
+            DEFAULT_PACKAGE_WEIGHT,
+            DEFAULT_PACKAGE_TO_OFFICE,
+            props.officeId
+        ));
     }
     function onChangeUser(event: SelectChangeEvent) {
         const toValue = event.target.value;

@@ -13,6 +13,7 @@ import { API_URL, GRID_CARD_CONTAINER_STYLE, MODAL_STYLE } from "../../util/Cons
 export default function Offices() {
     const [open, setOpen] = useState<boolean>(false);
     const [offices, setOffices] = useState<OfficeModel[]>([]);
+    const [officeId, setOfficeId] = useState<number>(0);
     const [users, setUsers] = useState<UserModel[]>([]);
     const [user, setUser] = useState<UserModel>(new UserModel(0, "Anonymous", ""));
     const jwt = sessionStorage["jwt"];
@@ -96,7 +97,10 @@ export default function Offices() {
                                 </CardContent>
                                 <CardActions>
                                     <Button variant="contained"
-                                        onClick={onClick}
+                                        onClick={() => {
+                                            setOpen(true);
+                                            setOfficeId(office.id);
+                                        }}
                                         size="small"
                                         sx={{
                                             marginLeft: "auto",
@@ -127,7 +131,7 @@ export default function Offices() {
                         cursor: "pointer"
                     }}>
                     </CloseIcon>
-                    <PackageForm userId={user.id} users={users} />
+                    <PackageForm userId={user.id} users={users} offices={offices} officeId={officeId} />
                 </Box>
             </Modal>
         </>
