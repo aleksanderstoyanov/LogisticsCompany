@@ -24,6 +24,7 @@ export const DEFAULT_USER_ID = 0;
 export const DEFAULT_PACKAGE_ADDRESS = "None";
 export const DEFAULT_PACKAGE_FROM_ID = 0;
 export const DEFAULT_PACKAGE_TO_ID = 0;
+export const DEFAULT_PACKAGE_DELIVERY_ID= 0;
 export const DEFAULT_PACKAGE_WEIGHT = 0;
 export const DEFAULT_PACKAGE_TO_OFFICE = false;
 

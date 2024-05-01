@@ -4,15 +4,16 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
-import { DataGrid, GridActionsCellItem, GridColDef, GridEventListener, GridRowEditStopReasons, GridRowId, GridRowModel, GridRowModes, GridRowModesModel } from "@mui/x-data-grid";
+import { DataGrid, GridActionsCellItem, GridColDef, GridEventListener, GridRowEditStopReasons, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridRowSelectionModel } from "@mui/x-data-grid";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-import { Box, Typography } from "@mui/material";
+import { Alert, Box, Button, Typography } from "@mui/material";
 import Unauthorized from "../auth/Unauthorized";
 import { API_URL, DEFAULT_USER_EMAIL, DEFAULT_USER_ID, DEFAULT_USER_Role, GRID_BOX_STYLE, PACKAGE_STATUSES } from "../../util/Constants";
 import { isAuthorized, isAuthorizedForRole } from "../../util/AuthorizationHelper";
 import { deepEqual, valueOptionMapper } from "../../util/Common";
 import { ColumnContainer } from "../../util/ColumnContainer";
+import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
 
 export default function Packages() {
     const [userModel, setUserModel] = useState<UserModel>(
@@ -23,20 +24,25 @@ export default function Packages() {
         )
     );
     const [users, setUsers] = useState<UserModel[]>([]);
+    const [selectedIds, setSelectedIds] = useState<GridRowId[]>([]);
     const [rows, setRows] = useState<any[]>([]);
 
     const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
     const [isEditable, setEditable] = useState<boolean>(false);
 
+    const [isDeliveryButtonVisible, setDeliveryButtonVisible] = useState<boolean>(false);
+    const [isMessageVisible, setMessageVisible] = useState<boolean>(false);
+    const [deliveryMessage, setDeliveryMessage] = useState<string>("");
+
     const jwt = sessionStorage["jwt"];
-    
-    const { Id, Email, Role } = isAuthorized(jwt) ? jwtDecode(jwt) 
+
+    const { Id, Email, Role } = isAuthorized(jwt) ? jwtDecode(jwt)
         : { Id: null, Role: null, Email: null } as any;
 
     const packageStatusValueOptions = PACKAGE_STATUSES[
         userModel.role == "OfficeEmployee" ? "OfficeEmployee" : "Courier"
     ];
-    
+
     const userValueOptions = users.map((user) => { return valueOptionMapper(user, "id", "email") });
 
     useEffect(() => {
@@ -138,6 +144,26 @@ export default function Packages() {
         setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } })
     }
 
+    function onSelect(rows: GridRowSelectionModel) {
+        setSelectedIds(rows);
+        setDeliveryButtonVisible(rows.length == 0 ? false : true);
+    }
+    function onBeginDelivery() {
+        axios({
+            method: "POST",
+            url: `${API_URL}/Deliveries/Create`,
+            headers: {
+                "Authorization": `Bearer ${jwt}`
+            },
+            data: { "selectedIds": selectedIds }
+        })
+            .then((response) => {
+                if (response.status == 200) {
+                    setDeliveryMessage(response.data);
+                    setMessageVisible(true);
+                }
+            })
+    }
     function onDelete(id: GridRowId) {
         axios({
             method: "DELETE",
@@ -224,6 +250,7 @@ export default function Packages() {
                 columns={columns}
                 onRowModesModelChange={handleRowModesModelChange}
                 onRowEditStop={handleRowEditStop}
+                onRowSelectionModelChange={onSelect}
                 processRowUpdate={processRowUpdate}
                 rowModesModel={rowModesModel}
                 initialState={{
@@ -237,6 +264,25 @@ export default function Packages() {
                 checkboxSelection={userModel.role == "Courier" ? true : false}
                 disableRowSelectionOnClick
             />
+
+            <Button color="success"
+                variant="contained"
+                size="large"
+                onClick={onBeginDelivery}
+                endIcon={<LocalShippingOutlinedIcon />}
+                sx={{
+                    display: isDeliveryButtonVisible ? "flex" : "none",
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                    marginTop: "5em",
+                }}>
+                <Typography variant="button">
+                    Begin Delivery
+                </Typography>
+            </Button>
+            <Alert style={{ display: isMessageVisible ? "block" : "none" }} severity="success">
+                 {deliveryMessage}
+            </Alert>
         </Box>
     );
 }
