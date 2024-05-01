@@ -15,6 +15,7 @@ import Packages from './components/employees/Packages';
 import ReceivedPackagesPanel from './components/clients/ReceivedPackagesPanel';
 import SentPackagesPanel from './components/clients/SentPackagesPanel';
 import Reports from './components/admin/Reports';
+import Deliveries from './components/employees/Deliveries';
 
 const darkTheme = createTheme({
   palette: {
@@ -39,6 +40,7 @@ function App() {
           <Route path="packages" element={<Packages />}></Route>
           <Route path="sentPackages" element={<SentPackagesPanel />}></Route>
           <Route path="receivedPackages" element={<ReceivedPackagesPanel />}></Route>
+          <Route path="deliveries" element={<Deliveries />}></Route>
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

@@ -9,6 +9,7 @@ export function Navigation() {
     const [userModel, setUserModel] = useState<UserModel>(new UserModel(0, "Anonymous", "None"));
 
     const [isOfficesVisible, setOfficesVisible] = useState<boolean>(false);
+    const [isDeliveriesVisible, setDeliveriesVisible] = useState<boolean>(false);
 
     const [isPackagesVisible, setPackagesVisible] = useState<boolean>(false);
     const [isSentPackagesVisible, setSentPackagesVisible] = useState<boolean>(false);
@@ -45,6 +46,7 @@ export function Navigation() {
                     break;
                 case "Courier":
                     setPackagesVisible(true);
+                    setDeliveriesVisible(true);
                     break;
             }
 
@@ -93,6 +95,11 @@ export function Navigation() {
                         <Link variant="h6" underline="none" href="/offices" style={{ display: isVisible(isOfficesVisible), marginLeft: "2%" }}>
                             <Button color="inherit">
                                 Offices
+                            </Button>
+                        </Link>
+                        <Link variant="h6" underline="none" href="/deliveries" style={{ display: isVisible(isDeliveriesVisible), marginLeft: "2%" }}>
+                            <Button color="inherit">
+                                Deliveries
                             </Button>
                         </Link>
                         <Link variant="h6" underline="none" href="/packages" style={{ display: isVisible(isPackagesVisible), marginLeft: "2%" }}>
