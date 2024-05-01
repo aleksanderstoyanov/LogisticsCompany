@@ -20,6 +20,7 @@ namespace LogisticsCompany.Data.Seeders
             await SeedPackageStatuses();
             await SeedOffices();
             await SeedUsers();
+            await SeedDeliveries();
             await SeedPackages();
         }
 
@@ -108,6 +109,18 @@ namespace LogisticsCompany.Data.Seeders
             }
         }
 
+        private async Task SeedDeliveries()
+        {
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
+            {
+                var table = "Deliveries";
+
+                if (!Exists(table))
+                {
+                    await sqlConnection.ExecuteAsync(InsertCommand(table, "'2024-12-25'", "NULL"));
+                }
+            }
+        }
         private async Task SeedPackages()
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
@@ -116,7 +129,7 @@ namespace LogisticsCompany.Data.Seeders
 
                 if (!Exists(table))
                 {
-                    await sqlConnection.ExecuteAsync(InsertCommand(table, "2", "3", "1", "1", "'Pesholandiq 12'", "0", "12.1"));
+                    await sqlConnection.ExecuteAsync(InsertCommand(table, "2", "3", "1", "1", "1", "'Pesholandiq 12'", "0", "12.1"));
                 }
             }
 

@@ -19,6 +19,7 @@ namespace LogisticsCompany.Data.Initializers
         {
             await InitRoles();
             await InitPackageStatuses();
+            await InitDeliveries();
             await InitOffices();
             await InitUsers();
             await InitPackages();
@@ -53,9 +54,11 @@ namespace LogisticsCompany.Data.Initializers
                     ToId INT NULL,
                     PackageStatusId INT NULL,
                     OfficeId INT NULL,
+                    DeliveryId INT NULL,
                     Address NVARCHAR(MAX) NOT NULL,
                     ToOffice BIT,
                     Weight INT,
+                    {ForeignKeyConstraint("fk_package_delivery", "DeliveryId", "dbo.Deliveries", "Id")} ON DELETE SET NULL,
                     {ForeignKeyConstraint("fk_package_office", "OfficeId", "dbo.Offices", "Id")} ON DELETE SET NULL,
                     {ForeignKeyConstraint("fk_from", "FromId", "dbo.Users", "Id")} ON DELETE NO ACTION,
                     {ForeignKeyConstraint("fk_to", "ToId", "dbo.Users", "Id")} ON DELETE NO ACTION,
@@ -118,6 +121,23 @@ namespace LogisticsCompany.Data.Initializers
                          Id INT NOT NULL PRIMARY KEY IDENTITY (1, 1),
                          Address NVARCHAR(MAX),
                          PricePerWeight DECIMAL(10,2)
+                      )
+                      """;
+
+                await connection.ExecuteAsync(sql);
+            }
+        }
+
+        private async Task InitDeliveries()
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var sql = """
+                      IF OBJECT_ID('Deliveries', 'U') IS NULL
+                      CREATE TABLE Deliveries(
+                         Id INT NOT NULL PRIMARY KEY IDENTITY (1, 1),
+                         StartDate DATE NOT NULL,
+                         EndDate DATE NULL
                       )
                       """;
 
