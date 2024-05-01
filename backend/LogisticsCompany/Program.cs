@@ -4,6 +4,7 @@ using LogisticsCompany.Data.Factory;
 using LogisticsCompany.Mapping.Profiles;
 using LogisticsCompany.Services;
 using LogisticsCompany.Services.Contracts;
+using LogisticsCompany.Services.Deliveries;
 using LogisticsCompany.Services.Offices;
 using LogisticsCompany.Services.Package;
 using LogisticsCompany.Services.Packages;
@@ -38,6 +39,7 @@ builder.Services.AddTransient<IOfficeService, OfficeService>();
 builder.Services.AddTransient<IPackageStatusService, PackageStatusService>();
 builder.Services.AddTransient<IPackageService, PackageService>();
 builder.Services.AddTransient<IReportService, ReportService>();
+builder.Services.AddTransient<IDeliveryService, DeliveryService>();
 
 
 // Register JWT Services
