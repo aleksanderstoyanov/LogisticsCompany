@@ -13,6 +13,9 @@ namespace LogisticsCompany.Services.Dto
         public int FromId { get; set; }
         public int ToId { get; set; }
         public string PackageStatusName { get; set; }
+
+        public int DeliveryId { get; set; }
+
         public int OfficeId { get; set; }
         public double Weight { get; set; }
         public bool ToOffice { get; set; }

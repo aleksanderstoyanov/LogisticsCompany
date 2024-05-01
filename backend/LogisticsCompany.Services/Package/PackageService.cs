@@ -35,6 +35,7 @@ namespace LogisticsCompany.Services.Packages
                         dto.ToId != null ? dto.ToId.ToString() : "NULL",
                         "1", // PackageStatusID
                         dto.OfficeId != null ? dto.OfficeId.ToString() : "NULL",
+                        "NULL", // DeliveryId
                         $"'{dto.Address}'",
                         dto.ToOffice ? "1" : "0",
                         dto.Weight.ToString().Replace(",", ".")
@@ -53,6 +54,7 @@ namespace LogisticsCompany.Services.Packages
             {
                 {"FromId", dto.FromId != null ?  dto.FromId.ToString() : "NULL" },
                 {"ToId", dto.ToId != null ?  dto.ToId.ToString() : "NULL"},
+                {"DeliveryId", dto.DeliveryId != null ?  dto.DeliveryId.ToString() : "NULL"},
                 {"Address", $"{dto.Address}"},
                 {"PackageStatusId", packageStatusId != null ? packageStatusId.Value.ToString() :  "NULL"},
                 {"ToOffice", dto.ToOffice ? "1": "0"},
@@ -135,17 +137,48 @@ namespace LogisticsCompany.Services.Packages
                 .Descriptors(descriptors =>
                 {
                     descriptors.Add(descriptor => descriptor
-                        .Field("Id")
+                        .Field("package.Id")
                         .FieldValue(id)
                         .EqualityOperator(EqualityOperator.EQUALS)
                     );
                 });
 
+            var joinClauseDescriptorContainer = new ClauseDescriptorContainer();
+
+            joinClauseDescriptorContainer.Descriptors(descriptors =>
+            {
+                descriptors.Add(descriptor => descriptor
+                    .Field("status.Id")
+                    .FieldValue("package.PackageStatusId")
+                    .EqualityOperator(EqualityOperator.EQUALS)
+                );
+            });
+
             using (var connection = new SqlConnection(_connectionString))
             {
                 var query = new SqlQueryBuilder()
-                    .Select(columns: "*")
-                    .From(table: "Packages")
+                   .Select(
+                        columns:
+                        new string[]
+                        {
+                            "package.Id",
+                            "package.Address",
+                            "package.FromId",
+                            "package.ToId",
+                            "package.DeliveryId",
+                            "package.OfficeId",
+                            "package.Weight",
+                            "package.PackageStatusId",
+                            "status.Name as PackageStatusName"
+                        }
+                     )
+                    .From(table: "Packages", @as: "package")
+                    .Join(
+                        joinOperator: JoinOperator.INNER,
+                        table: "PackageStatuses",
+                        container: joinClauseDescriptorContainer,
+                        @as: "status"
+                    )
                     .Where(clauseDescriptorContainer)
                     .ToQuery();
 
@@ -178,6 +211,8 @@ namespace LogisticsCompany.Services.Packages
                         "package.Id",
                         "package.Address",
                         "package.FromId",
+                        "package.DeliveryId",
+                        "package.OfficeId",
                         "package.ToId",
                         "package.Weight",
                         "package.PackageStatusId",

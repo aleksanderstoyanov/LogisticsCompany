@@ -11,6 +11,8 @@ namespace LogisticsCompany.Request
         public string Address { get; set; }
         public int? FromId { get; set; }
 
+        public int? DeliveryId { get; set; }
+
         [Required]
         public int OfficeId { get; set; }
         public string? PackageStatusName { get; set; }
