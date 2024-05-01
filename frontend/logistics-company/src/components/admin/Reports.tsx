@@ -16,7 +16,8 @@ export default function Reports() {
 
     const [employees, setEmployees] = useState<UserModel[]>([]);
     const [clients, setClients] = useState<UserModel[]>([]);
-    const [packages, setPackages] = useState<PackageModel[]>([]);
+    const [registeredPackages, setRegisteredPackages] = useState<PackageModel[]>([]);
+    const [nonDeliveredPackages, setNonDeliveredPackages] = useState<PackageModel[]>([]);
     const [detailsFor, setDetailsFor] = useState<string>("None");
 
     const [open, setOpen] = useState<boolean>(false);
@@ -57,10 +58,16 @@ export default function Reports() {
                                 setClients(data);
                             }
                             break;
-                        case "Packages":
-                            if (packages.length == 0 && data.length > 0) {
-                                setPackages(data)
+                        case "RegisteredPackages":
+                            if (registeredPackages.length == 0 && data.length > 0) {
+                                setRegisteredPackages(data)
                             }
+                            break;
+                        case "NonDeliveredPackages":
+                            if (nonDeliveredPackages.length == 0 && data.length > 0) {
+                                setNonDeliveredPackages(data);
+                            }
+                            break;
                     }
 
                     setOpen(true);
@@ -78,8 +85,10 @@ export default function Reports() {
                 return <UserReportDetails users={employees} detailsFor={detailsFor} />
             case "Clients":
                 return <UserReportDetails users={clients} detailsFor={detailsFor} />
-            case "Packages":
-                return <PackageReportDetails packages={packages} />
+            case "RegisteredPackages":
+                return <PackageReportDetails packages={registeredPackages} />
+            case "NonDeliveredPackages":
+                return <PackageReportDetails packages={nonDeliveredPackages} />
         }
 
     }
@@ -104,6 +113,9 @@ export default function Reports() {
                     </Link>
                     <Link variant="h6" underline="hover" href={`${API_URL}/Reports/AllRegisteredPackages`} onClick={onClick} sx={{ marginLeft: "5%" }}>
                         All Registered Packages
+                    </Link>
+                    <Link variant="h6" underline="hover" href={`${API_URL}/Reports/AllInDeliveryPackages`} onClick={onClick} sx={{ marginLeft: "5%" }}>
+                        All In Delivery Packages
                     </Link>
                 </Typography>
                 <Modal
