@@ -32,8 +32,8 @@ namespace LogisticsCompany.Controllers
                 return Unauthorized();
             }
 
-            return Ok(new 
-            { 
+            return Ok(new
+            {
                 Data = employees,
                 DataFor = "Employees"
             });
@@ -47,8 +47,8 @@ namespace LogisticsCompany.Controllers
             var clients = await _reportService.GetAllClients();
 
             var header = HttpContext.Request.Headers["Authorization"];
-            
-            if(!AuthorizationRequestHelper.IsAuthorized("Admin", header))
+
+            if (!AuthorizationRequestHelper.IsAuthorized("Admin", header))
             {
                 return Unauthorized();
             }
@@ -69,7 +69,7 @@ namespace LogisticsCompany.Controllers
 
             var header = HttpContext.Request.Headers["Authorization"];
 
-            if(!AuthorizationRequestHelper.IsAuthorized("Admin", header))
+            if (!AuthorizationRequestHelper.IsAuthorized("Admin", header))
             {
                 return Unauthorized();
             }
@@ -77,7 +77,27 @@ namespace LogisticsCompany.Controllers
             return Ok(new
             {
                 Data = packages,
-                DataFor = "Packages"
+                DataFor = "RegisteredPackages"
+            });
+        }
+
+        [HttpGet]
+        [Route("allInDeliveryPackages")]
+        public async Task<IActionResult> GetAllNonDeliveredPackages()
+        {
+            var header = HttpContext.Request.Headers["Authorization"];
+
+            if (!AuthorizationRequestHelper.IsAuthorized("Admin", header))
+            {
+                return Unauthorized();
+            }
+
+            var packages = await _reportService.GetAllInDeliveryPackages();
+
+            return Ok(new
+            {
+                Data = packages,
+                DataFor = "NonDeliveredPackages",
             });
         }
     }

@@ -125,5 +125,12 @@ namespace LogisticsCompany.Services.Reports
             }
 
         }
+
+        public async Task<IEnumerable<PackageReportDto>> GetAllInDeliveryPackages()
+        {
+            var packages = await GetAllRegisteredPackages();
+
+            return packages.Where(package => package.PackageStatusName == "InDelivery");
+        }
     }
 }
