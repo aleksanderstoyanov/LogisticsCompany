@@ -68,6 +68,7 @@ export default function OfficePanel() {
               if (row.id === newRow.id) {
                 row.id = response.data.id;
                 row.address = newRow.address;
+                row.pricePerWeight = newRow.pricePerWeight;
                 return row;
               }
               else {
@@ -121,6 +122,7 @@ export default function OfficePanel() {
   let columns = new ColumnContainer()
     .Add("id", "ID", 200, false)
     .Add("address", "Address", 200, true)
+    .Add("pricePerWeight", "Price Per Weight", 200, true, "number")
     .GetColumns();
 
   columns.push(
