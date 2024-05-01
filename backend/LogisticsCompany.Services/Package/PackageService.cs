@@ -14,11 +14,13 @@ namespace LogisticsCompany.Services.Packages
     public class PackageService : BaseService, IPackageService
     {
         private readonly IPackageStatusService _packageStatusService;
+        private readonly IOfficeService _officeService;
 
-        public PackageService(LogisticsCompanyContext dbContext, IPackageStatusService packageStatusService) :
+        public PackageService(LogisticsCompanyContext dbContext, IPackageStatusService packageStatusService, IOfficeService officeService) :
             base(dbContext)
         {
             this._packageStatusService = packageStatusService;
+            this._officeService = officeService;
         }
 
         public async Task Create(PackageDto dto)
@@ -31,7 +33,8 @@ namespace LogisticsCompany.Services.Packages
                     {
                         dto.FromId != null ? dto.FromId.ToString() : "NULL",
                         dto.ToId != null ? dto.ToId.ToString() : "NULL",
-                        "1",
+                        "1", // PackageStatusID
+                        dto.OfficeId != null ? dto.OfficeId.ToString() : "NULL",
                         $"'{dto.Address}'",
                         dto.ToOffice ? "1" : "0",
                         dto.Weight.ToString().Replace(",", ".")

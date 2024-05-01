@@ -10,6 +10,9 @@ namespace LogisticsCompany.Request
         [Required]
         public string Address { get; set; }
         public int? FromId { get; set; }
+
+        [Required]
+        public int OfficeId { get; set; }
         public string? PackageStatusName { get; set; }
         public int? ToId { get; set; }
 

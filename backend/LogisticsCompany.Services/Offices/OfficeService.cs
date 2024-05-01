@@ -119,7 +119,7 @@ namespace LogisticsCompany.Services.Offices
                 var command = SqlCommandHelper.InsertCommand
                 (
                     table: "Offices",
-                    values: new[] { $"'{dto.Address}'" }
+                    values: new[] { $"'{dto.Address}'", $"'{dto.PricePerWeight}'" }
                 );
 
                 await connection.ExecuteAsync(command);
