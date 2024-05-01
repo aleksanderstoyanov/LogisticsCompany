@@ -5,6 +5,7 @@
         public int Id { get; set; }
         public int FromId { get; set; }
         public int ToId { get; set; }
+        public int DeliveryId { get; set; }
         public int PackageStatusId { get; set; }
         public int OfficeId { get; set; }
         public decimal Price { get; set; }
