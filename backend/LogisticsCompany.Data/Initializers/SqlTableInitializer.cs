@@ -52,9 +52,11 @@ namespace LogisticsCompany.Data.Initializers
                     FromId INT NULL,
                     ToId INT NULL,
                     PackageStatusId INT NULL,
+                    OfficeId INT NULL,
                     Address NVARCHAR(MAX) NOT NULL,
                     ToOffice BIT,
                     Weight INT,
+                    {ForeignKeyConstraint("fk_package_office", "OfficeId", "dbo.Offices", "Id")} ON DELETE SET NULL,
                     {ForeignKeyConstraint("fk_from", "FromId", "dbo.Users", "Id")} ON DELETE NO ACTION,
                     {ForeignKeyConstraint("fk_to", "ToId", "dbo.Users", "Id")} ON DELETE NO ACTION,
                     {ForeignKeyConstraint("fk_packageStatus", "PackageStatusId", "dbo.PackageStatuses", "Id")} ON DELETE SET NULL
@@ -114,7 +116,8 @@ namespace LogisticsCompany.Data.Initializers
                       IF OBJECT_ID('Offices', 'U') IS NULL
                       CREATE TABLE Offices(
                          Id INT NOT NULL PRIMARY KEY IDENTITY (1, 1),
-                         Address NVARCHAR(MAX)
+                         Address NVARCHAR(MAX),
+                         PricePerWeight DECIMAL(10,2)
                       )
                       """;
 
