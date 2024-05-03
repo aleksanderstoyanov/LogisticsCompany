@@ -1,4 +1,6 @@
 ﻿using LogisticsCompany.Helpers;
+using LogisticsCompany.Request;
+using LogisticsCompany.Response;
 using LogisticsCompany.Services;
 using LogisticsCompany.Services.Contracts;
 using Microsoft.AspNetCore.Authorization;
@@ -82,6 +84,7 @@ namespace LogisticsCompany.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         [Route("allInDeliveryPackages")]
         public async Task<IActionResult> GetAllNonDeliveredPackages()
         {
@@ -99,6 +102,32 @@ namespace LogisticsCompany.Controllers
                 Data = packages,
                 DataFor = "NonDeliveredPackages",
             });
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("getIncomesForPeriod")]
+        public async Task<IActionResult> GetIncomesForPeriod([FromQuery] DateTime startPeriod, [FromQuery] DateTime endPeriod)
+        {
+            var header = HttpContext.Request.Headers["Authorization"];
+
+            if (!AuthorizationRequestHelper.IsAuthorized("Admin", header))
+            {
+                return Unauthorized();
+            }
+
+            if (startPeriod > endPeriod)
+            {
+                return BadRequest("Start Period should be less than End Period!");
+            }
+
+            var income = await _reportService.GetIncomeForPeriod(startPeriod, endPeriod);
+
+            return Ok(new ReportIncomeResponseModel
+            {
+                Income = income
+            });
+
         }
     }
 }
