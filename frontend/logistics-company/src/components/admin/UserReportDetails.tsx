@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Divider, List, ListItem, ListItemAvatar, ListItemIcon, ListItemText, Typography } from "@mui/material";
 import BadgeIcon from '@mui/icons-material/Badge';
 import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
-import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import { getRandomInt } from '../../util/Common';
 
 export default function UserReportDetails(props: any) {

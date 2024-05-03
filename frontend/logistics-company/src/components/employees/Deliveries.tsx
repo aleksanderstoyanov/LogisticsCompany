@@ -70,14 +70,14 @@ export default function Deliveries() {
             field: 'actions',
             type: 'actions',
             headerName: 'Actions',
-            width: 200,
+            width: 300,
             cellClassName: 'actions',
             getActions: ({ id }) => {
                 const row = rows.find(row => row.id == id);
 
                 if (row.endDate != null) {
                     return [
-                        <Typography variant="h5">
+                        <Typography variant="h6">
                             Delivery has finished!
                         </Typography>
                     ]
