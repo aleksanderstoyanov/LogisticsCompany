@@ -2,10 +2,12 @@
 using LogisticsCompany.Data;
 using LogisticsCompany.Data.Builders;
 using LogisticsCompany.Data.Common;
+using LogisticsCompany.Data.Entity;
 using LogisticsCompany.Services.Contracts;
 using LogisticsCompany.Services.Dto;
 using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
+using System.ComponentModel.Design;
 
 namespace LogisticsCompany.Services.Reports
 {
@@ -131,6 +133,77 @@ namespace LogisticsCompany.Services.Reports
             var packages = await GetAllRegisteredPackages();
 
             return packages.Where(package => package.PackageStatusName == "InDelivery");
+        }
+
+        public async Task<decimal> GetIncomeForPeriod(DateTime startPeriod, DateTime endPeriod)
+        {
+            var startPeriodParsed = DateOnly.FromDateTime(startPeriod);
+            var endPeriodParsed = DateOnly.FromDateTime(endPeriod);
+
+            var officeClauseContainer = new ClauseDescriptorContainer()
+                .Descriptors(descriptors =>
+                {
+                    descriptors.Add(descriptor => descriptor
+                        .Field("package.OfficeId")
+                        .FieldValue("office.Id")
+                        .EqualityOperator(EqualityOperator.EQUALS)
+                    );
+                });
+
+            var deliveryClauseContainer = new ClauseDescriptorContainer()
+                .Descriptors(descriptors =>
+                {
+                    descriptors.Add(descriptor => descriptor
+                        .Field("package.DeliveryId")
+                        .FieldValue("delivery.Id")
+                        .EqualityOperator(EqualityOperator.EQUALS)
+                    );
+                });
+
+            var clauseDescriptorContaier = new ClauseDescriptorContainer()
+                .Descriptors(descriptors =>
+                {
+                    descriptors.Add(descriptor => descriptor
+                        .Field("delivery.EndDate")
+                        .FieldValue($"{startPeriodParsed.Year}-{startPeriodParsed.Month}-{startPeriodParsed.Day}")
+                        .EqualityOperator(EqualityOperator.GREATER_THAN_AND_EQUALS)
+                        .LogicalOperator(LogicalOperator.AND)
+                    );
+
+                    descriptors.Add(descriptor => descriptor
+                        .Field("delivery.EndDate")
+                        .FieldValue($"{endPeriodParsed.Year}-{endPeriodParsed.Month}-{endPeriodParsed.Day}")
+                        .EqualityOperator(EqualityOperator.LESSER_THAN_AND_EQUALS)
+                    );
+
+                });
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var query = new SqlQueryBuilder()
+                    .Select(columns: "SUM(office.PricePerWeight * package.Weight) AS TotalPrice")
+                    .From(table: "Packages", @as: "package")
+                    .Join
+                    (
+                        joinOperator: JoinOperator.INNER,
+                        table: "Offices",
+                        container: officeClauseContainer,
+                        @as: "office"
+                    )
+                    .Join(
+                        joinOperator: JoinOperator.INNER,
+                        table: "Deliveries",
+                        container: deliveryClauseContainer,
+                        @as: "delivery"
+                    )
+                    .Where(clauseDescriptorContaier)
+                    .ToQuery();
+
+
+                var result = await connection.QuerySingleOrDefaultAsync<IncomeAggregateModel>(query);
+
+                return result.TotalPrice;
+            }
         }
     }
 }

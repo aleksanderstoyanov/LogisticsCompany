@@ -8,5 +8,7 @@ namespace LogisticsCompany.Services.Contracts
         Task<IEnumerable<UserDto>> GetAllEmployees();
         Task<IEnumerable<PackageReportDto>> GetAllRegisteredPackages();
         Task<IEnumerable<PackageReportDto>> GetAllInDeliveryPackages();
+        Task<decimal> GetIncomeForPeriod(DateTime startPeriod, DateTime endPeriod);
+
     }
 }
