@@ -186,7 +186,7 @@ namespace LogisticsCompany.Data.Seeders
 
                 if (!Exists(table))
                 {
-                    await sqlConnection.ExecuteAsync(InsertCommand(table, "'2024-12-25'", "NULL"));
+                    await sqlConnection.ExecuteAsync(InsertCommand(table, "'2024-05-01'", "NULL"));
                 }
             }
         }
