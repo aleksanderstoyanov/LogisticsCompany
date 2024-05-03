@@ -1,7 +1,7 @@
 import { Divider, List, ListItem, ListItemIcon, ListItemText, Typography } from "@mui/material";
 import Inventory2Icon from '@mui/icons-material/Inventory2';
 import React from "react";
-import { PackageStatusReportModel } from "../../models/PackageStatusReportModel";
+import { PackageStatusReportModel } from "../../../models/PackageStatusReportModel";
 
 export default function PackageReportDetails(props: any) {
     return (

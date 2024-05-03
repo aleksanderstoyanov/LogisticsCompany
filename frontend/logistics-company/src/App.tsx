@@ -8,13 +8,13 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import '../../logistics-company/src/styles/App.css';
-import AdminPanel from './components/admin/AdminPanel';
-import OfficePanel from './components/admin/OfficePanel';
+import AdminPanel from './components/admin/panels/AdminPanel';
+import OfficePanel from './components/admin/panels/OfficePanel';
 import Offices from './components/clients/Offices';
 import Packages from './components/employees/Packages';
 import ReceivedPackagesPanel from './components/clients/ReceivedPackagesPanel';
 import SentPackagesPanel from './components/clients/SentPackagesPanel';
-import Reports from './components/admin/Reports';
+import Reports from './components/admin/reports/Reports';
 import Deliveries from './components/employees/Deliveries';
 
 const darkTheme = createTheme({

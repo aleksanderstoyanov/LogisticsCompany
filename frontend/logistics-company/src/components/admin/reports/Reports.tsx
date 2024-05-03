@@ -1,12 +1,12 @@
 import { Box, Link, Modal, Typography } from "@mui/material";
-import { API_URL, MODAL_STYLE } from "../../util/Constants";
+import { API_URL, MODAL_STYLE } from "../../../util/Constants";
 import { Component, SyntheticEvent, useEffect, useState } from "react";
 import axios from "axios";
-import { isAuthorized, isAuthorizedForRole } from "../../util/AuthorizationHelper";
-import Unauthorized from "../auth/Unauthorized";
+import { isAuthorized, isAuthorizedForRole } from "../../../util/AuthorizationHelper";
+import Unauthorized from "../../auth/Unauthorized";
 import { jwtDecode } from "jwt-decode";
-import { UserModel } from "../../models/UserModel";
-import PackageModel from "../../models/PackageModel";
+import { UserModel } from "../../../models/UserModel";
+import PackageModel from "../../../models/PackageModel";
 import CloseIcon from '@mui/icons-material/Close';
 import UserReportDetails from "./UserReportDetails";
 import PackageReportDetails from "./PackageReportDetails";
@@ -136,7 +136,6 @@ export default function Reports() {
                     <Link variant="h6" underline="hover" sx={{ marginLeft: "5%", cursor: "pointer" }} onClick={onClick}>
                         Incomes
                     </Link>
-
                 </Typography>
                 <Modal
                     open={open}
@@ -147,7 +146,7 @@ export default function Reports() {
                         <CloseIcon onClick={handleClose} sx={{
                             float: "right",
                             cursor: "pointer"
-                        }}>
+                        }}>9
                         </CloseIcon>
                         {renderReportDetails()}
                     </Box>

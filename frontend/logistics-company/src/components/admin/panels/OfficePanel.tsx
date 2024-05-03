@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { UserModel } from "../../models/UserModel";
+import { UserModel } from "../../../models/UserModel";
 import { jwtDecode } from "jwt-decode";
 import { Box, Button, Typography } from "@mui/material";
 import { DataGrid, GridActionsCellItem, GridColDef, GridEventListener, GridRowEditStopReasons, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridRowsProp, GridSlots, GridToolbarContainer } from "@mui/x-data-grid";
@@ -9,11 +9,11 @@ import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
 import axios from "axios";
-import { ColumnContainer } from "../../util/ColumnContainer";
-import { isAuthorized, isAuthorizedForRole } from "../../util/AuthorizationHelper";
-import { API_URL, DEFAULT_USER_EMAIL, DEFAULT_USER_ID, DEFAULT_USER_Role, GRID_BOX_STYLE } from "../../util/Constants";
-import { deepEqual, getRandomInt } from "../../util/Common";
-import Unauthorized from "../auth/Unauthorized";
+import { ColumnContainer } from "../../../util/ColumnContainer";
+import { isAuthorized, isAuthorizedForRole } from "../../../util/AuthorizationHelper";
+import { API_URL, DEFAULT_USER_EMAIL, DEFAULT_USER_ID, DEFAULT_USER_Role, GRID_BOX_STYLE } from "../../../util/Constants";
+import { deepEqual, getRandomInt } from "../../../util/Common";
+import Unauthorized from "../../auth/Unauthorized";
 
 export default function OfficePanel() {
   const [userModel, setUserModel] = useState<UserModel>(
