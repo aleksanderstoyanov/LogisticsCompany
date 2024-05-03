@@ -42,6 +42,19 @@ namespace LogisticsCompany.Data.Seeders
             }
         }
 
+        /// <summary>
+        /// Table Structure
+        /// <code>
+        ///     <table>
+        ///         <th> 
+        ///             Address (NVARCHAR(MAX))
+        ///         </th>
+        ///         <th> 
+        ///             PricePerWeight (DECIMAL(10, 2))
+        ///         </th>
+        ///     </table>
+        /// </code>
+        /// </summary>
         private async Task SeedOffices()
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
@@ -56,6 +69,29 @@ namespace LogisticsCompany.Data.Seeders
             }
         }
 
+        /// <summary>
+        /// Table Structure
+        /// <code>
+        ///     <table>
+        ///         <th> 
+        ///             Username (NVARCHAR(MAX))
+        ///         </th>
+        ///         <th> 
+        ///             FirstName (NVARCHAR(MAX))
+        ///         </th>
+        ///         <th> 
+        ///             LastName (NVARCHAR(MAX))
+        ///         </th>
+        ///         <th>
+        ///             Email (NVARCHAR(MAX))
+        ///         </th>
+        ///         <th> 
+        ///             RoleId Fk (INT) NULL 
+        ///             (1 - None; 2 - OfficeEmployee; 3 - Courier; 4 - Client 5 - Admin)
+        ///         </th>
+        ///     </table>
+        /// </code>
+        /// </summary>
         private async Task SeedUsers()
         {
 
@@ -75,6 +111,16 @@ namespace LogisticsCompany.Data.Seeders
             }
         }
 
+        /// <summary>
+        /// Table Structure
+        /// <code>
+        ///     <table>
+        ///         <th> 
+        ///             Name (NVARCHAR(MAX))
+        ///         </th>
+        ///     </table>
+        /// </code>
+        /// </summary>
         private async Task SeedRoles()
         {
 
@@ -93,6 +139,16 @@ namespace LogisticsCompany.Data.Seeders
             }
         }
 
+        /// <summary>
+        /// Table Structure
+        /// <code>
+        ///     <table>
+        ///         <th> 
+        ///             Name (NVARCHAR(MAX))
+        ///         </th>
+        ///     </table>
+        /// </code>
+        /// </summary>
         private async Task SeedPackageStatuses()
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
@@ -109,6 +165,19 @@ namespace LogisticsCompany.Data.Seeders
             }
         }
 
+        /// <summary>
+        /// Table Structure
+        /// <code>
+        ///      <table>
+        ///          <th> 
+        ///              StartDate (DATE)
+        ///          </th>
+        ///          <th>
+        ///              EndDate (DATE)    
+        ///          </th>
+        ///      </table>
+        /// </code>
+        /// </summary>
         private async Task SeedDeliveries()
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
@@ -121,6 +190,40 @@ namespace LogisticsCompany.Data.Seeders
                 }
             }
         }
+
+
+        /// <summary>
+        /// Table Structure
+        /// <code>
+        ///      <table>
+        ///          <th> 
+        ///              FromId FK(INT) NULL
+        ///          </th>
+        ///          <th> 
+        ///              ToId FK(INT) NULL
+        ///          </th>
+        ///          <th> 
+        ///              PackageStatusId FK(INT) NULL
+        ///              (1 - NonRegistered; 2 - Registered; 3 - InDelivery; 4 - Delivered)
+        ///          </th>
+        ///          <th>
+        ///              OfficeId FK(INT) NULL
+        ///          </th>
+        ///          <th>
+        ///              DeliveryId FK(INT) NULL
+        ///          </th>
+        ///          <th> 
+        ///              Address (NVARCHAR(MAX))
+        ///          </th>
+        ///          <th>
+        ///              ToOffice (BIT)
+        ///          </th>
+        ///           <th>
+        ///              WEIGHT (INT)
+        ///          </th>
+        ///      </table>
+        /// </code>
+        /// </summary>
         private async Task SeedPackages()
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
