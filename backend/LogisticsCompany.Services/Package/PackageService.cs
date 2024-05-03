@@ -27,7 +27,7 @@ namespace LogisticsCompany.Services.Packages
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                var command = SqlCommandHelper.InsertCommand(
+                var command = InsertCommand(
                     table: "Packages",
                     values: new string[]
                     {
@@ -236,7 +236,7 @@ namespace LogisticsCompany.Services.Packages
             }
         }
 
-        public async Task<IEnumerable<PackageDto>> GetReceivedPackages(int id)
+        public async Task<IEnumerable<SentReceivedPackageDto>> GetReceivedPackages(int id)
         {
             var clauseDescriptorContainer = new ClauseDescriptorContainer();
 
@@ -250,14 +250,34 @@ namespace LogisticsCompany.Services.Packages
                     );
                 });
 
-            var joinClauseDescriptorContainer = new ClauseDescriptorContainer();
+            var packageStatusClauseContainer = new ClauseDescriptorContainer();
 
-            joinClauseDescriptorContainer
+            packageStatusClauseContainer
                 .Descriptors(descriptors =>
                 {
                     descriptors.Add(descriptor => descriptor
                         .Field("status.Id")
                         .FieldValue("package.PackageStatusId")
+                        .EqualityOperator(EqualityOperator.EQUALS)
+                    );
+                });
+
+            var toClauseContainer = new ClauseDescriptorContainer()
+                .Descriptors(descriptors =>
+                {
+                    descriptors.Add(descriptor => descriptor
+                        .Field("package.ToId")
+                        .FieldValue("toUser.Id")
+                        .EqualityOperator(EqualityOperator.EQUALS)
+                    );
+                });
+
+            var fromClauseContainer = new ClauseDescriptorContainer()
+                .Descriptors(descriptors =>
+                {
+                    descriptors.Add(descriptor => descriptor
+                        .Field("package.FromId")
+                        .FieldValue("fromUser.Id")
                         .EqualityOperator(EqualityOperator.EQUALS)
                     );
                 });
@@ -273,6 +293,8 @@ namespace LogisticsCompany.Services.Packages
                         "package.Address",
                         "package.Weight",
                         "package.ToOffice",
+                        "CONCAT(toUser.FirstName,' ',toUser.LastName) AS ToUser",
+                        "CONCAT(fromUser.FirstName, ' ', fromUser.LastName) AS FromUser",
                         "status.Name as PackageStatusName"
                     }
                 )
@@ -281,19 +303,31 @@ namespace LogisticsCompany.Services.Packages
                 (
                     joinOperator: JoinOperator.INNER,
                     table: "PackageStatuses",
-                    container: joinClauseDescriptorContainer,
+                    container: packageStatusClauseContainer,
                     @as: "status"
+                )
+                .Join(
+                    joinOperator: JoinOperator.INNER,
+                    table: "Users",
+                    container: toClauseContainer,
+                    @as: "toUser"
+                 )
+                .Join(
+                    joinOperator: JoinOperator.INNER,
+                    table: "Users",
+                    container: fromClauseContainer,
+                    @as: "fromUser"
                 )
                 .Where(clauseDescriptorContainer)
                 .ToQuery();
 
-                var result = await connection.QueryAsync<PackageDto>(query);
+                var result = await connection.QueryAsync<SentReceivedPackageDto>(query);
 
                 return result;
             }
         }
 
-        public async Task<IEnumerable<PackageDto>> GetSentPackages(int id)
+        public async Task<IEnumerable<SentReceivedPackageDto>> GetSentPackages(int id)
         {
             var clauseDescriptorContainer = new ClauseDescriptorContainer();
 
@@ -306,9 +340,9 @@ namespace LogisticsCompany.Services.Packages
                 );
             });
 
-            var joinClauseDescriptorContainer = new ClauseDescriptorContainer();
+            var packageStatusContainer = new ClauseDescriptorContainer();
 
-            joinClauseDescriptorContainer.Descriptors(descriptors =>
+            packageStatusContainer.Descriptors(descriptors =>
             {
                 descriptors.Add(descriptor => descriptor
                     .Field("status.Id")
@@ -316,6 +350,26 @@ namespace LogisticsCompany.Services.Packages
                     .EqualityOperator(EqualityOperator.EQUALS)
                 );
             });
+
+            var fromUserClauseContainer = new ClauseDescriptorContainer()
+                .Descriptors(descriptors =>
+                {
+                    descriptors.Add(descriptor => descriptor
+                        .Field("package.FromId")
+                        .FieldValue("fromUser.Id")
+                        .EqualityOperator(EqualityOperator.EQUALS)
+                    );
+                });
+
+            var toUserClauseDescriptorContainer = new ClauseDescriptorContainer()
+                .Descriptors(descriptors =>
+                {
+                    descriptors.Add(descriptor => descriptor
+                        .Field("package.ToId")
+                        .FieldValue("toUser.Id")
+                        .EqualityOperator(EqualityOperator.EQUALS)
+                    );
+                });
 
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -328,6 +382,8 @@ namespace LogisticsCompany.Services.Packages
                         "package.Address",
                         "package.Weight",
                         "package.ToOffice",
+                        "CONCAT(fromUser.FirstName, ' ', fromUser.LastName) AS FromUser",
+                        "CONCAT(toUser.FirstName, ' ', toUser.LastName) AS ToUser",
                         "status.Name as PackageStatusName"
                     }
                 )
@@ -336,13 +392,25 @@ namespace LogisticsCompany.Services.Packages
                 (
                     joinOperator: JoinOperator.INNER,
                     table: "PackageStatuses",
-                    container: joinClauseDescriptorContainer,
+                    container: packageStatusContainer,
                     @as: "status"
                 )
+                .Join(
+                    joinOperator: JoinOperator.INNER,
+                    table: "Users",
+                    container: fromUserClauseContainer,
+                    @as: "fromUser"
+                 )
+                .Join(
+                    joinOperator: JoinOperator.INNER,
+                    table: "Users",
+                    container: toUserClauseDescriptorContainer,
+                    @as: "toUser"
+                 )
                 .Where(clauseDescriptorContainer)
                 .ToQuery();
 
-                var result = await connection.QueryAsync<PackageDto>(query);
+                var result = await connection.QueryAsync<SentReceivedPackageDto>(query);
 
                 return result;
             }
