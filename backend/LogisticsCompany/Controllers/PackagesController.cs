@@ -45,13 +45,13 @@ namespace LogisticsCompany.Controllers
         {
             var header = HttpContext.Request.Headers["Authorization"];
 
-            if (!IsAuthorized("Client", header))
+            if (!IsAuthorized("Client", header) && !IsAuthorized("Admin", header))
             {
                 return Unauthorized();
             }
 
             var result = await _packageService.GetReceivedPackages(id);
-            var response = _mapper.Map<IEnumerable<PackageDto>, IEnumerable<PackageClientResponseModel>>(result);
+            var response = _mapper.Map<IEnumerable<SentReceivedPackageDto>, IEnumerable<PackageClientResponseModel>>(result);
             return Ok(response);
         }
 
@@ -61,13 +61,13 @@ namespace LogisticsCompany.Controllers
         {
             var header = HttpContext.Request.Headers["Authorization"];
 
-            if(!IsAuthorized("Client", header))
+            if(!IsAuthorized("Client", header) && !IsAuthorized("Admin", header))
             {
                 return Unauthorized();
             }
 
             var result = await _packageService.GetSentPackages(id);
-            var response = _mapper.Map<IEnumerable<PackageDto>, IEnumerable<PackageClientResponseModel>>(result);
+            var response = _mapper.Map<IEnumerable<SentReceivedPackageDto>, IEnumerable<PackageClientResponseModel>>(result);
 
             return Ok(response);
         }

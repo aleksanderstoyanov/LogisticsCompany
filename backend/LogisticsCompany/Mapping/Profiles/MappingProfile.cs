@@ -19,6 +19,7 @@ namespace LogisticsCompany.Mapping.Profiles
             CreateMap<OfficeDto, OfficeResponseModel>();
 
             CreateMap<PackageDto, PackageClientResponseModel>();
+            CreateMap<SentReceivedPackageDto, PackageClientResponseModel>();
             CreateMap<PackageRequestModel, PackageDto>();
 
             CreateMap<DeliveryCreateRequest, DeliveryDto>();
