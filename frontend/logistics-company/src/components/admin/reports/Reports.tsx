@@ -11,6 +11,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import UserReportDetails from "./UserReportDetails";
 import PackageReportDetails from "./PackageReportDetails";
 import IncomesReportDetails from "./IncomesReportDetails";
+import UserPackageDetails from "./UserPackageDetails";
 
 export default function Reports() {
     const jwt = sessionStorage["jwt"];
@@ -80,11 +81,19 @@ export default function Reports() {
                 })
 
         }
-        else{
+        else {
             switch (anchor.text) {
                 case "Incomes":
                     setOpen(true);
                     setDetailsFor("Incomes");
+                    break;
+                case "Received Packages For":
+                    setOpen(true)
+                    setDetailsFor("ReceivedPackages")
+                    break;
+                case "Sent Packages By":
+                    setOpen(true)
+                    setDetailsFor("SentPackages")
                     break;
                 default:
                     break;
@@ -105,6 +114,9 @@ export default function Reports() {
                 return <PackageReportDetails packages={registeredPackages} />
             case "NonDeliveredPackages":
                 return <PackageReportDetails packages={nonDeliveredPackages} />
+            case "ReceivedPackages":
+            case "SentPackages":
+                return <UserPackageDetails detailsFor={detailsFor} />
         }
 
     }
@@ -135,6 +147,12 @@ export default function Reports() {
                     </Link>
                     <Link variant="h6" underline="hover" sx={{ marginLeft: "5%", cursor: "pointer" }} onClick={onClick}>
                         Incomes
+                    </Link>
+                    <Link variant="h6" underline="hover" sx={{ marginLeft: "5%", cursor: "pointer" }} onClick={onClick}>
+                        Received Packages For
+                    </Link>
+                    <Link variant="h6" underline="hover" sx={{ marginLeft: "5%", cursor: "pointer" }} onClick={onClick}>
+                        Sent Packages By
                     </Link>
                 </Typography>
                 <Modal

@@ -4,6 +4,82 @@ import React from "react";
 import { PackageStatusReportModel } from "../../../models/PackageStatusReportModel";
 
 export default function PackageReportDetails(props: any) {
+
+    const detailsFor = props.detailsFor;
+
+    function renderDetailsFor(logisticPackage: any): React.ReactNode {
+        switch (detailsFor) {
+            case "ReceivedPackages":
+                return (
+                    <React.Fragment>
+                        <Typography
+                            sx={{ display: 'block' }}
+                            component="span"
+                            paragraph={true}
+                            variant="body2"
+                            color="text.primary">
+                        </Typography>
+                        {`Address — ${logisticPackage.address}`}
+                        <Typography
+                            sx={{ display: 'block' }}
+                            component="span"
+                            paragraph={true}
+                            variant="body2"
+                            color="text.primary">
+                        </Typography>
+                        {`From — ${logisticPackage.fromUser}`}
+                    </React.Fragment>)
+
+            case "SentPackages":
+                return (
+                    <React.Fragment>
+                        <Typography
+                            sx={{ display: 'block' }}
+                            component="span"
+                            paragraph={true}
+                            variant="body2"
+                            color="text.primary">
+                        </Typography>
+                        {`Address — ${logisticPackage.address}`}
+                        <Typography
+                            sx={{ display: 'block' }}
+                            component="span"
+                            paragraph={true}
+                            variant="body2"
+                            color="text.primary">
+                        </Typography>
+                        {`To — ${logisticPackage.toUser}`}
+                    </React.Fragment>)
+            default:
+                return (
+                    <React.Fragment>
+                        <Typography
+                            sx={{ display: 'block' }}
+                            component="span"
+                            paragraph={true}
+                            variant="body2"
+                            color="text.primary">
+                        </Typography>
+                        {`Address — ${logisticPackage.address}`}
+                        <Typography
+                            sx={{ display: 'block' }}
+                            component="span"
+                            paragraph={true}
+                            variant="body2"
+                            color="text.primary">
+                        </Typography>
+                        {`From — ${logisticPackage.fromUser}`}
+                        <Typography
+                            sx={{ display: 'block' }}
+                            component="span"
+                            paragraph={true}
+                            variant="body2"
+                            color="text.primary">
+                        </Typography>
+                        {`To — ${logisticPackage.toUser}`}
+                    </React.Fragment>)
+        }
+    }
     return (
         <List
             sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
@@ -21,34 +97,7 @@ export default function PackageReportDetails(props: any) {
                             <ListItemText
                                 primary={`Status: ${logisticPackage.packageStatusName}`}
                                 secondary={
-                                    <React.Fragment>
-                                        <Typography
-                                            sx={{ display: 'block' }}
-                                            component="span"
-                                            paragraph={true}
-                                            variant="body2"
-                                            color="text.primary">
-                                            
-                                        </Typography>
-                                            {`Address — ${logisticPackage.address}`}
-                                        <Typography
-                                            sx={{ display: 'block' }}
-                                            component="span"
-                                            paragraph={true}
-                                            variant="body2"
-                                            color="text.primary">
-                                            
-                                        </Typography>
-                                            {`From — ${logisticPackage.fromUser}`}
-                                        <Typography
-                                            sx={{ display: 'block' }}
-                                            component="span"
-                                            paragraph={true}
-                                            variant="body2"
-                                            color="text.primary">
-                                        </Typography>
-                                            {`To — ${logisticPackage.toUser}`}
-                                    </React.Fragment>
+                                    renderDetailsFor(logisticPackage)
                                 }
                             />
                         </ListItem>
