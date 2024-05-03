@@ -14,6 +14,12 @@ export const LOGIN_FORM_IDS = ["email", "password"];
 export const REGISTER_FORM_IDS = ["user", "firstName", "lastName", "email", "password"];
 
 /**
+ * The unique date picker identifiers
+ */
+export const START_PERIOD_ID = "StartPeriod";
+export const END_PERIOD_ID = "EndPeriod";
+
+/**
  * The default values for different models.
  * @constant
  */

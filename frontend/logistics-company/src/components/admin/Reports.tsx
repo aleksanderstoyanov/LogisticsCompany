@@ -10,6 +10,7 @@ import PackageModel from "../../models/PackageModel";
 import CloseIcon from '@mui/icons-material/Close';
 import UserReportDetails from "./UserReportDetails";
 import PackageReportDetails from "./PackageReportDetails";
+import IncomesReportDetails from "./IncomesReportDetails";
 
 export default function Reports() {
     const jwt = sessionStorage["jwt"];
@@ -35,47 +36,60 @@ export default function Reports() {
         var anchor = e.target as HTMLAnchorElement;
         const url = anchor.getAttribute("href") as string;
 
-        axios({
-            method: "GET",
-            url: url,
-            headers: {
-                "Authorization": `Bearer ${jwt}`
-            }
-        })
-            .then((response) => {
-                const data = response.data.data;
-                const dataFor = response.data.dataFor;
+        if (url != null) {
 
-                if (response.status == 200) {
-                    switch (dataFor) {
-                        case "Employees":
-                            if (employees.length == 0 && data.length > 0) {
-                                setEmployees(data);
-                            }
-                            break;
-                        case "Clients":
-                            if (clients.length == 0 && data.length > 0) {
-                                setClients(data);
-                            }
-                            break;
-                        case "RegisteredPackages":
-                            if (registeredPackages.length == 0 && data.length > 0) {
-                                setRegisteredPackages(data)
-                            }
-                            break;
-                        case "NonDeliveredPackages":
-                            if (nonDeliveredPackages.length == 0 && data.length > 0) {
-                                setNonDeliveredPackages(data);
-                            }
-                            break;
+            axios({
+                method: "GET",
+                url: url,
+                headers: {
+                    "Authorization": `Bearer ${jwt}`
+                }
+            })
+                .then((response) => {
+                    const data = response.data.data;
+                    const dataFor = response.data.dataFor;
+
+                    if (response.status == 200) {
+                        switch (dataFor) {
+                            case "Employees":
+                                if (employees.length == 0 && data.length > 0) {
+                                    setEmployees(data);
+                                }
+                                break;
+                            case "Clients":
+                                if (clients.length == 0 && data.length > 0) {
+                                    setClients(data);
+                                }
+                                break;
+                            case "RegisteredPackages":
+                                if (registeredPackages.length == 0 && data.length > 0) {
+                                    setRegisteredPackages(data)
+                                }
+                                break;
+                            case "NonDeliveredPackages":
+                                if (nonDeliveredPackages.length == 0 && data.length > 0) {
+                                    setNonDeliveredPackages(data);
+                                }
+                                break;
+                        }
+
+                        setOpen(true);
+                        setDetailsFor(dataFor);
                     }
 
+                })
+
+        }
+        else{
+            switch (anchor.text) {
+                case "Incomes":
                     setOpen(true);
-                    setDetailsFor(dataFor);
-                }
-
-            })
-
+                    setDetailsFor("Incomes");
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     function renderReportDetails(): any {
@@ -83,6 +97,8 @@ export default function Reports() {
         switch (detailsFor) {
             case "Employees":
                 return <UserReportDetails users={employees} detailsFor={detailsFor} />
+            case "Incomes":
+                return <IncomesReportDetails />
             case "Clients":
                 return <UserReportDetails users={clients} detailsFor={detailsFor} />
             case "RegisteredPackages":
@@ -117,6 +133,10 @@ export default function Reports() {
                     <Link variant="h6" underline="hover" href={`${API_URL}/Reports/AllInDeliveryPackages`} onClick={onClick} sx={{ marginLeft: "5%" }}>
                         All In Delivery Packages
                     </Link>
+                    <Link variant="h6" underline="hover" sx={{ marginLeft: "5%", cursor: "pointer" }} onClick={onClick}>
+                        Incomes
+                    </Link>
+
                 </Typography>
                 <Modal
                     open={open}
