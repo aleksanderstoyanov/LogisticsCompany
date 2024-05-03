@@ -42,8 +42,12 @@ namespace LogisticsCompany.Data.Common
                     return "LIKE";
                 case EqualityOperator.GREATER_THAN:
                     return ">";
+                case EqualityOperator.GREATER_THAN_AND_EQUALS:
+                    return ">=";
                 case EqualityOperator.LESSER_THAN:
                     return "<";
+                case EqualityOperator.LESSER_THAN_AND_EQUALS:
+                    return "<=";
 
                 default:
                     return string.Empty;
