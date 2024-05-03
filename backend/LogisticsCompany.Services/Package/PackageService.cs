@@ -54,7 +54,7 @@ namespace LogisticsCompany.Services.Packages
             {
                 {"FromId", dto.FromId != null ?  dto.FromId.ToString() : "NULL" },
                 {"ToId", dto.ToId != null ?  dto.ToId.ToString() : "NULL"},
-                {"DeliveryId", dto.DeliveryId != null ?  dto.DeliveryId.ToString() : "NULL"},
+                {"DeliveryId", dto.DeliveryId != null && dto.DeliveryId != 0 ?  dto.DeliveryId.ToString() : "NULL"},
                 {"Address", $"{dto.Address}"},
                 {"PackageStatusId", packageStatusId != null ? packageStatusId.Value.ToString() :  "NULL"},
                 {"ToOffice", dto.ToOffice ? "1": "0"},
