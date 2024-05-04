@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using LogisticsCompany.Helpers;
-using LogisticsCompany.Request;
-using LogisticsCompany.Response;
+using LogisticsCompany.Request.Office;
+using LogisticsCompany.Response.Office;
 using LogisticsCompany.Services.Offices.Commands;
 using LogisticsCompany.Services.Offices.Dto;
 using LogisticsCompany.Services.Offices.Queries;

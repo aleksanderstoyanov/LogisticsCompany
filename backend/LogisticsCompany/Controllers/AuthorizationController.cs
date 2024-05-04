@@ -1,13 +1,9 @@
 ﻿using AutoMapper;
-using LogisticsCompany.Entity;
-using LogisticsCompany.Request;
+using LogisticsCompany.Request.Authorization;
 using LogisticsCompany.Services.Authorization;
 using LogisticsCompany.Services.Authorization.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace LogisticsCompany.Controllers
 {

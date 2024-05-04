@@ -1,5 +1,5 @@
 ﻿using LogisticsCompany.Helpers;
-using LogisticsCompany.Response;
+using LogisticsCompany.Response.Report;
 using LogisticsCompany.Services.Reports.Queries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

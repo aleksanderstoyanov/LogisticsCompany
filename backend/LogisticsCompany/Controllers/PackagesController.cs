@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using LogisticsCompany.Request;
-using LogisticsCompany.Response;
+using LogisticsCompany.Request.Package;
+using LogisticsCompany.Response.Package;
 using LogisticsCompany.Services.Package.Commands;
 using LogisticsCompany.Services.Package.Dto;
 using LogisticsCompany.Services.Package.Queries;

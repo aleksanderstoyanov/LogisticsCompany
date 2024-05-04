@@ -1,4 +1,4 @@
-﻿namespace LogisticsCompany.Request
+﻿namespace LogisticsCompany.Request.Report
 {
     public class ReportIncomeRequestModel
     {

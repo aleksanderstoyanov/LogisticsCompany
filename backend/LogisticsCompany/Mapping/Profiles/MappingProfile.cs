@@ -1,6 +1,11 @@
 ﻿using AutoMapper;
-using LogisticsCompany.Request;
-using LogisticsCompany.Response;
+using LogisticsCompany.Request.Authorization;
+using LogisticsCompany.Request.Delivery;
+using LogisticsCompany.Request.Office;
+using LogisticsCompany.Request.Package;
+using LogisticsCompany.Request.User;
+using LogisticsCompany.Response.Office;
+using LogisticsCompany.Response.Package;
 using LogisticsCompany.Services.Authorization.Dto;
 using LogisticsCompany.Services.Dto;
 using LogisticsCompany.Services.Offices.Dto;

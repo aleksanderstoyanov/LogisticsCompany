@@ -1,4 +1,4 @@
-﻿namespace LogisticsCompany.Request
+﻿namespace LogisticsCompany.Request.Delivery
 {
     public class DeliveryUpdateRequest
     {

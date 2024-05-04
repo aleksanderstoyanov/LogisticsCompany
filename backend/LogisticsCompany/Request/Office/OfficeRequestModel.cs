@@ -1,4 +1,4 @@
-﻿namespace LogisticsCompany.Request
+﻿namespace LogisticsCompany.Request.Office
 {
     public class OfficeRequestModel
     {

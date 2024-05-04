@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace LogisticsCompany.Request
+namespace LogisticsCompany.Request.User
 {
     public class UserRequestModel
     {

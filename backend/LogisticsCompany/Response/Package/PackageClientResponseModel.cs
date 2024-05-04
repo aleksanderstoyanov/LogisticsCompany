@@ -1,4 +1,4 @@
-﻿namespace LogisticsCompany.Response
+﻿namespace LogisticsCompany.Response.Package
 {
     public class PackageClientResponseModel
     {
