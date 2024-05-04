@@ -14,8 +14,14 @@ using LogisticsCompany.Services.Users.Dto;
 
 namespace LogisticsCompany.Mapping.Profiles
 {
+    /// <summary>
+    /// Mapping class used for providing a scoped profile of mapping configurations.
+    /// </summary>
     public class MappingProfile : Profile
     {
+        /// <summary>
+        /// Creates a Mapping Profile with defined mappings configurations.
+        /// </summary>
         public MappingProfile()
         {
             CreateMap<RegisterRequestModel, RegisterDto>();

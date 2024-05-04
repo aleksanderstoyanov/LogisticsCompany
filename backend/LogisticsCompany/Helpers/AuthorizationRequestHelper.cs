@@ -3,8 +3,19 @@ using System.IdentityModel.Tokens.Jwt;
 
 namespace LogisticsCompany.Helpers
 {
+    /// <summary>
+    /// Helper class used for performing authorization operations.
+    /// </summary>
     public class AuthorizationRequestHelper
     {
+        /// <summary>
+        /// Method for parsing and verifyng the request header based on passed role.
+        /// </summary>
+        /// <param name="role">The role which will indicate whether current user role.</param>
+        /// <param name="authorizationHeader">The Authorization Header used for gathering the current row.</param>
+        /// <returns>
+        /// <see cref="bool"/> based on whether the current user matches the passed role.
+        /// </returns>
         public static bool IsAuthorized(string role, string authorizationHeader)
         {
             if (authorizationHeader.IsNullOrEmpty())
