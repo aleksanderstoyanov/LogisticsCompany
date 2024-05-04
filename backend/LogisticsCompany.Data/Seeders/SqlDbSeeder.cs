@@ -6,6 +6,9 @@ using Microsoft.Data.SqlClient;
 
 namespace LogisticsCompany.Data.Seeders
 {
+    /// <summary>
+    /// Seeder class used for seeding data to the SQL Database.
+    /// </summary>
     public class SqlDbSeeder : ISeeder
     {
         private readonly string _connectionString;
@@ -14,6 +17,10 @@ namespace LogisticsCompany.Data.Seeders
         {
             this._connectionString = connectionString;
         }
+
+        /// <summary>
+        /// Method used for instatiating seeding operations to existing SQL Tables.
+        /// </summary>
         public async Task Seed()
         {
             await SeedRoles();

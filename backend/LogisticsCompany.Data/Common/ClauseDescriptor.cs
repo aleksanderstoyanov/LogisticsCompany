@@ -2,6 +2,9 @@
 
 namespace LogisticsCompany.Data.Common
 {
+    /// <summary>
+    /// Class for composing a raw WHERE Clause in the Database.
+    /// </summary>
     public class ClauseDescriptor
     {
         public string? Field { get; set; }
@@ -12,16 +15,32 @@ namespace LogisticsCompany.Data.Common
 
         public LogicalOperator? LogicalOperator { get; set; }
 
+        /// <summary>
+        /// Creates an empty <see cref="ClauseDescriptor"/>.instance.
+        /// </summary>
         public ClauseDescriptor()
         {
         }
 
+        /// <summary>
+        /// Creates a <see cref="ClauseDescriptor"/> instance.
+        /// with the passed <paramref name="field"/> and <paramref name="fieldValue"/>.
+        /// </summary>
+        /// <param name="field">The Field which will be used in the WHERE clause.</param>
+        /// <param name="fieldValue">The Field Value which will be used in the WHERE clause.</param>
         public ClauseDescriptor(string field, object fieldValue)
         {
             this.Field = field;
             this.FieldValue = fieldValue;
         }
 
+        /// <summary>
+        /// Creates a <see cref="ClauseDescriptor"> instance.</see>
+        /// </summary>
+        /// <param name="field">The Field which will be used in the WHERE clause.</param>
+        /// <param name="fieldValue">The Field Value which will be used in the WHERE clause</param>
+        /// <param name="logicalOperator">The Logical Operator which will be used in the WHERE clause.</param>
+        /// <param name="equalityOperator">The Equality Operator which will be used in the WHERE clause.</param>
         public ClauseDescriptor(string field, object fieldValue, LogicalOperator logicalOperator, EqualityOperator equalityOperator)
         {
             this.Field = field;
@@ -54,6 +73,13 @@ namespace LogisticsCompany.Data.Common
             }
         }
 
+        /// <summary>
+        /// Method which will compose the raw WHERE clause.
+        /// </summary>
+        /// <param name="isJoinClause">Determines whether the clause will be used in a JOIN Statement.</param>
+        /// <returns>
+        /// The raw WHERE clause.
+        /// </returns>
         public string ToString(bool isJoinClause)
         {
             var result = "";

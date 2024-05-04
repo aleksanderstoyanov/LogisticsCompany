@@ -7,6 +7,9 @@ using static LogisticsCompany.Data.Helpers.SqlConstraintHelper;
 
 namespace LogisticsCompany.Data.Initializers
 {
+    /// <summary>
+    /// Initializer Class used for constructing SQL Table Schemas
+    /// </summary>
     public class SqlTableInitializer : IInitializer
     {
         internal string _connectionString { get; set; }
@@ -15,6 +18,11 @@ namespace LogisticsCompany.Data.Initializers
         {
             _connectionString = connectionString;
         }
+
+        /// <summary>
+        /// Method used for creating SQL Tables.
+        /// </summary>
+        /// <returns></returns>
         public async Task Init()
         {
             await InitRoles();

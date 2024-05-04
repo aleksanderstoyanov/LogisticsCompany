@@ -1,5 +1,8 @@
 ﻿namespace LogisticsCompany.Data.Helpers
 {
+    /// <summary>
+    /// Class used for performing password hasing operations.
+    /// </summary>
     public static class PasswordHasher
     {
         public static string HashPassword(string password)

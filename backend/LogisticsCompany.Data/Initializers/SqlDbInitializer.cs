@@ -4,6 +4,9 @@ using Microsoft.Data.SqlClient;
 
 namespace LogisticsCompany.Data.Initializers
 {
+    /// <summary>
+    /// Initializer Class used for construcing the the LogisticsCompany Database.
+    /// </summary>
     public class SqlDbInitializer : IInitializer
     {
         internal string _connectionString;
@@ -13,6 +16,9 @@ namespace LogisticsCompany.Data.Initializers
             _connectionString = connectionString;
         }
 
+        /// <summary>
+        /// Method used constructing the Database through a newly created SQL Connection.
+        /// </summary>
         public async Task Init()
         {
             using (var connection = new SqlConnection(_connectionString))

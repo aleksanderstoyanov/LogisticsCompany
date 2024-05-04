@@ -4,6 +4,9 @@ using System.Text;
 
 namespace LogisticsCompany.Data.Helpers
 {
+    /// <summary>
+    /// Helper class used for constructing raw SQL commands.
+    /// </summary>
     public static class SqlCommandHelper
     {
         /// <summary>

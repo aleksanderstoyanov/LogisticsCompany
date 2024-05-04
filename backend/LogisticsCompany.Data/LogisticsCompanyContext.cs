@@ -3,10 +3,17 @@ using Microsoft.Extensions.Configuration;
 
 namespace LogisticsCompany.Data
 {
+    /// <summary>
+    /// Class used for creating the Database Context.
+    /// </summary>
     public class LogisticsCompanyContext
     {
         internal IConfiguration _configuration { get; set; }
 
+        /// <summary>
+        /// Creates a <see cref="LogisticsCompanyContext" /> instance with the passed <paramref name="configuration"/>
+        /// </summary>
+        /// <param name="configuration"></param>
         public LogisticsCompanyContext(IConfiguration configuration)
         {
             _configuration = configuration;
@@ -47,6 +54,9 @@ namespace LogisticsCompany.Data
                 .GetResult();
         }
 
+        /// <summary>
+        /// Method that retrieves the connection string from the Application Settings.
+        /// </summary>
         public string GetConnectionString()
                 => _configuration.GetConnectionString("DefaultConnectionString");
     }
