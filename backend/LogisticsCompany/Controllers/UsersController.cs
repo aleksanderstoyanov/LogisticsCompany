@@ -10,6 +10,9 @@ using static LogisticsCompany.Helpers.AuthorizationRequestHelper;
 
 namespace LogisticsCompany.Controllers
 {
+    /// <summary>
+    /// A <see cref="ControllerBase" /> which will handle request made for user operations.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
@@ -18,6 +21,13 @@ namespace LogisticsCompany.Controllers
         private readonly IUserCommandService _commandService;
         private readonly IMapper _mapper;
 
+        /// <summary>
+        /// Creates a <see cref="UsersController" /> instance 
+        /// with the injected <paramref name="mapper"/>, <paramref name="queryService"/>, and <paramref name="commandService"/>
+        /// </summary>
+        /// <param name="mapper">Mapper used for transposing Request to Dto models.</param>
+        /// <param name="queryService">Service used for performing query operations to the database.</param>
+        /// <param name="commandService">Service used for performing command operations to the database.</param>
         public UsersController(IMapper mapper, 
             IUserQueryService queryService,
             IUserCommandService commandService)
@@ -27,6 +37,12 @@ namespace LogisticsCompany.Controllers
             _commandService = commandService;
         }
 
+        /// <summary>
+        /// Action Method which will intercept the incoming GET request for retrieving all users.
+        /// </summary>
+        /// <returns>
+        /// <see cref="ObjectResult"/> for the response.
+        /// </returns>
         [HttpGet]
         [Authorize]
         [Route("getAll")]
@@ -45,6 +61,14 @@ namespace LogisticsCompany.Controllers
             return Ok(users);
         }
 
+        /// <summary>
+        /// Action Method which will intercept the incoming GET request for retrieving all users except one.
+        /// </summary>
+        /// <param name="id">The Query String paramater for the UserId.</param>
+        /// <param name="role">The Query String parameter for the User Role.</param>
+        /// <returns>
+        /// <see cref="ObjectResult"/> for the response.
+        /// </returns>
         [HttpGet]
         [Authorize]
         [Route("getAllExcept")]
@@ -63,6 +87,13 @@ namespace LogisticsCompany.Controllers
 
         }
 
+        /// <summary>
+        /// Action Method which will intercept the incoming PUT request for updating an existing User entity.
+        /// </summary>
+        /// <param name="requestModel">The Model coming from the Request Body</param>
+        /// <returns>
+        /// <see cref="ObjectResult"/> for the response.
+        /// </returns>
         [HttpPut]
         [Authorize]
         [Route("update")]
@@ -88,6 +119,13 @@ namespace LogisticsCompany.Controllers
 
         }
 
+        /// <summary>
+        /// Action Method which will intercepth the incoming DELETE request for deleting an existing User entity.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>
+        /// <see cref="ObjectResult"/> for the response.
+        /// </returns>
         [HttpDelete]
         [Authorize]
         [Route("delete")]

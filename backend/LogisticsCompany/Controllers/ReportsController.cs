@@ -6,18 +6,31 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LogisticsCompany.Controllers
 {
+    /// <summary>
+    /// A <see cref="ControllerBase"/> which will handle request made based on report operations.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class ReportsController : ControllerBase
     {
         private readonly IReportQueryService _queryService;
 
+        /// <summary>
+        /// Creates a <see cref="ReportsController" /> instance 
+        /// with the injected <paramref name="queryService"/> argument.
+        /// </summary>
+        /// <param name="queryService">Service used for executing query operations to the database.</param>
         public ReportsController(IReportQueryService queryService)
         {
             _queryService = queryService;
         }
 
-
+        /// <summary>
+        /// Action Method which will intercept the incoming GET request made for retrieving all users that are employees.
+        /// </summary>
+        /// <returns>
+        /// <see cref="ObjectResult"/> for the response.
+        /// </returns>
         [HttpGet]
         [Authorize]
         [Route("allEmployees")]
@@ -39,6 +52,12 @@ namespace LogisticsCompany.Controllers
             });
         }
 
+        /// <summary>
+        /// Action Method which will intercept the incoming GET request made for retrieving all users that are clients.
+        /// </summary>
+        /// <returns>
+        /// <see cref="ObjectResult"/>
+        /// </returns>
         [HttpGet]
         [Authorize]
         [Route("allClients")]
@@ -60,6 +79,12 @@ namespace LogisticsCompany.Controllers
             });
         }
 
+        /// <summary>
+        /// Action Method which will intercept the incoming GET request made for retrieving all registered packages.
+        /// </summary>
+        /// <returns>
+        /// <see cref="ObjectResult"/>
+        /// </returns>
         [HttpGet]
         [Authorize]
         [Route("allRegisteredPackages")]
@@ -81,6 +106,12 @@ namespace LogisticsCompany.Controllers
             });
         }
 
+        /// <summary>
+        /// Action Method which will intercept the incoming GET request made for retrieving all non-delivered packages.
+        /// </summary>
+        /// <returns>
+        /// <see cref="ObjectResult"/> for the response.
+        /// </returns>
         [HttpGet]
         [Authorize]
         [Route("allInDeliveryPackages")]
@@ -102,6 +133,14 @@ namespace LogisticsCompany.Controllers
             });
         }
 
+        /// <summary>
+        /// Action Method which will intercept the incoming GET request made for retrieving all non-delivered packages.
+        /// </summary>
+        /// <param name="startPeriod"></param>
+        /// <param name="endPeriod"></param>
+        /// <returns>
+        /// <see cref="ObjectResult"/> for the response.
+        /// </returns>
         [HttpGet]
         [Authorize]
         [Route("getIncomesForPeriod")]

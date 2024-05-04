@@ -7,6 +7,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace LogisticsCompany.Controllers
 {
+    /// <summary>
+    /// A <see cref="ControllerBase"/> which will handle requests made for register and login operations.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class AuthorizationController : ControllerBase
@@ -15,6 +18,13 @@ namespace LogisticsCompany.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IMapper _mapper;
 
+        /// <summary>
+        /// Create a <see cref="AuthorizationController" /> instance 
+        /// with the injected <paramref name="authorizationService"/>, <paramref name="configuration"/>, <paramref name="mapper"/> arguments.
+        /// </summary>
+        /// <param name="mapper">Mapper used for mapping Request to DTO models.</param>
+        /// <param name="authorizationService">Service which will perform Login and Register operations to the database.</param>
+        /// <param name="configuration">Configuration used for gathering the application's settings.</param>
         public AuthorizationController(IMapper mapper, IAuthorizationService authorizationService, IConfiguration configuration)
         {
             _authorizationService = authorizationService;
@@ -22,6 +32,11 @@ namespace LogisticsCompany.Controllers
             _configuration = configuration;
         }
 
+        /// <summary>
+        /// Action Method which will intercept the incoming POST request for registration.
+        /// </summary>
+        /// <param name="requestModel">The Model coming from the Request Body.</param>
+        /// <returns> <see cref="ObjectResult"/> for the response.</returns>
         [HttpPost]
         [Route("register")]
         public IActionResult Register(RegisterRequestModel requestModel)
@@ -37,6 +52,11 @@ namespace LogisticsCompany.Controllers
             return Ok("Registered Successfully");
         }
 
+        /// <summary>
+        /// Action Method which will intercept the incoming POST request for login.
+        /// </summary>
+        /// <param name="requestModel">The model coming from the request body.</param>
+        /// <returns> <see cref="ObjectResult"/> for the response.</returns>
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login(LoginRequestModel requestModel)

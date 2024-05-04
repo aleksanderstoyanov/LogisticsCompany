@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LogisticsCompany.Controllers
 {
+    /// <summary>
+    /// A <see cref="ControllerBase"/> which will handle request made for office operations.
+    /// </summary>
     [ApiController]
     [Route("/api/[controller]")]
 
@@ -19,6 +22,14 @@ namespace LogisticsCompany.Controllers
         private readonly IOfficeCommandService _commandService;
         private readonly IMapper _mapper;
 
+        /// <summary>
+        /// Creates a <see cref="OfficesController"/> instance 
+        /// with the injected <paramref name="mapper"/>, <paramref name="queryService"/>, and <paramref name="commandService"/>
+        /// arguments.
+        /// </summary>
+        /// <param name="mapper">Mapper used for transpoing existing Request to DTO models.</param>
+        /// <param name="queryService">Service used for executing query operations to the database.</param>
+        /// <param name="commandService">Service used for executing command operations to the database.</param>
         public OfficesController(IMapper mapper,
             IOfficeQueryService queryService,
             IOfficeCommandService commandService)
@@ -28,6 +39,12 @@ namespace LogisticsCompany.Controllers
             _commandService = commandService;
         }
 
+        /// <summary>
+        /// Action Method which will intercept the incoming request for gathering all office instances.
+        /// </summary>
+        /// <returns>
+        /// <see cref="ObjectResult"/> for the response.
+        /// </returns>
         [HttpGet]
         [Authorize]
         [Route("getAll")]
@@ -44,6 +61,13 @@ namespace LogisticsCompany.Controllers
             return Ok(offices);
         }
 
+        /// <summary>
+        /// Action Method which will intercept the incoming POST request for creating a new office entity.
+        /// </summary>
+        /// <param name="requestModel">The Model coming from the Request Body.</param>
+        /// <returns>
+        /// <see cref="ObjectResult"/> for the result.
+        /// </returns>
         [HttpPost]
         [Authorize]
         [Route("create")]
@@ -70,6 +94,13 @@ namespace LogisticsCompany.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Action Method which will intercept the incoming PUT request for updating an existing office entity.
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <returns>
+        /// <see cref="ObjectResult"/> for the response.
+        /// </returns>
         [HttpPut]
         [Authorize]
         [Route("update")]
@@ -89,6 +120,13 @@ namespace LogisticsCompany.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Action Method which will intercept the incoming Delete request for deleting an existing office entity.
+        /// </summary>
+        /// <param name="id">Query String parameter for the Office Id.</param>
+        /// <returns>
+        /// <see cref="ObjectResult"/> for the response.
+        /// </returns>
         [HttpDelete]
         [Authorize]
         [Route("delete")]
