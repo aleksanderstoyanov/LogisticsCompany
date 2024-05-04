@@ -146,7 +146,6 @@ namespace LogisticsCompany.Controllers
             await _commandService.Delete(id);
 
             return Ok("");
-
         }
     }
 }
