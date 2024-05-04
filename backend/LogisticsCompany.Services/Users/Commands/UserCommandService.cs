@@ -11,6 +11,9 @@ using Microsoft.Data.SqlClient;
 
 namespace LogisticsCompany.Services.Users.Commands
 {
+    /// <summary>
+    /// A <see cref="BaseService"/> class which will perform Database Command operations for Users
+    /// </summary>
     public class UserCommandService : BaseService, IUserCommandService
     {
         private readonly IUserQueryService _userQueryService;
@@ -18,6 +21,17 @@ namespace LogisticsCompany.Services.Users.Commands
         private readonly IOfficeQueryService _officeQueryService;
         private readonly IPackageQueryService _packageQueryService;
         
+        /// <summary>
+        /// Creates a <see cref="UserCommandService"/> instance
+        /// with the injected <paramref name="dbContext"/>, <paramref name="userQueryService"/>,
+        /// <paramref name="roleQueryService"/>, <paramref name="officeQueryService"/>, and
+        /// <paramref name="packageQueryService"/> arguments.
+        /// </summary>
+        /// <param name="dbContext">The Database context</param>
+        /// <param name="userQueryService">Service used for performing query operations for Users</param>
+        /// <param name="roleQueryService">Service used for performing query operations for Roles</param>
+        /// <param name="officeQueryService">Service used for performing query operations for Offices</param>
+        /// <param name="packageQueryService">Service used for performing query operations for Packages</param>
         public UserCommandService(
             LogisticsCompanyContext dbContext,
             IUserQueryService userQueryService,
@@ -32,6 +46,11 @@ namespace LogisticsCompany.Services.Users.Commands
             _packageQueryService = packageQueryService;
         }
 
+        /// <summary>
+        /// Updates an existing User entity
+        /// based on the passed <paramref name="userDto"/>
+        /// </summary>
+        /// <param name="userDto">The Dto model user for updating an existing User entity.</param>
         public async Task Update(UserDto userDto)
         {
             var roleId = await _roleQueryService.GetIdByName(userDto.RoleName);
@@ -65,6 +84,12 @@ namespace LogisticsCompany.Services.Users.Commands
             }
         }
 
+        /// <summary>
+        /// Deletes an existing User entity
+        /// based on the passed <paramref name="id"/>
+        /// argument.
+        /// </summary>
+        /// <param name="id">The Id field of the User.</param>
         public async Task Delete(int id)
         {
             var user = _userQueryService.GetById(id);

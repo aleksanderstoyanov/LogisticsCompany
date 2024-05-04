@@ -10,14 +10,34 @@ using LogisticsCompany.Services.Users.Dto;
 
 namespace LogisticsCompany.Services.Reports.Queries
 {
+
+    /// <summary>
+    /// A <see cref="BaseService"/> class that will perform Database query operations for Reports.
+    /// </summary>
     public class ReportQueryService : BaseService, IReportQueryService
     {
         private readonly IUserQueryService _userQueryService;
+
+        /// <summary>
+        /// Creates a <see cref="ReportQueryService"/> instance
+        /// with the injected <paramref name="dbContext"/> and <paramref name="userQueryService"/>
+        /// arguments.
+        /// </summary>
+        /// <param name="dbContext">The Database context</param>
+        /// <param name="userQueryService">Service used for performing query operations for Users</param>
         public ReportQueryService(LogisticsCompanyContext dbContext, IUserQueryService userQueryService)
             : base(dbContext)
         {
             _userQueryService = userQueryService;
         }
+
+        /// <summary>
+        /// Performs a SQL query for retrieving all users
+        /// that are clients.
+        /// </summary>
+        /// <returns>
+        /// <see cref="IEnumerable{UserDto}"/> collection of Users.
+        /// </returns>
         public async Task<IEnumerable<UserDto>> GetAllClients()
         {
             var users = await _userQueryService.GetUsers();
@@ -25,6 +45,13 @@ namespace LogisticsCompany.Services.Reports.Queries
             return users.Where(user => user.RoleName == "Client");
         }
 
+        /// <summary>
+        /// Peforms a SQL query for retrieving all users
+        /// that are employees.
+        /// </summary>
+        /// <returns>
+        /// <see cref="IEnumerable{UserDto}"/> collection of users.
+        /// </returns>
         public async Task<IEnumerable<UserDto>> GetAllEmployees()
         {
             var users = await _userQueryService.GetUsers();
@@ -32,6 +59,13 @@ namespace LogisticsCompany.Services.Reports.Queries
             return users.Where(user => user.RoleName == "OfficeEmployee" || user.RoleName == "Courier");
         }
 
+        /// <summary>
+        /// Performs a SQL Query for retrieving all registered
+        /// packages.
+        /// </summary>
+        /// <returns>
+        /// <see cref="IEnumerable{PackageReportDto}"/> collection of packages.
+        /// </returns>
         public async Task<IEnumerable<PackageReportDto>> GetAllRegisteredPackages()
         {
             var fromUserClauseDescriptorContainer = new ClauseDescriptorContainer();
@@ -118,6 +152,13 @@ namespace LogisticsCompany.Services.Reports.Queries
 
         }
 
+        /// <summary>
+        /// Performs a SQL query for retrieving all packages
+        /// that are InDelivery.
+        /// </summary>
+        /// <returns>
+        /// <see cref="IEnumerable{PackageReportDto}"/> collection of packages.
+        /// </returns>
         public async Task<IEnumerable<PackageReportDto>> GetAllInDeliveryPackages()
         {
             var packages = await GetAllRegisteredPackages();
@@ -125,6 +166,18 @@ namespace LogisticsCompany.Services.Reports.Queries
             return packages.Where(package => package.PackageStatusName == "InDelivery");
         }
 
+        /// <summary>
+        /// Performs a SQL Query for retrieving
+        /// the total income based on the passed
+        /// <paramref name="startPeriod"/> and <paramref name="endPeriod"/>
+        /// arguments.
+        /// </summary>
+        /// <param name="startPeriod">The Start Period</param>
+        /// <param name="endPeriod">The End Period</param>
+        /// <returns>
+        /// The total price based on the <paramref name="startPeriod"/> and <paramref name="endPeriod"/>
+        /// arguments.
+        /// </returns>
         public async Task<decimal> GetIncomeForPeriod(DateTime startPeriod, DateTime endPeriod)
         {
             var startPeriodParsed = DateOnly.FromDateTime(startPeriod);

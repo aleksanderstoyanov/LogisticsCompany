@@ -9,10 +9,22 @@ using static LogisticsCompany.Data.Helpers.SqlCommandHelper;
 
 namespace LogisticsCompany.Services.Package.Commands
 {
+    /// <summary>
+    /// A <see cref="BaseService"/> class for performing Database command operations for Packages.
+    /// </summary>
     public class PackageCommandService : BaseService, IPackageCommandService
     {
         private readonly IPackageStatusQueryService _packageStatusQueryService;
         private readonly IPackageQueryService _packageQueryService;
+
+        /// <summary>
+        /// Creates an <see cref="PackageCommandService"/> instance 
+        /// with the injected <paramref name="dbContext"/>, <paramref name="packageQueryService"/>,
+        /// and <paramref name="packageStatusQueryService"/> arguments.
+        /// </summary>
+        /// <param name="dbContext">The Database Context</param>
+        /// <param name="packageQueryService">The Service used for performing Query operations for Packages.</param>
+        /// <param name="packageStatusQueryService">The Service used for performing Query operations for PackageStatuses.</param>
         public PackageCommandService(LogisticsCompanyContext dbContext,
             IPackageQueryService packageQueryService,
             IPackageStatusQueryService packageStatusQueryService)
@@ -22,6 +34,11 @@ namespace LogisticsCompany.Services.Package.Commands
             _packageStatusQueryService = packageStatusQueryService;
         }
 
+        /// <summary>
+        /// Creates a new Package entity in the Database
+        /// by using the <paramref name="dto"/> argument.
+        /// </summary>
+        /// <param name="dto">The DTO object containing the fields for creation.</param>
         public async Task Create(PackageDto dto)
         {
             using (var connection = new SqlConnection(_connectionString))
@@ -45,6 +62,11 @@ namespace LogisticsCompany.Services.Package.Commands
             }
         }
 
+        /// <summary>
+        /// Updates an existing Package entity
+        /// by using the values passed from the <paramref name="dto"/>.
+        /// </summary>
+        /// <param name="dto">The DTO object containing the fields for update.</param>
         public async Task Update(PackageDto dto)
         {
             var packageStatusId = await _packageStatusQueryService.GetIdByName(dto.PackageStatusName);
@@ -74,6 +96,11 @@ namespace LogisticsCompany.Services.Package.Commands
             }
         }
 
+        /// <summary>
+        /// Deletes an existing record 
+        /// by using the passed <paramref name="id"/>
+        /// </summary>
+        /// <param name="id">The id argument which will be used for deleting an existing package.</param>
         public async Task Delete(int id)
         {
             var package = _packageQueryService.GetById(id);

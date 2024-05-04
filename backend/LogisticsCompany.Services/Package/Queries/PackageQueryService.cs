@@ -7,14 +7,30 @@ using Microsoft.Data.SqlClient;
 
 namespace LogisticsCompany.Services.Package.Queries
 {
-    public class PackageQueryService: BaseService, IPackageQueryService
+    /// <summary>
+    /// A <see cref="BaseService"/> class for performing Database query operations for Packages
+    /// </summary>
+    public class PackageQueryService : BaseService, IPackageQueryService
     {
-        public PackageQueryService(LogisticsCompanyContext dbContext):
+        /// <summary>
+        /// Creates a <see cref="PackageQueryService"/> with the 
+        /// injected <paramref name="dbContext"/> argument.
+        /// </summary>
+        /// <param name="dbContext">The Database context.</param>
+        public PackageQueryService(LogisticsCompanyContext dbContext) :
             base(dbContext)
         {
-            
+
         }
 
+        /// <summary>
+        /// Performs a SQL Query for retrieving a package
+        /// based on the passed <paramref name="id"/> argument.
+        /// </summary>
+        /// <param name="id">The User id which will be used for retrieving an existing entity.</param>
+        /// <returns>
+        /// <see cref="IEnumerable{PackageDto}"/> collection of packages.
+        /// </returns>
         public async Task<IEnumerable<PackageDto>> GetPackagesByUserId(int id)
         {
             var clauseDescriptorContainer = new ClauseDescriptorContainer();
@@ -52,6 +68,14 @@ namespace LogisticsCompany.Services.Package.Queries
 
         }
 
+        /// <summary>
+        /// Performs a SQL Query for retrieving a package
+        /// based on the passed <paramref name="id"/> argument.
+        /// </summary>
+        /// <param name="id">The id which will be used for retrieving an existing entity</param>
+        /// <returns>
+        /// <see cref="PackageDto"/>
+        /// </returns>
         public async Task<PackageDto?> GetById(int id)
         {
             var clauseDescriptorContainer = new ClauseDescriptorContainer();
@@ -112,6 +136,12 @@ namespace LogisticsCompany.Services.Package.Queries
 
         }
 
+        /// <summary>
+        /// Performs an SQL Query for retrieving all packages.
+        /// </summary>
+        /// <returns>
+        /// <see cref="IEnumerable{PackageDto}"/> collection of packages.
+        /// </returns>
         public async Task<IEnumerable<PackageDto>> GetAll()
         {
             var clauseContainerDescriptor = new ClauseDescriptorContainer();
@@ -159,6 +189,14 @@ namespace LogisticsCompany.Services.Package.Queries
             }
         }
 
+        /// <summary>
+        /// Performs an SQL Query for retrieving received packages based on the 
+        /// User <paramref name="id"/> argument.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>
+        /// <see cref="IEnumerable{SentReceivedPackageDto}"/> collection of packages.
+        /// </returns>
         public async Task<IEnumerable<SentReceivedPackageDto>> GetReceivedPackages(int id)
         {
             var clauseDescriptorContainer = new ClauseDescriptorContainer();
@@ -250,6 +288,14 @@ namespace LogisticsCompany.Services.Package.Queries
             }
         }
 
+        /// <summary>
+        /// Performs an SQL Query for retrieving sent packages based on the 
+        /// User <paramref name="id"/> argument.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>
+        /// <see cref="IEnumerable{SentReceivedPackageDto}"/> collection of packages.
+        /// </returns>
         public async Task<IEnumerable<SentReceivedPackageDto>> GetSentPackages(int id)
         {
             var clauseDescriptorContainer = new ClauseDescriptorContainer();
@@ -339,6 +385,16 @@ namespace LogisticsCompany.Services.Package.Queries
             }
         }
 
+        /// <summary>
+        /// Performs an SQL Query for getting the Count
+        /// of Total Packages based on the <paramref name="from"/> and <paramref name="to"/>
+        /// User ids.
+        /// </summary>
+        /// <param name="from">FromId Package argument.</param>
+        /// <param name="to">ToId Package argument.</param>
+        /// <returns>
+        /// The Total Count of Packages.
+        /// </returns>
         public async Task<int> GetPackageCountByFromAndTo(int from, int to)
         {
             var clauseDescriptorContainer = new ClauseDescriptorContainer();

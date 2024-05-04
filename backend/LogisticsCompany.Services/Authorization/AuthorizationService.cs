@@ -12,12 +12,24 @@ using LogisticsCompany.Services.Authorization.Dto;
 
 namespace LogisticsCompany.Services.Authorization
 {
+    /// <summary>
+    /// A <see cref="BaseService"/> used for performing Register and Login operations to the Database.
+    /// </summary>
     public class AuthorizationService : BaseService, IAuthorizationService
     {
         private readonly IUserQueryService _userQueryService;
         private readonly IRoleQueryService _roleQueryService;
+
+        /// <summary>
+        /// Creates a <see cref="AuthorizationService"/> with the injected
+        /// <paramref name="dbContext"/>, <paramref name="roleQueryService"/>, and <paramref name="userQueryService"/>
+        /// arguments.
+        /// </summary>
+        /// <param name="dbContext">The Database Context</param>
+        /// <param name="userQueryService">Service used for User Query operations.</param>
+        /// <param name="roleQueryService">Service used for Role Query operations.</param>
         public AuthorizationService(
-            LogisticsCompanyContext dbContext, 
+            LogisticsCompanyContext dbContext,
             IUserQueryService userQueryService,
             IRoleQueryService roleQueryService)
             : base(dbContext)
@@ -26,6 +38,19 @@ namespace LogisticsCompany.Services.Authorization
             _roleQueryService = roleQueryService;
         }
 
+
+        /// <summary>
+        /// Executes a Login operation to the Database 
+        /// based on the passed <paramref name="dto"/>.
+        /// And returns a JWT token from the <paramref name="issuer"/> and <paramref name="key"/> 
+        /// arguments.
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <param name="issuer"></param>
+        /// <param name="key"></param>
+        /// <returns>
+        /// The composed JWT Security Token.
+        /// </returns>
         public async Task<string> Login(LoginDto dto, string issuer, string key)
         {
             var user = await _userQueryService.GetUserByEmailAndPassword(dto.Email, dto.PasswordHash);
@@ -58,6 +83,11 @@ namespace LogisticsCompany.Services.Authorization
             return string.Empty;
         }
 
+        /// <summary>
+        /// Executes a Register operation by creating a new User entity to the Database
+        /// from the passed <paramref name="dto"/>.
+        /// </summary>
+        /// <param name="dto"></param>
         public async Task Register(RegisterDto dto)
         {
             dto.Password = PasswordHasher.HashPassword(dto.Password);

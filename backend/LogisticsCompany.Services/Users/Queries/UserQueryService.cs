@@ -8,13 +8,32 @@ using Microsoft.Data.SqlClient;
 
 namespace LogisticsCompany.Services.Users.Queries
 {
+    /// <summary>
+    /// A <see cref="BaseService"/> class used for the performing Database Query operations for Users.
+    /// </summary>
     public class UserQueryService: BaseService, IUserQueryService
     {
+        /// <summary>
+        /// Creates a <see cref="UserQueryService"/> instance
+        /// with the injected <paramref name="dbContext"/> 
+        /// argument.
+        /// </summary>
+        /// <param name="dbContext"></param>
         public UserQueryService(LogisticsCompanyContext dbContext)
             : base(dbContext)
         {
         }
 
+        /// <summary>
+        /// Performs a SQL query for retrieving 
+        /// different user from the user that matches the <paramref name="id"/>
+        /// and the <paramref name="role"/> arguments.
+        /// </summary>
+        /// <param name="id">The Id of the User</param>
+        /// <param name="role">The Role of the User</param>
+        /// <returns>
+        /// <see cref="IEnumerable{UserDto}"/> collection of Users.
+        /// </returns>
         public async Task<IEnumerable<UserDto>> GetDifferentUsersFromCurrent(int id, string role)
         {
             var user = GetById(id);
@@ -88,6 +107,14 @@ namespace LogisticsCompany.Services.Users.Queries
             }
         }
 
+        /// <summary>
+        /// Performs a SQL Query for retrieving a 
+        /// user based on the provided <paramref name="id"/>
+        /// </summary>
+        /// <param name="id">The Id field of the User</param>
+        /// <returns>
+        /// <see cref="LoginDto"/>
+        /// </returns>
         public async Task<LoginDto?> GetById(int id)
         {
             using (var connection = new SqlConnection(_connectionString))
@@ -114,6 +141,13 @@ namespace LogisticsCompany.Services.Users.Queries
             }
         }
 
+        /// <summary>
+        /// Performs a SQL Query for retrieving 
+        /// all users.
+        /// </summary>
+        /// <returns>
+        /// <see cref="IEnumerable{UserDto}"/> collection of users.
+        /// </returns>
         public async Task<IEnumerable<UserDto>> GetUsers()
         {
             using (var connection = new SqlConnection(this._connectionString))
@@ -172,6 +206,16 @@ namespace LogisticsCompany.Services.Users.Queries
             }
         }
 
+        /// <summary>
+        /// Performs a SQL Query for retrieving a User entity
+        /// that matches the <paramref name="email"/> and <paramref name="password"/>
+        /// arguments.
+        /// </summary>
+        /// <param name="email">The Email field of the User</param>
+        /// <param name="password">The Password field of the User</param>
+        /// <returns>
+        /// <see cref="LoginDto"/>
+        /// </returns>
         public async Task<LoginDto?> GetUserByEmailAndPassword(string email, string password)
         {
             using (var connection = new SqlConnection(this._connectionString))
@@ -199,6 +243,15 @@ namespace LogisticsCompany.Services.Users.Queries
                 return user;
             }
         }
+
+        /// <summary>
+        /// Performs a SQL Query for retrieving a Email from an existing user entity
+        /// based on the passed <paramref name="email"/>
+        /// argument.
+        /// </summary>
+        /// <param name="email">The Email field of the User.</param>
+        /// <returns>
+        /// </returns>
         public async Task<string> GetRegisterEmail(string email)
         {
             using (var sqlConnection = new SqlConnection(_dbContext.GetConnectionString()))

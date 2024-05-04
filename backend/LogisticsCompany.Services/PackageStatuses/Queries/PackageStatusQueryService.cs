@@ -6,14 +6,30 @@ using Microsoft.Data.SqlClient;
 
 namespace LogisticsCompany.Services.PackageStatuses.Queries
 {
+    /// <summary>
+    /// A <see cref="BaseService"/> class that will perform Database Query operations for PackageStatuses
+    /// </summary>
     public class PackageStatusQueryService : BaseService, IPackageStatusQueryService
     {
+        /// <summary>
+        /// Creates a <see cref="PackageStatusQueryService"/> instance 
+        /// with the injected <paramref name="dbContext"/>
+        /// </summary>
+        /// <param name="dbContext">The Database context</param>
         public PackageStatusQueryService(LogisticsCompanyContext dbContext)
             : base(dbContext)
         {
 
         }
 
+        /// <summary>
+        /// Performs a SQL Query for retrieving the Id field
+        /// of a PackageStatus based on the passed <paramref name="name"/>.
+        /// </summary>
+        /// <param name="name">The name of the package status.</param>
+        /// <returns>
+        /// The Id field of the gathered PackageStatus entity.
+        /// </returns>
         public async Task<int?> GetIdByName(string name)
         {
             var clauseDescriptorContainer = new ClauseDescriptorContainer()

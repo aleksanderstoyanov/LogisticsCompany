@@ -7,13 +7,27 @@ using Microsoft.Data.SqlClient;
 
 namespace LogisticsCompany.Services.Deliveries.Queries
 {
+    /// <summary>
+    /// A <see cref="BaseService"/> class used for performing DataBase query operations for Deliveries.
+    /// </summary>
     public class DeliveryQueryService : BaseService, IDeliveryQueryService
     {
+        /// <summary>
+        /// Creates a <see cref="DeliveryQueryService"/> instance 
+        /// with the injected <paramref name="dbContext"/>
+        /// </summary>
+        /// <param name="dbContext">The Database context.</param>
         public DeliveryQueryService(LogisticsCompanyContext dbContext)
             : base(dbContext)
         {
         }
 
+        /// <summary>
+        /// Performs a SQL Query for Retrieving All Deliveries.
+        /// </summary>
+        /// <returns>
+        /// <see cref="IEnumerable{DeliveryDto}"/> collection of deliveries.
+        /// </returns>
         public async Task<IEnumerable<DeliveryDto>> GetAll()
         {
             var query = new SqlQueryBuilder()
@@ -29,6 +43,13 @@ namespace LogisticsCompany.Services.Deliveries.Queries
             }
         }
 
+        /// <summary>
+        /// Performs a SQL Query for Retrieving a Delivery Entity
+        /// based on the passed <paramref name="id"/>.
+        /// </summary>
+        /// <returns>
+        /// <see cref="DeliveryDto"/>
+        /// </returns>
         public async Task<DeliveryDto?> GetById(int id)
         {
             var clauseDescriptorContainer = new ClauseDescriptorContainer()

@@ -11,12 +11,26 @@ using Microsoft.Data.SqlClient;
 
 namespace LogisticsCompany.Services.Deliveries.Commands
 {
+    /// <summary>
+    /// A <see cref="BaseService"/> class used for performing DataBase command operations for Deliveries.
+    /// </summary>
     public class DeliveryCommandService : BaseService, IDeliveryCommandService
     {
         private readonly IPackageQueryService _packageQueryService;
         private readonly IDeliveryQueryService _deliveryQueryService;
 
         private readonly IPackageCommandService _packageCommandService;
+
+        /// <summary>
+        /// Creates a <see cref="DeliveryCommandService"/> instance
+        /// with the injected <paramref name="dbContext"/>, <paramref name="packageQueryService"/>,
+        /// <paramref name="deliveryQueryService"/>, and <paramref name="packageCommandService"/> 
+        /// arguments.
+        /// </summary>
+        /// <param name="dbContext">The Database Context</param>
+        /// <param name="packageQueryService">Service used for performing Package Query operations.</param>
+        /// <param name="deliveryQueryService">Service use for performing Delivery Query operations.</param>
+        /// <param name="packageCommandService">Service used for performing Package Command operations.</param>
         public DeliveryCommandService(LogisticsCompanyContext dbContext,
             IPackageQueryService packageQueryService,
             IDeliveryQueryService deliveryQueryService,
@@ -28,6 +42,11 @@ namespace LogisticsCompany.Services.Deliveries.Commands
             _packageCommandService = packageCommandService;
         }
 
+        /// <summary>
+        /// Creates a Delivery Entity in the Database.
+        /// based on the passed <paramref name="dto"/>
+        /// </summary>
+        /// <param name="dto">Model coming from the Controller API layer.</param>
         public async Task<string> Create(DeliveryDto dto)
         {
             var sb = new StringBuilder();
@@ -78,6 +97,11 @@ namespace LogisticsCompany.Services.Deliveries.Commands
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Updates an existing Delivery Entity
+        /// based on the passed <paramref name="dto"/>
+        /// </summary>
+        /// <param name="dto">Model coming from the Controller API layer.</param>
         public async Task Update(DeliveryDto dto)
         {
 
