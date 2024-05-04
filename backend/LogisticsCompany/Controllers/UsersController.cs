@@ -2,8 +2,9 @@
 using LogisticsCompany.Helpers;
 using LogisticsCompany.Request;
 using LogisticsCompany.Response;
-using LogisticsCompany.Services.Contracts;
-using LogisticsCompany.Services.Dto;
+using LogisticsCompany.Services.Users.Commands;
+using LogisticsCompany.Services.Users.Dto;
+using LogisticsCompany.Services.Users.Queries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,14 +16,19 @@ namespace LogisticsCompany.Controllers
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
-        private readonly IUserService _userService;
+        private readonly IUserQueryService _queryService;
+        private readonly IUserCommandService _commandService;
         private readonly IMapper _mapper;
 
-        public UsersController(IUserService userService, IMapper mapper)
+        public UsersController(IMapper mapper, 
+            IUserQueryService queryService,
+            IUserCommandService commandService)
         {
-            this._userService = userService;
-            this._mapper = mapper;
+            _mapper = mapper;
+            _queryService = queryService;
+            _commandService = commandService;
         }
+
         [HttpGet]
         [Authorize]
         [Route("getAll")]
@@ -36,7 +42,7 @@ namespace LogisticsCompany.Controllers
             }
 
             // TO DO: Add rewiring and mapping to response model.
-            var users = await this._userService.GetUsers();
+            var users = await _queryService.GetUsers();
 
             return Ok(users);
         }
@@ -53,7 +59,7 @@ namespace LogisticsCompany.Controllers
                 return Unauthorized();
             }
 
-            var users = await this._userService.GetDifferentUsersFromCurrent(id, role);
+            var users = await _queryService.GetDifferentUsersFromCurrent(id, role);
 
             return Ok(users);
 
@@ -78,7 +84,7 @@ namespace LogisticsCompany.Controllers
 
             var dto = _mapper.Map<UserRequestModel, UserDto>(requestModel);
 
-            await _userService.Update(dto);
+            await _commandService.Update(dto);
 
             return Ok("");
 
@@ -101,7 +107,7 @@ namespace LogisticsCompany.Controllers
                 return Unauthorized();
             }
 
-            await _userService.Delete(id);
+            await _commandService.Delete(id);
 
             return Ok("");
 

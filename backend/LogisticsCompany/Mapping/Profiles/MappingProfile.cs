@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
-using LogisticsCompany.Dto;
 using LogisticsCompany.Request;
 using LogisticsCompany.Response;
+using LogisticsCompany.Services.Authorization.Dto;
 using LogisticsCompany.Services.Dto;
+using LogisticsCompany.Services.Offices.Dto;
+using LogisticsCompany.Services.Package.Dto;
+using LogisticsCompany.Services.Users.Dto;
 
 namespace LogisticsCompany.Mapping.Profiles
 {

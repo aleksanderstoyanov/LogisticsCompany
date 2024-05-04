@@ -2,11 +2,11 @@
 using LogisticsCompany.Helpers;
 using LogisticsCompany.Request;
 using LogisticsCompany.Response;
-using LogisticsCompany.Services.Contracts;
-using LogisticsCompany.Services.Dto;
+using LogisticsCompany.Services.Offices.Commands;
+using LogisticsCompany.Services.Offices.Dto;
+using LogisticsCompany.Services.Offices.Queries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Reflection.PortableExecutable;
 
 namespace LogisticsCompany.Controllers
 {
@@ -15,13 +15,17 @@ namespace LogisticsCompany.Controllers
 
     public class OfficesController : ControllerBase
     {
-        private readonly IOfficeService _officeService;
+        private readonly IOfficeQueryService _queryService;
+        private readonly IOfficeCommandService _commandService;
         private readonly IMapper _mapper;
 
-        public OfficesController(IOfficeService officeService, IMapper _mapper)
+        public OfficesController(IMapper mapper,
+            IOfficeQueryService queryService,
+            IOfficeCommandService commandService)
         {
-            this._officeService = officeService;
-            this._mapper = _mapper;
+            _mapper = mapper;
+            _queryService = queryService;
+            _commandService = commandService;
         }
 
         [HttpGet]
@@ -36,7 +40,7 @@ namespace LogisticsCompany.Controllers
                 return Unauthorized();
             }
 
-            var offices = await _officeService.GetAll();
+            var offices = await _queryService.GetAll();
             return Ok(offices);
         }
 
@@ -54,7 +58,7 @@ namespace LogisticsCompany.Controllers
 
             var dto = this._mapper.Map<OfficeCreateRequestModel, OfficeDto>(requestModel);
 
-            var office = await _officeService.Create(dto);
+            var office = await _commandService.Create(dto);
 
             if (office == null)
             {
@@ -80,7 +84,7 @@ namespace LogisticsCompany.Controllers
 
             var dto = this._mapper.Map<OfficeRequestModel, OfficeDto>(requestModel);
 
-            await _officeService.Update(dto);
+            await _commandService.Update(dto);
 
             return Ok();
         }
@@ -96,7 +100,7 @@ namespace LogisticsCompany.Controllers
                 return Unauthorized();
             }
 
-            await _officeService.Delete(id);
+            await _commandService.Delete(id);
 
             return Ok();
         }

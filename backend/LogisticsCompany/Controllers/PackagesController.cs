@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using LogisticsCompany.Helpers;
 using LogisticsCompany.Request;
 using LogisticsCompany.Response;
-using LogisticsCompany.Services.Contracts;
-using LogisticsCompany.Services.Dto;
+using LogisticsCompany.Services.Package.Commands;
+using LogisticsCompany.Services.Package.Dto;
+using LogisticsCompany.Services.Package.Queries;
 using Microsoft.AspNetCore.Mvc;
 
 using static LogisticsCompany.Helpers.AuthorizationRequestHelper;
@@ -15,12 +15,16 @@ namespace LogisticsCompany.Controllers
     public class PackagesController : ControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly IPackageService _packageService;
+        private readonly IPackageQueryService _queryService;
+        private readonly IPackageCommandService _commandService;
 
-        public PackagesController(IMapper mapper, IPackageService packageService)
+        public PackagesController(IMapper mapper, 
+            IPackageQueryService queryService, 
+            IPackageCommandService commandService)
         {
-            this._mapper = mapper;
-            this._packageService = packageService;
+            _mapper = mapper;
+            _queryService = queryService;
+            _commandService = commandService;
         }
 
         [HttpGet]
@@ -34,7 +38,7 @@ namespace LogisticsCompany.Controllers
                 return Unauthorized();
             }
 
-            var result = await _packageService.GetAll();
+            var result = await _queryService.GetAll();
 
             return Ok(result);
         }
@@ -50,7 +54,7 @@ namespace LogisticsCompany.Controllers
                 return Unauthorized();
             }
 
-            var result = await _packageService.GetReceivedPackages(id);
+            var result = await _queryService.GetReceivedPackages(id);
             var response = _mapper.Map<IEnumerable<SentReceivedPackageDto>, IEnumerable<PackageClientResponseModel>>(result);
             return Ok(response);
         }
@@ -66,7 +70,7 @@ namespace LogisticsCompany.Controllers
                 return Unauthorized();
             }
 
-            var result = await _packageService.GetSentPackages(id);
+            var result = await _queryService.GetSentPackages(id);
             var response = _mapper.Map<IEnumerable<SentReceivedPackageDto>, IEnumerable<PackageClientResponseModel>>(result);
 
             return Ok(response);
@@ -85,7 +89,7 @@ namespace LogisticsCompany.Controllers
 
             var dto = _mapper.Map<PackageRequestModel, PackageDto>(requestModel);
 
-            await _packageService.Create(dto);
+            await _commandService.Create(dto);
 
             return Ok();
         }
@@ -103,7 +107,7 @@ namespace LogisticsCompany.Controllers
 
             var dto = _mapper.Map<PackageRequestModel, PackageDto>(requestModel);
 
-            await _packageService.Update(dto);
+            await _commandService.Update(dto);
 
             return Ok();
         }
@@ -119,7 +123,7 @@ namespace LogisticsCompany.Controllers
                 return Unauthorized();
             }
 
-            await _packageService.Delete(id);
+            await _commandService.Delete(id);
 
             return Ok();
         }

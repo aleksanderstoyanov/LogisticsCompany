@@ -1,19 +1,21 @@
-using AutoMapper;
+using System.Text;
 using LogisticsCompany.Data;
 using LogisticsCompany.Data.Factory;
 using LogisticsCompany.Mapping.Profiles;
-using LogisticsCompany.Services;
-using LogisticsCompany.Services.Contracts;
-using LogisticsCompany.Services.Deliveries;
-using LogisticsCompany.Services.Offices;
-using LogisticsCompany.Services.Package;
-using LogisticsCompany.Services.Packages;
-using LogisticsCompany.Services.Reports;
-using LogisticsCompany.Services.Users;
+using LogisticsCompany.Services.Authorization;
+using LogisticsCompany.Services.Deliveries.Commands;
+using LogisticsCompany.Services.Deliveries.Queries;
+using LogisticsCompany.Services.Offices.Commands;
+using LogisticsCompany.Services.Offices.Queries;
+using LogisticsCompany.Services.Package.Commands;
+using LogisticsCompany.Services.Package.Queries;
+using LogisticsCompany.Services.PackageStatuses.Queries;
+using LogisticsCompany.Services.Reports.Queries;
+using LogisticsCompany.Services.Roles.Queries;
+using LogisticsCompany.Services.Users.Commands;
+using LogisticsCompany.Services.Users.Queries;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Runtime.CompilerServices;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,15 +34,27 @@ builder.Services.AddAutoMapper(mapper =>
 builder.Services.AddSingleton<LogisticsCompanyContext>();
 builder.Services.AddSingleton<SqlDbFactory>();
 
-// Register Database Services
-builder.Services.AddTransient<IUserService, UserService>();
-builder.Services.AddTransient<IRoleService, RoleService>();
-builder.Services.AddTransient<IOfficeService, OfficeService>();
-builder.Services.AddTransient<IPackageStatusService, PackageStatusService>();
-builder.Services.AddTransient<IPackageService, PackageService>();
-builder.Services.AddTransient<IReportService, ReportService>();
-builder.Services.AddTransient<IDeliveryService, DeliveryService>();
+// Register Authorization Services
 
+builder.Services.AddTransient<IAuthorizationService, AuthorizationService>();
+
+// Register Query Services
+builder.Services.AddTransient<IUserQueryService, UserQueryService>();
+builder.Services.AddTransient<IRoleQueryService, RoleQueryService>();
+builder.Services.AddTransient<IOfficeQueryService, OfficeQueryService>();
+
+builder.Services.AddTransient<IPackageQueryService, PackageQueryService>();
+builder.Services.AddTransient<IPackageStatusQueryService, PackageStatusQueryService>();
+
+builder.Services.AddTransient<IDeliveryQueryService, DeliveryQueryService>();
+builder.Services.AddTransient<IReportQueryService, ReportQueryService>();
+
+
+// Register Command Services
+builder.Services.AddTransient<IUserCommandService, UserCommandService>();
+builder.Services.AddTransient<IOfficeCommandService, OfficeCommandService>();
+builder.Services.AddTransient<IPackageCommandService, PackageCommandService>();
+builder.Services.AddTransient<IDeliveryCommandService, DeliveryCommandService>();
 
 // Register JWT Services
 var jwtIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<string>();
@@ -75,7 +89,7 @@ app.UseCors(options =>
 
 using (var scope = app.Services.CreateScope())
 {
-   var dbFactory = scope.ServiceProvider.GetRequiredService<LogisticsCompanyContext>();
+    var dbFactory = scope.ServiceProvider.GetRequiredService<LogisticsCompanyContext>();
 }
 
 app.UseHttpsRedirection();

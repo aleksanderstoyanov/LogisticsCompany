@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using LogisticsCompany.Helpers;
 using LogisticsCompany.Request;
-using LogisticsCompany.Services.Contracts;
+using LogisticsCompany.Services.Deliveries.Commands;
+using LogisticsCompany.Services.Deliveries.Queries;
 using LogisticsCompany.Services.Dto;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace LogisticsCompany.Controllers
 {
@@ -13,13 +13,17 @@ namespace LogisticsCompany.Controllers
     [Route("api/[controller]")]
     public class DeliveriesController : ControllerBase
     {
-        private readonly IDeliveryService _deliveryService;
+        private readonly IDeliveryQueryService _queryService;
+        private readonly IDeliveryCommandService _commandService;
         private readonly IMapper _mapper;
 
-        public DeliveriesController(IDeliveryService deliveryService, IMapper mapper)
+        public DeliveriesController(IMapper mapper,
+            IDeliveryQueryService queryService, 
+            IDeliveryCommandService commandService)
         {
-            this._deliveryService = deliveryService;
-            this._mapper = mapper;
+            _mapper = mapper;
+            _queryService = queryService;
+            _commandService = commandService;
         }
 
         [HttpGet]
@@ -34,7 +38,7 @@ namespace LogisticsCompany.Controllers
                 return Unauthorized();
             }
 
-            var deliveries = await _deliveryService.GetAll();
+            var deliveries = await _queryService.GetAll();
 
             return Ok(deliveries);
         }
@@ -53,7 +57,7 @@ namespace LogisticsCompany.Controllers
 
             var dto = _mapper.Map<DeliveryCreateRequest, DeliveryDto>(requestModel);
 
-            var statusMessage = await _deliveryService.Create(dto);
+            var statusMessage = await _commandService.Create(dto);
 
             return Ok(statusMessage);
         }
@@ -70,10 +74,9 @@ namespace LogisticsCompany.Controllers
                 return Unauthorized();
             }
 
-
             var dto = _mapper.Map<DeliveryUpdateRequest, DeliveryDto>(requestModel);
 
-            await _deliveryService.Update(dto);
+            await _commandService.Update(dto);
 
             return Ok();
         }

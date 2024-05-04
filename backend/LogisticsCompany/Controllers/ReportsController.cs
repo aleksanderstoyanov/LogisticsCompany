@@ -1,8 +1,6 @@
 ﻿using LogisticsCompany.Helpers;
-using LogisticsCompany.Request;
 using LogisticsCompany.Response;
-using LogisticsCompany.Services;
-using LogisticsCompany.Services.Contracts;
+using LogisticsCompany.Services.Reports.Queries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,11 +10,11 @@ namespace LogisticsCompany.Controllers
     [Route("api/[controller]")]
     public class ReportsController : ControllerBase
     {
-        private readonly IReportService _reportService;
+        private readonly IReportQueryService _queryService;
 
-        public ReportsController(IReportService reportService)
+        public ReportsController(IReportQueryService queryService)
         {
-            this._reportService = reportService;
+            _queryService = queryService;
         }
 
 
@@ -25,7 +23,7 @@ namespace LogisticsCompany.Controllers
         [Route("allEmployees")]
         public async Task<IActionResult> AllEmployees()
         {
-            var employees = await _reportService.GetAllEmployees();
+            var employees = await _queryService.GetAllEmployees();
 
             var header = HttpContext.Request.Headers["Authorization"];
 
@@ -46,7 +44,7 @@ namespace LogisticsCompany.Controllers
         [Route("allClients")]
         public async Task<IActionResult> AllClients()
         {
-            var clients = await _reportService.GetAllClients();
+            var clients = await _queryService.GetAllClients();
 
             var header = HttpContext.Request.Headers["Authorization"];
 
@@ -67,7 +65,7 @@ namespace LogisticsCompany.Controllers
         [Route("allRegisteredPackages")]
         public async Task<IActionResult> AllRegisteredPackages()
         {
-            var packages = await _reportService.GetAllRegisteredPackages();
+            var packages = await _queryService.GetAllRegisteredPackages();
 
             var header = HttpContext.Request.Headers["Authorization"];
 
@@ -95,7 +93,7 @@ namespace LogisticsCompany.Controllers
                 return Unauthorized();
             }
 
-            var packages = await _reportService.GetAllInDeliveryPackages();
+            var packages = await _queryService.GetAllInDeliveryPackages();
 
             return Ok(new
             {
@@ -121,7 +119,7 @@ namespace LogisticsCompany.Controllers
                 return BadRequest("Start Period should be less than End Period!");
             }
 
-            var income = await _reportService.GetIncomeForPeriod(startPeriod, endPeriod);
+            var income = await _queryService.GetIncomeForPeriod(startPeriod, endPeriod);
 
             return Ok(new ReportIncomeResponseModel
             {

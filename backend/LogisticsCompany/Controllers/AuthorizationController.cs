@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
-using LogisticsCompany.Dto;
 using LogisticsCompany.Entity;
 using LogisticsCompany.Request;
-using LogisticsCompany.Services.Contracts;
-using LogisticsCompany.Services.Dto;
+using LogisticsCompany.Services.Authorization;
+using LogisticsCompany.Services.Authorization.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -17,14 +16,14 @@ namespace LogisticsCompany.Controllers
     public class AuthorizationController : ControllerBase
     {
         private readonly IConfiguration _configuration;
-        private readonly IUserService _userService;
+        private readonly IAuthorizationService _authorizationService;
         private readonly IMapper _mapper;
 
-        public AuthorizationController(IUserService userService, IMapper mapper, IConfiguration configuration)
+        public AuthorizationController(IMapper mapper, IAuthorizationService authorizationService, IConfiguration configuration)
         {
-            this._userService = userService;
-            this._mapper = mapper;
-            this._configuration = configuration;
+            _authorizationService = authorizationService;
+            _mapper = mapper;
+            _configuration = configuration;
         }
 
         [HttpPost]
@@ -37,7 +36,7 @@ namespace LogisticsCompany.Controllers
             }
 
             var dto = _mapper.Map<RegisterRequestModel, RegisterDto>(requestModel);
-            _userService.Register(dto);
+            _authorizationService.Register(dto);
 
             return Ok("Registered Successfully");
         }
@@ -56,7 +55,7 @@ namespace LogisticsCompany.Controllers
 
             var dto = _mapper.Map<LoginRequestModel, LoginDto>(requestModel);
 
-            var token = await _userService.Login(dto, issuer, key);
+            var token = await _authorizationService.Login(dto, issuer, key);
 
             if (token.IsNullOrEmpty())
             {
