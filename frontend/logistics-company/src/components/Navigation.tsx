@@ -1,8 +1,7 @@
-import { AppBar, Box, Button, Icon, IconButton, Link, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, Button, Link, Toolbar, Typography } from "@mui/material";
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { UserModel } from "../models/UserModel";
-import { BreakfastDiningOutlined } from "@mui/icons-material";
 
 export function Navigation() {
 
