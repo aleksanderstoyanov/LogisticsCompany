@@ -47,8 +47,8 @@ namespace LogisticsCompany.Services.Package.Commands
                     table: "Packages",
                     values: new string[]
                     {
-                        dto.FromId != null ? dto.FromId.ToString() : "NULL",
-                        dto.ToId != null ? dto.ToId.ToString() : "NULL",
+                        dto.FromId != null && dto.FromId != 0 ? dto.FromId.ToString() : "NULL",
+                        dto.ToId != null && dto.ToId != 0 ? dto.ToId.ToString() : "NULL",
                         "1", // PackageStatusID
                         dto.OfficeId != null ? dto.OfficeId.ToString() : "NULL",
                         "NULL", // DeliveryId
@@ -73,8 +73,8 @@ namespace LogisticsCompany.Services.Package.Commands
 
             var keyValuePairs = new Dictionary<string, string>()
             {
-                {"FromId", dto.FromId != null ?  dto.FromId.ToString() : "NULL" },
-                {"ToId", dto.ToId != null ?  dto.ToId.ToString() : "NULL"},
+                {"FromId", dto.FromId != null && dto.FromId != 0 ?  dto.FromId.ToString() : "NULL" },
+                {"ToId", dto.ToId != null && dto.ToId != 0 ?  dto.ToId.ToString() : "NULL"},
                 {"DeliveryId", dto.DeliveryId != null && dto.DeliveryId != 0 ?  dto.DeliveryId.ToString() : "NULL"},
                 {"Address", $"{dto.Address}"},
                 {"PackageStatusId", packageStatusId != null ? packageStatusId.Value.ToString() :  "NULL"},
