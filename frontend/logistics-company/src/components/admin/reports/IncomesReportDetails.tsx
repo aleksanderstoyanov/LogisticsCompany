@@ -3,10 +3,9 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
-import { SyntheticEvent, useState } from "react";
-import { API_URL, END_PERIOD_ID, START_PERIOD_ID } from "../../../util/Constants";
-import dayjs from "dayjs";
-import axios from "axios";
+import { useState } from "react";
+import { END_PERIOD_ID, START_PERIOD_ID } from "../../../util/Constants";
+import { getIncomesForPeriod } from "../../../requests/ReportRequests";
 
 export default function IncomesReportDetails() {
     const jwt = sessionStorage["jwt"];
@@ -32,26 +31,20 @@ export default function IncomesReportDetails() {
             setAlertMessage("Start or End Period is not filled!");
         }
 
-        else if(startPeriod && endPeriod && startPeriod > endPeriod){
+        else if (startPeriod && endPeriod && startPeriod > endPeriod) {
             setAlertVisible(true);
             setAlertMessage("Start Date must not be after End Period!");
         }
 
         else {
             setAlertVisible(false);
-            axios({
-                method:"GET",
-                url: `${API_URL}/Reports/GetIncomesForPeriod?startPeriod=${startPeriod.toDateString()}&endPeriod=${endPeriod.toDateString()}`,
-                headers: {
-                    "Authorization": `Bearer ${jwt}`
-                }
-            })
-            .then((response) => {
-                const income = response.data.income;
-                setIncomeVisible(true);
-                setIncome(income);
-            })
-            
+            getIncomesForPeriod(jwt, startPeriod.toDateString(), endPeriod.toDateString())
+                .then((response) => {
+                    const income = response.data.income;
+                    setIncomeVisible(true);
+                    setIncome(income);
+                })
+
         }
     }
     return (
@@ -89,11 +82,11 @@ export default function IncomesReportDetails() {
             </Box>
             <Box display={"flex"} justifyContent={"center"} marginTop={"2.5em"}>
                 <Typography variant="h6" sx={{
-                    display: incomeMessageVisible ? "block": "none"
+                    display: incomeMessageVisible ? "block" : "none"
                 }}>
-                    Income from <strong>{startPeriod?.toDateString()} </strong> 
-                           to <strong>{endPeriod?.toDateString()} </strong>
-                           is ${income}
+                    Income from <strong>{startPeriod?.toDateString()} </strong>
+                    to <strong>{endPeriod?.toDateString()} </strong>
+                    is ${income}
                 </Typography>
             </Box>
             <Alert severity="error"

@@ -30,7 +30,7 @@ export const DEFAULT_USER_ID = 0;
 export const DEFAULT_PACKAGE_ADDRESS = "None";
 export const DEFAULT_PACKAGE_FROM_ID = 0;
 export const DEFAULT_PACKAGE_TO_ID = 0;
-export const DEFAULT_PACKAGE_DELIVERY_ID= 0;
+export const DEFAULT_PACKAGE_DELIVERY_ID = 0;
 export const DEFAULT_PACKAGE_WEIGHT = 0;
 export const DEFAULT_PACKAGE_TO_OFFICE = false;
 
@@ -71,12 +71,20 @@ export const MODAL_STYLE = {
     pb: 3,
 };
 
+/**
+ * The default style properties for the Grid's style box container.
+ * @constant
+ */
 export const GRID_BOX_STYLE = {
     height: 400,
     width: '100%',
     marginTop: "7%"
 };
 
+/**
+ * The default style properties for the Grid's style card container.
+ * @constant
+ */
 export const GRID_CARD_CONTAINER_STYLE = {
     direction: "row",
     justifyContent: "center",

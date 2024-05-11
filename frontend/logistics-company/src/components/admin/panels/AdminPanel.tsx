@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
 import { UserModel } from "../../../models/UserModel";
 import { jwtDecode } from "jwt-decode";
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import { DataGrid, GridActionsCellItem, GridEventListener, GridRowEditStopReasons, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridRowsProp } from "@mui/x-data-grid";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
-import axios from "axios";
-import { API_URL, DEFAULT_USER_EMAIL, DEFAULT_USER_ID, DEFAULT_USER_Role, GRID_BOX_STYLE, USER_ROLES } from "../../../util/Constants";
+import { DEFAULT_USER_EMAIL, DEFAULT_USER_ID, DEFAULT_USER_Role, GRID_BOX_STYLE, USER_ROLES } from "../../../util/Constants";
 import { deepEqual } from "../../../util/Common";
 import { ColumnContainer } from "../../../util/ColumnContainer";
 import { isAuthorized, isAuthorizedForRole } from "../../../util/AuthorizationHelper";
 import Unauthorized from "../../auth/Unauthorized";
+import { deleteUser, getAllUsers, updateUser } from "../../../requests/UserRequests";
+import { getAllOffices } from "../../../requests/OfficeRequests";
 
 export default function AdminPanel() {
   const [userModel, setUserModel] = useState<UserModel>(
@@ -42,13 +43,7 @@ export default function AdminPanel() {
       })
 
       if (isAuthorizedForRole(Role, "Admin")) {
-        axios({
-          method: "GET",
-          url: `${API_URL}/Users/GetAll`,
-          headers: {
-            "Authorization": `Bearer ${jwt}`
-          }
-        })
+        getAllUsers(jwt)
           .then(function (response) {
             var data = response.data;
             if (rows.length == 0 && data.length > 0) {
@@ -56,13 +51,7 @@ export default function AdminPanel() {
             }
           })
 
-        axios({
-          method: "GET",
-          url: `${API_URL}/Offices/GetAll`,
-          headers: {
-            "Authorization": `Bearer ${jwt}`
-          }
-        })
+        getAllOffices(jwt)
           .then(function (response) {
             var data = response.data;
             if (offices.length == 0 && data.length > 0) {
@@ -96,14 +85,7 @@ export default function AdminPanel() {
     const foundRow = rows.find((row) => row.id === newRow.id) as GridRowModel;
     const updatedRow = { ...newRow, isNew: false };
     if (foundRow != null && !deepEqual(foundRow, newRow)) {
-      axios({
-        method: "PUT",
-        data: updatedRow,
-        url: `${API_URL}/Users/Update`,
-        headers: {
-          "Authorization": `Bearer ${jwt}`
-        }
-      })
+      updateUser(jwt, updatedRow);
     }
     setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
 
@@ -115,13 +97,7 @@ export default function AdminPanel() {
   }
 
   function onDelete(id: GridRowId) {
-    axios({
-      method: "DELETE",
-      url: `${API_URL}/Users/Delete?id=${id}`,
-      headers: {
-        "Authorization": `Bearer ${jwt}`
-      }
-    })
+    deleteUser(id, jwt)
       .then((response) => {
         if (response.status == 200) {
           setTimeout(() => {

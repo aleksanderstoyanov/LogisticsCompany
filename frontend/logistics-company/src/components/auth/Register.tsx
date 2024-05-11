@@ -7,8 +7,8 @@ import "../../models/RegisterModel";
 
 import { SyntheticEvent, useState } from "react";
 import { RegisterModel } from "../../models/RegisterModel";
-import axios, { Axios } from "axios";
-import { API_URL, DEFAULT_USER_EMAIL, DEFAULT_USER_PASSWORD, DEFAULT_USER_USERNAME } from "../../util/Constants";
+import { DEFAULT_USER_EMAIL, DEFAULT_USER_PASSWORD, DEFAULT_USER_USERNAME } from "../../util/Constants";
+import { register } from "../../requests/AuthRequests";
 
 const IDS = ["user", "firstName", "lastName", "email", "password"] as const;
 const [USERNAME_ID, FIRSTNAME_ID, LASTNAME_ID, EMAIL_ID, PASSWORD_ID] = IDS;
@@ -16,7 +16,7 @@ const [USERNAME_ID, FIRSTNAME_ID, LASTNAME_ID, EMAIL_ID, PASSWORD_ID] = IDS;
 export function Register() {
   const [registerModel, changeRegisterModel] = useState<RegisterModel>
     (
-        new RegisterModel
+      new RegisterModel
         (
           DEFAULT_USER_USERNAME,
           DEFAULT_USER_USERNAME,
@@ -82,11 +82,7 @@ export function Register() {
     );
   }
   function onRegister(event: SyntheticEvent) {
-    axios({
-      method: 'POST',
-      url: `${API_URL}/Authorization/Register`,
-      data: registerModel
-    })
+    register(registerModel)
       .then((response) => {
         if (response.status == 200) {
           window.location.href = "/login";

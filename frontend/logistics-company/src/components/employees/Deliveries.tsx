@@ -1,13 +1,13 @@
 import { Box, Button, Typography } from "@mui/material";
-import { API_URL, GRID_BOX_STYLE } from "../../util/Constants";
+import { GRID_BOX_STYLE } from "../../util/Constants";
 import { DataGrid, GridRowId, GridRowModel } from "@mui/x-data-grid";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { isAuthorized, isAuthorizedForRole } from "../../util/AuthorizationHelper";
 import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
 import { jwtDecode } from "jwt-decode";
 import Unauthorized from "../auth/Unauthorized";
-import axios from "axios";
 import { ColumnContainer } from "../../util/ColumnContainer";
+import { getAllDeliveries, updateDelivery } from "../../requests/DeliveryRequests";
 
 export default function Deliveries() {
 
@@ -21,13 +21,7 @@ export default function Deliveries() {
     useEffect(() => {
         debugger;
         if (isAuthorized(jwt) && isAuthorizedForRole("Courier", Role)) {
-            axios({
-                method: "GET",
-                url: `${API_URL}/Deliveries/GetAll`,
-                headers: {
-                    "Authorization": `Bearer ${jwt}`
-                }
-            })
+            getAllDeliveries(jwt)
                 .then((response) => {
                     const data = response.data;
 
@@ -52,16 +46,9 @@ export default function Deliveries() {
 
     function onDeliver(event: SyntheticEvent, id: GridRowId) {
         var button = event.target as HTMLButtonElement;
-        
-        axios({
-            url: `${API_URL}/Deliveries/Update`,
-            method: "PUT",
-            headers: {
-                "Authorization": `Bearer ${jwt}`
-            },
-            data: {id: id}
-        })
-        
+
+        updateDelivery(jwt, { id: id });
+
         button.remove();
     }
 
@@ -89,7 +76,7 @@ export default function Deliveries() {
                         <Button
                             variant="outlined"
                             color="primary"
-                            onClick={ (event) => {onDeliver(event, row.id)}}
+                            onClick={(event) => { onDeliver(event, row.id) }}
                             endIcon={<LocalShippingOutlinedIcon />}>
                             Deliver
                         </Button>,

@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { UserModel } from "../../models/UserModel";
 import { jwtDecode } from "jwt-decode";
-import axios from "axios";
 import { Box } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import { ColumnContainer } from "../../util/ColumnContainer";
 import { isAuthorized, isAuthorizedForRole } from "../../util/AuthorizationHelper";
 import Unauthorized from "../auth/Unauthorized";
-import { API_URL, DEFAULT_USER_EMAIL, DEFAULT_USER_ID, DEFAULT_USER_Role, GRID_BOX_STYLE } from "../../util/Constants";
+import { DEFAULT_USER_EMAIL, DEFAULT_USER_ID, DEFAULT_USER_Role, GRID_BOX_STYLE } from "../../util/Constants";
+import { getSentPackages } from "../../requests/PackageRequests";
 
 export default function SentPackagesPanel() {
     const [user, setUser] = useState<UserModel>(
@@ -39,13 +39,7 @@ export default function SentPackagesPanel() {
                 userModel.role = Role;
                 return userModel;
             })
-            axios({
-                method: "GET",
-                url: `${API_URL}/Packages/GetSent?id=${user.id}`,
-                headers: {
-                    "Authorization": `Bearer ${jwt}`
-                }
-            })
+            getSentPackages(jwt, user.id)
                 .then((response) => {
                     const data = response.data;
 

@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { UserModel } from "../../models/UserModel";
 import { jwtDecode } from "jwt-decode";
-import axios from "axios";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import { Box } from "@mui/material";
 import { ColumnContainer } from "../../util/ColumnContainer";
 import { isAuthorized, isAuthorizedForRole } from "../../util/AuthorizationHelper";
 import Unauthorized from "../auth/Unauthorized";
-import { API_URL, DEFAULT_USER_EMAIL, DEFAULT_USER_ID, DEFAULT_USER_Role, GRID_BOX_STYLE } from "../../util/Constants";
+import { DEFAULT_USER_EMAIL, DEFAULT_USER_ID, DEFAULT_USER_Role, GRID_BOX_STYLE } from "../../util/Constants";
+import { getReceivedPackages } from "../../requests/PackageRequests";
 
 export default function ReceivedPackagesPanel() {
     const jwt = sessionStorage["jwt"];
@@ -20,7 +20,7 @@ export default function ReceivedPackagesPanel() {
     );
     const [rows, setRows] = useState<any[]>([]);
     const { Id, Email, Role } = isAuthorized(jwt) ? jwtDecode(jwt)
-    : { Id: null, Role: null, Email: null } as any;
+        : { Id: null, Role: null, Email: null } as any;
 
     let columns = new ColumnContainer()
         .Add("id", "Id", 200, false)
@@ -43,13 +43,7 @@ export default function ReceivedPackagesPanel() {
             })
 
             if (isAuthorizedForRole(user.role, "Client")) {
-                axios({
-                    method: "GET",
-                    url: `${API_URL}/Packages/GetReceived?id=${user.id}`,
-                    headers: {
-                        "Authorization": `Bearer ${jwt}`
-                    }
-                })
+                getReceivedPackages(jwt, user.id)
                     .then((response) => {
                         const data = response.data;
                         if (rows.length == 0 && data.length > 0) {

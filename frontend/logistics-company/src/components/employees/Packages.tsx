@@ -4,16 +4,18 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
-import { DataGrid, GridActionsCellItem, GridColDef, GridEventListener, GridRowEditStopReasons, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridRowSelectionModel } from "@mui/x-data-grid";
-import axios from "axios";
+import { DataGrid, GridActionsCellItem, GridEventListener, GridRowEditStopReasons, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridRowSelectionModel } from "@mui/x-data-grid";
 import { jwtDecode } from "jwt-decode";
 import { Alert, Box, Button, Typography } from "@mui/material";
 import Unauthorized from "../auth/Unauthorized";
-import { API_URL, DEFAULT_USER_EMAIL, DEFAULT_USER_ID, DEFAULT_USER_Role, GRID_BOX_STYLE, PACKAGE_STATUSES } from "../../util/Constants";
+import { DEFAULT_USER_EMAIL, DEFAULT_USER_ID, DEFAULT_USER_Role, GRID_BOX_STYLE, PACKAGE_STATUSES } from "../../util/Constants";
 import { isAuthorized, isAuthorizedForRole } from "../../util/AuthorizationHelper";
 import { deepEqual, valueOptionMapper } from "../../util/Common";
 import { ColumnContainer } from "../../util/ColumnContainer";
 import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
+import { deletePackage, getAllPackages, updatePackage } from "../../requests/PackageRequests";
+import { getAllUsersExcept } from "../../requests/UserRequests";
+import { createDelivery } from "../../requests/DeliveryRequests";
 
 export default function Packages() {
     const [userModel, setUserModel] = useState<UserModel>(
@@ -62,13 +64,7 @@ export default function Packages() {
 
         if (isAuthorizedForRole(Role, "OfficeEmployee") || isAuthorizedForRole(Role, "Courier")) {
             if (rows.length == 0) {
-                axios({
-                    method: "GET",
-                    url: `${API_URL}/Packages/GetAll`,
-                    headers: {
-                        "Authorization": `Bearer ${jwt}`
-                    }
-                })
+                getAllPackages(jwt)
                     .then(function (response) {
                         var data = response.data;
                         if (rows.length == 0 && data.length > 0) {
@@ -78,13 +74,7 @@ export default function Packages() {
             }
 
             if (users.length === 0) {
-                axios({
-                    method: "GET",
-                    url: `${API_URL}/Users/GetAllExcept?id=${userModel.id}&role=Client`,
-                    headers: {
-                        "Authorization": `Bearer ${jwt}`
-                    }
-                })
+                getAllUsersExcept(jwt, userModel.id, "Client")
                     .then((response) => {
                         const data = response.data;
                         if (users.length == 0 && data.length > 0) {
@@ -126,14 +116,7 @@ export default function Packages() {
         const foundRow = rows.find((row) => row.id === newRow.id) as GridRowModel;
         const updatedRow = { ...newRow, isNew: false };
         if (foundRow != null && !deepEqual(foundRow, newRow)) {
-            axios({
-                method: "PUT",
-                url: `${API_URL}/Packages/Update`,
-                data: updatedRow,
-                headers: {
-                    "Authorization": `Bearer ${jwt}`
-                }
-            })
+            updatePackage(jwt, updatedRow);
         }
         setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
 
@@ -149,14 +132,7 @@ export default function Packages() {
         setDeliveryButtonVisible(rows.length == 0 ? false : true);
     }
     function onBeginDelivery() {
-        axios({
-            method: "POST",
-            url: `${API_URL}/Deliveries/Create`,
-            headers: {
-                "Authorization": `Bearer ${jwt}`
-            },
-            data: { "selectedIds": selectedIds }
-        })
+        createDelivery(jwt, { selectedIds: selectedIds })
             .then((response) => {
                 if (response.status == 200) {
                     setDeliveryMessage(response.data);
@@ -165,13 +141,7 @@ export default function Packages() {
             })
     }
     function onDelete(id: GridRowId) {
-        axios({
-            method: "DELETE",
-            url: `${API_URL}/Packages/Delete?id=${id}`,
-            headers: {
-                "Authorization": `Bearer ${jwt}`
-            }
-        })
+        deletePackage(id, jwt)
             .then((response) => {
                 if (response.status == 200) {
                     setTimeout(() => {
@@ -281,7 +251,7 @@ export default function Packages() {
                 </Typography>
             </Button>
             <Alert style={{ display: isMessageVisible ? "block" : "none" }} severity="success">
-                 {deliveryMessage}
+                {deliveryMessage}
             </Alert>
         </Box>
     );

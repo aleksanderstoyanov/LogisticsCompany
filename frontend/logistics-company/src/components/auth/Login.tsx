@@ -7,8 +7,8 @@ import '../../styles/Register.css';
 import { SyntheticEvent, useState } from "react";
 import { LoginModel } from "../../models/LoginModel";
 
-import axios from "axios";
-import { API_URL, DEFAULT_USER_PASSWORD, DEFAULT_USER_USERNAME, LOGIN_FORM_IDS } from "../../util/Constants";
+import { DEFAULT_USER_PASSWORD, DEFAULT_USER_USERNAME, LOGIN_FORM_IDS } from "../../util/Constants";
+import { login } from "../../requests/AuthRequests";
 
 export function Login() {
     const [EMAIL_ID, PASSWORD_ID] = LOGIN_FORM_IDS;
@@ -31,13 +31,8 @@ export function Login() {
         setLoginModel(new LoginModel("", ""));
     }
     function onLogin(event: SyntheticEvent) {
-        axios({
-            method: 'POST',
-            url: `${API_URL}/Authorization/Login`,
-            data: loginModel
-        })
+        login(loginModel)
             .then((response) => {
-                debugger;
                 let jwt = response.data;
                 if (jwt != "Invalid Credentials") {
                     sessionStorage['jwt'] = response.data;

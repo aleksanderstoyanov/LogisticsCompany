@@ -8,12 +8,12 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
-import axios from "axios";
 import { ColumnContainer } from "../../../util/ColumnContainer";
 import { isAuthorized, isAuthorizedForRole } from "../../../util/AuthorizationHelper";
-import { API_URL, DEFAULT_USER_EMAIL, DEFAULT_USER_ID, DEFAULT_USER_Role, GRID_BOX_STYLE } from "../../../util/Constants";
+import { DEFAULT_USER_EMAIL, DEFAULT_USER_ID, DEFAULT_USER_Role, GRID_BOX_STYLE } from "../../../util/Constants";
 import { deepEqual, getRandomInt } from "../../../util/Common";
 import Unauthorized from "../../auth/Unauthorized";
+import { createOffice, deleteOffice, getAllOffices, updateOffice } from "../../../requests/OfficeRequests";
 
 export default function OfficePanel() {
   const [userModel, setUserModel] = useState<UserModel>(
@@ -53,14 +53,8 @@ export default function OfficePanel() {
     let updatedRow = { ...newRow, isNew: newRow.isNew ? true : false };
 
     if (newRow.isNew) {
-      axios({
-        method: "POST",
-        url: `${API_URL}/Offices/Create`,
-        data: updatedRow,
-        headers: {
-          "Authorization": `Bearer ${jwt}`
-        }
-      })
+
+      createOffice(jwt, updatedRow)
         .then((response) => {
           if (response.status == 200) {
 
@@ -81,14 +75,7 @@ export default function OfficePanel() {
     }
 
     else if (foundRow != null && !deepEqual(foundRow, newRow)) {
-      axios({
-        method: "PUT",
-        url: `${API_URL}/Offices/Update`,
-        data: updatedRow,
-        headers: {
-          "Authorization": `Bearer ${jwt}`
-        }
-      })
+      updateOffice(jwt, updatedRow);
 
       setRows(rows.map((row) => {
         return (row.id === newRow.id ? updatedRow : row)
@@ -103,13 +90,7 @@ export default function OfficePanel() {
   }
 
   function onDelete(id: GridRowId) {
-    axios({
-      method: "DELETE",
-      url: `${API_URL}/Offices/Delete?id=${id}`,
-      headers: {
-        "Authorization": `Bearer ${jwt}`
-      }
-    })
+    deleteOffice(id, jwt)
       .then(function (response) {
         if (response.status == 200) {
           setTimeout(() => {
@@ -184,13 +165,7 @@ export default function OfficePanel() {
       })
 
       if (isAuthorizedForRole(Role, "Admin")) {
-        axios({
-          method: "GET",
-          url: `${API_URL}/Offices/GetAll`,
-          headers: {
-            "Authorization": `Bearer ${jwt}`
-          }
-        })
+        getAllOffices(jwt)
           .then(function (response) {
             var data = response.data;
             if (rows.length == 0 && data.length > 0) {

@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { OfficeModel } from "../../models/OfficeModel"
 import { UserModel } from "../../models/UserModel";
 import { jwtDecode } from "jwt-decode";
-import axios from "axios";
 import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, Grid, Modal, Typography } from "@mui/material";
 import EmojiTransportationIcon from '@mui/icons-material/EmojiTransportation';
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
 import PackageForm from "./PackageForm";
 import CloseIcon from '@mui/icons-material/Close';
-import { API_URL, GRID_CARD_CONTAINER_STYLE, MODAL_STYLE } from "../../util/Constants";
+import { GRID_CARD_CONTAINER_STYLE, MODAL_STYLE } from "../../util/Constants";
+import { getAllOffices } from "../../requests/OfficeRequests";
+import { getAllUsersExcept } from "../../requests/UserRequests";
 
 export default function Offices() {
     const [open, setOpen] = useState<boolean>(false);
@@ -30,40 +31,28 @@ export default function Offices() {
             })
 
             if (Role == "Client") {
-                axios({
-                    method: "GET",
-                    url: `${API_URL}/Offices/GetAll`,
-                    headers: {
-                        "Authorization": `Bearer ${jwt}`
-                    }
-                })
-                .then((response) => {
-                    const data = response.data;
+                getAllOffices(jwt)
+                    .then((response) => {
+                        const data = response.data;
 
-                    if (offices.length == 0 && data.length > 0) {
-                        setOffices(data);
-                    }
-                })
+                        if (offices.length == 0 && data.length > 0) {
+                            setOffices(data);
+                        }
+                    })
 
-                axios({
-                    method: "GET",
-                    url: `${API_URL}/Users/GetAllExcept?id=${user.id}&role=Client`,
-                    headers: {
-                        "Authorization": `Bearer ${jwt}`
-                    }
-                })
-                .then((response) => {
-                    const data = response.data;
-                    
-                    if (users.length == 0 && data.length > 0) {
-                        setUsers(data);
-                    }
-                })
+                getAllUsersExcept(jwt, user.id, "Client")
+                    .then((response) => {
+                        const data = response.data;
+
+                        if (users.length == 0 && data.length > 0) {
+                            setUsers(data);
+                        }
+                    })
             }
 
         }
     })
-    
+
     function onClick() {
         setOpen(true);
     }

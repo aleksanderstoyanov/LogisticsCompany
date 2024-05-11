@@ -3,10 +3,9 @@ import PackageModel from "../../models/PackageModel";
 import { ChangeEvent, SyntheticEvent, useEffect, useState } from "react";
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
 import InventoryIcon from '@mui/icons-material/Inventory';
-import axios from "axios";
 import { UserModel } from "../../models/UserModel";
-import { API_URL, DEFAULT_PACKAGE_ADDRESS, DEFAULT_PACKAGE_DELIVERY_ID, DEFAULT_PACKAGE_FROM_ID, DEFAULT_PACKAGE_TO_ID, DEFAULT_PACKAGE_TO_OFFICE, DEFAULT_PACKAGE_WEIGHT, PACKAGE_FORM_IDS } from "../../util/Constants";
-import { OfficeModel } from "../../models/OfficeModel";
+import { DEFAULT_PACKAGE_ADDRESS, DEFAULT_PACKAGE_DELIVERY_ID, DEFAULT_PACKAGE_FROM_ID, DEFAULT_PACKAGE_TO_ID, DEFAULT_PACKAGE_TO_OFFICE, DEFAULT_PACKAGE_WEIGHT, PACKAGE_FORM_IDS } from "../../util/Constants";
+import { createPackage } from "../../requests/PackageRequests";
 
 export default function PackageForm(props: any) {
     const jwt = sessionStorage["jwt"];
@@ -95,15 +94,7 @@ export default function PackageForm(props: any) {
     }
 
     function onSubmit(event: SyntheticEvent) {
-        debugger;
-        axios({
-            method: "POST",
-            url: `${API_URL}/Packages/Create`,
-            data: packageModel,
-            headers: {
-                "Authorization": `Bearer ${jwt}`
-            }
-        })
+       createPackage(jwt, packageModel)
             .then((response) => {
                 if (response.status == 200) {
                     window.location.href = "/offices";
