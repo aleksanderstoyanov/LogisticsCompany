@@ -7,10 +7,14 @@ namespace LogisticsCompany.Data
     /// <summary>
     /// Class used for creating the Database Context.
     /// </summary>
-    public class LogisticsCompanyContext
+    public class LogisticsCompanyContext : IDbContext
     {
         internal IConfiguration _configuration { get; set; }
         internal IDbFactory _dbFactory { get; set; }
+
+        public LogisticsCompanyContext()
+        {
+        }
 
         /// <summary>
         /// Creates a <see cref="LogisticsCompanyContext" /> instance with the passed <paramref name="configuration"/>
