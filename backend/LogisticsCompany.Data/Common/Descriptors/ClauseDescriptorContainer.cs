@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LogisticsCompany.Data.Common
+namespace LogisticsCompany.Data.Common.Descriptors
 {
     /// <summary>
     /// Class used for storing existing <see cref="ClauseDescriptor"/> instances.
@@ -37,7 +37,7 @@ namespace LogisticsCompany.Data.Common
 
             factoryOptions.Invoke(factory);
 
-            this.ClauseDescriptors = (IReadOnlyCollection<ClauseDescriptor>)factory.Clauses;
+            ClauseDescriptors = (IReadOnlyCollection<ClauseDescriptor>)factory.Clauses;
 
             return this;
         }

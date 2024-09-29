@@ -1,4 +1,5 @@
 ﻿using LogisticsCompany.Data.Common;
+using LogisticsCompany.Data.Common.Descriptors;
 using System.Text;
 
 namespace LogisticsCompany.Data.Builders
