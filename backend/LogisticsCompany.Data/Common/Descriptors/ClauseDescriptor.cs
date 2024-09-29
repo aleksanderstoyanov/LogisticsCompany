@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
+using LogisticsCompany.Data.Common.Operators;
 
-namespace LogisticsCompany.Data.Common
+namespace LogisticsCompany.Data.Common.Descriptors
 {
     /// <summary>
     /// Class for composing a raw WHERE Clause in the Database.
@@ -30,8 +31,8 @@ namespace LogisticsCompany.Data.Common
         /// <param name="fieldValue">The Field Value which will be used in the WHERE clause.</param>
         public ClauseDescriptor(string field, object fieldValue)
         {
-            this.Field = field;
-            this.FieldValue = fieldValue;
+            Field = field;
+            FieldValue = fieldValue;
         }
 
         /// <summary>
@@ -43,10 +44,10 @@ namespace LogisticsCompany.Data.Common
         /// <param name="equalityOperator">The Equality Operator which will be used in the WHERE clause.</param>
         public ClauseDescriptor(string field, object fieldValue, LogicalOperator logicalOperator, EqualityOperator equalityOperator)
         {
-            this.Field = field;
-            this.FieldValue = fieldValue;
-            this.LogicalOperator = logicalOperator;
-            this.EqualityOperator = equalityOperator;
+            Field = field;
+            FieldValue = fieldValue;
+            LogicalOperator = logicalOperator;
+            EqualityOperator = equalityOperator;
         }
 
         private string SerializeEqualityOperator()
@@ -85,13 +86,13 @@ namespace LogisticsCompany.Data.Common
             var result = "";
             var serializedEqualityOperator = SerializeEqualityOperator();
 
-            if (this.LogicalOperator == null)
+            if (LogicalOperator == null)
             {
-                result = $"{this.Field} {serializedEqualityOperator} '{this.FieldValue}' {this.LogicalOperator}";
+                result = $"{Field} {serializedEqualityOperator} '{FieldValue}' {LogicalOperator}";
             }
             else
             {
-                result = $"{this.Field} {serializedEqualityOperator} '{this.FieldValue}' {this.LogicalOperator}";
+                result = $"{Field} {serializedEqualityOperator} '{FieldValue}' {LogicalOperator}";
             }
 
             if (isJoinClause)

@@ -2,6 +2,8 @@
 using LogisticsCompany.Data;
 using LogisticsCompany.Data.Builders;
 using LogisticsCompany.Data.Common;
+using LogisticsCompany.Data.Common.Descriptors;
+using LogisticsCompany.Data.Common.Operators;
 using LogisticsCompany.Services.Package.Dto;
 using Microsoft.Data.SqlClient;
 

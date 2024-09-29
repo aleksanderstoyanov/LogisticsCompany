@@ -7,6 +7,8 @@ using LogisticsCompany.Services.Users.Queries;
 using Dapper;
 using LogisticsCompany.Services.Reports.Dto;
 using LogisticsCompany.Services.Users.Dto;
+using LogisticsCompany.Data.Common.Operators;
+using LogisticsCompany.Data.Common.Descriptors;
 
 namespace LogisticsCompany.Services.Reports.Queries
 {

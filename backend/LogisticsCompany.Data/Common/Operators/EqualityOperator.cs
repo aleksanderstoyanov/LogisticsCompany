@@ -1,4 +1,4 @@
-﻿namespace LogisticsCompany.Data.Common
+﻿namespace LogisticsCompany.Data.Common.Operators
 {
     public enum EqualityOperator
     {

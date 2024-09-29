@@ -1,5 +1,4 @@
-﻿
-using LogisticsCompany.Data.Common;
+﻿using LogisticsCompany.Data.Common.Descriptors;
 
 namespace LogisticsCompany.Data.Builders
 {
