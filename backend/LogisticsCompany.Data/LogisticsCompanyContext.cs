@@ -1,4 +1,5 @@
-﻿using LogisticsCompany.Data.Factory;
+﻿using LogisticsCompany.Data.Contracts;
+using LogisticsCompany.Data.Factory;
 using Microsoft.Extensions.Configuration;
 
 namespace LogisticsCompany.Data
@@ -9,6 +10,7 @@ namespace LogisticsCompany.Data
     public class LogisticsCompanyContext
     {
         internal IConfiguration _configuration { get; set; }
+        internal IDbFactory _dbFactory { get; set; }
 
         /// <summary>
         /// Creates a <see cref="LogisticsCompanyContext" /> instance with the passed <paramref name="configuration"/>
@@ -28,12 +30,16 @@ namespace LogisticsCompany.Data
         public LogisticsCompanyContext(IConfiguration configuration, SqlDbFactory dbFactory)
         {
             _configuration = configuration;
-            var connectionString = GetConnectionString();
-
-            ConstructDatabase(dbFactory, connectionString);
+            _dbFactory = dbFactory;
         }
 
-        private static void ConstructDatabase(SqlDbFactory dbFactory, string connectionString)
+        /// <summary>
+        /// Initializes the database based on the DbFactory and Connection String.
+        /// </summary>
+        public void InitializeDatabase()
+                => ConstructDatabase(_dbFactory, GetConnectionString());
+
+        private void ConstructDatabase(IDbFactory dbFactory, string connectionString)
         {
             dbFactory
                 .CreateDbInitializer(connectionString)
