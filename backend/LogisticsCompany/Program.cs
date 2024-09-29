@@ -90,6 +90,7 @@ app.UseCors(options =>
 using (var scope = app.Services.CreateScope())
 {
     var dbFactory = scope.ServiceProvider.GetRequiredService<LogisticsCompanyContext>();
+    dbFactory.InitializeDatabase();
 }
 
 app.UseHttpsRedirection();
