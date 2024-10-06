@@ -3,6 +3,7 @@ using LogisticsCompany.Data;
 using LogisticsCompany.Data.Builders;
 using LogisticsCompany.Data.Common.Descriptors;
 using LogisticsCompany.Data.Common.Operators;
+using LogisticsCompany.Data.Contracts;
 using Microsoft.Data.SqlClient;
 
 namespace LogisticsCompany.Services.Roles.Queries
@@ -10,19 +11,19 @@ namespace LogisticsCompany.Services.Roles.Queries
     /// <summary>
     /// A <see cref="BaseService"/> class which will perform Database Query operations for Roles.
     /// </summary>
-    public class RoleQueryService: BaseService, IRoleQueryService
+    public class RoleQueryService : BaseService, IRoleQueryService
     {
 
         /// <summary>
         /// Creates a <see cref="RoleQueryService"/> instance 
-        /// with the injected <paramref name="dbContext"/>
-        /// argument.
+        /// with the injected <paramref name="dbContext"/> and <paramref name="dbAdapter"/>
+        /// arguments.
         /// </summary>
         /// <param name="dbContext">The Database context</param>
-        public RoleQueryService(LogisticsCompanyContext dbContext)
-            :base(dbContext)
+        public RoleQueryService(LogisticsCompanyContext dbContext,
+            IDbAdapter dbAdapter)
+            : base(dbContext, dbAdapter)
         {
-            
         }
 
         /// <summary>
@@ -36,29 +37,28 @@ namespace LogisticsCompany.Services.Roles.Queries
         /// </returns>
         public async Task<int> GetIdByName(string name)
         {
-            using (var connection = new SqlConnection(_connectionString))
+            var clauseContainer = new ClauseDescriptorContainer();
+
+            clauseContainer.Descriptors(descriptors =>
             {
-                var clauseContainer = new ClauseDescriptorContainer();
+                descriptors.Add(descriptor => descriptor
+                    .Field("Name")
+                    .EqualityOperator(EqualityOperator.EQUALS)
+                    .FieldValue(name)
+                );
+            });
 
-                clauseContainer.Descriptors(descriptors =>
-                {
-                    descriptors.Add(descriptor => descriptor
-                        .Field("Name")
-                        .EqualityOperator(EqualityOperator.EQUALS)
-                        .FieldValue(name)
-                    );
-                });
+            var query = new SqlQueryBuilder()
+                .Select(columns: "Id")
+                .From(table: "Roles")
+                .Where(clauseContainer)
+                .ToQuery();
 
-                var query = new SqlQueryBuilder()
-                    .Select(columns: "Id")
-                    .From(table: "Roles")
-                    .Where(clauseContainer)
-                    .ToQuery();
 
-                var id = await connection.QuerySingleAsync<int>(query);
+            var id = await this._dbAdapter
+                .QuerySingle<int>(query);
 
-                return id;
-            }
+            return id;
         }
 
         /// <summary>
@@ -71,29 +71,27 @@ namespace LogisticsCompany.Services.Roles.Queries
         /// <returns></returns>
         public async Task<string?> GetRoleNameById(int id)
         {
-            using (var connection = new SqlConnection(this._connectionString))
+            var clauseContainer = new ClauseDescriptorContainer();
+
+            clauseContainer.Descriptors(descriptors =>
             {
-                var clauseContainer = new ClauseDescriptorContainer();
+                descriptors.Add(descriptor => descriptor
+                    .Field("Id")
+                    .EqualityOperator(EqualityOperator.EQUALS)
+                    .FieldValue(id)
+                );
+            });
 
-                clauseContainer.Descriptors(descriptors =>
-                {
-                    descriptors.Add(descriptor => descriptor
-                        .Field("Id")
-                        .EqualityOperator(EqualityOperator.EQUALS)
-                        .FieldValue(id)
-                    );
-                });
+            var query = new SqlQueryBuilder()
+               .Select(columns: "Name")
+               .From(table: "Roles")
+               .Where(clauseContainer)
+               .ToQuery();
 
-                var query = new SqlQueryBuilder()
-                   .Select(columns: "Name")
-                   .From(table: "Roles")
-                   .Where(clauseContainer)
-                   .ToQuery();
+            var result = await this._dbAdapter
+                .QuerySingle<string>(query);
 
-                var roleName = await connection.QueryFirstOrDefaultAsync<string>(query);
-
-                return roleName;
-            }
+            return result;
         }
     }
 }

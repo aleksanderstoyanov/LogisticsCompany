@@ -9,6 +9,7 @@ using LogisticsCompany.Services.Reports.Dto;
 using LogisticsCompany.Services.Users.Dto;
 using LogisticsCompany.Data.Common.Operators;
 using LogisticsCompany.Data.Common.Descriptors;
+using LogisticsCompany.Data.Contracts;
 
 namespace LogisticsCompany.Services.Reports.Queries
 {
@@ -22,13 +23,16 @@ namespace LogisticsCompany.Services.Reports.Queries
 
         /// <summary>
         /// Creates a <see cref="ReportQueryService"/> instance
-        /// with the injected <paramref name="dbContext"/> and <paramref name="userQueryService"/>
+        /// with the injected <paramref name="dbContext"/>, <paramref name="dbAdapter"/> and <paramref name="userQueryService"/>
         /// arguments.
         /// </summary>
         /// <param name="dbContext">The Database context</param>
         /// <param name="userQueryService">Service used for performing query operations for Users</param>
-        public ReportQueryService(LogisticsCompanyContext dbContext, IUserQueryService userQueryService)
-            : base(dbContext)
+        /// <param name="dbAdapter">The Database adapter that will instantiate a connection and execute the constructed query.</param>
+        public ReportQueryService(LogisticsCompanyContext dbContext, 
+            IUserQueryService userQueryService,
+            IDbAdapter dbAdapter)
+            : base(dbContext, dbAdapter)
         {
             _userQueryService = userQueryService;
         }
@@ -143,15 +147,12 @@ namespace LogisticsCompany.Services.Reports.Queries
                 )
                 .ToQuery();
 
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var packages = await connection.QueryAsync<PackageReportDto>(query);
 
-                return packages
-                    .Where(package => package.PackageStatusName != "NonRegistered")
-                    .ToList();
-            }
+            var result = await this._dbAdapter
+                    .QueryAll<PackageReportDto>(query);
 
+            return result
+                .Where(package => package.PackageStatusName != "NonRegistered");
         }
 
         /// <summary>
@@ -165,7 +166,8 @@ namespace LogisticsCompany.Services.Reports.Queries
         {
             var packages = await GetAllRegisteredPackages();
 
-            return packages.Where(package => package.PackageStatusName == "InDelivery");
+            return packages
+                .Where(package => package.PackageStatusName == "InDelivery");
         }
 
         /// <summary>
@@ -223,32 +225,30 @@ namespace LogisticsCompany.Services.Reports.Queries
 
                 });
 
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var query = new SqlQueryBuilder()
-                    .Select(columns: "SUM(office.PricePerWeight * package.Weight) AS TotalPrice")
-                    .From(table: "Packages", @as: "package")
-                    .Join
-                    (
-                        joinOperator: JoinOperator.INNER,
-                        table: "Offices",
-                        container: officeClauseContainer,
-                        @as: "office"
-                    )
-                    .Join(
-                        joinOperator: JoinOperator.INNER,
-                        table: "Deliveries",
-                        container: deliveryClauseContainer,
-                        @as: "delivery"
-                    )
-                    .Where(clauseDescriptorContaier)
-                    .ToQuery();
 
+            var query = new SqlQueryBuilder()
+                   .Select(columns: "SUM(office.PricePerWeight * package.Weight) AS TotalPrice")
+                   .From(table: "Packages", @as: "package")
+                   .Join
+                   (
+                       joinOperator: JoinOperator.INNER,
+                       table: "Offices",
+                       container: officeClauseContainer,
+                       @as: "office"
+                   )
+                   .Join(
+                       joinOperator: JoinOperator.INNER,
+                       table: "Deliveries",
+                       container: deliveryClauseContainer,
+                       @as: "delivery"
+                   )
+                   .Where(clauseDescriptorContaier)
+                   .ToQuery();
 
-                var result = await connection.QuerySingleOrDefaultAsync<IncomeAggregateModel>(query);
+            var result = await this._dbAdapter
+                    .QuerySingle<IncomeAggregateModel>(query);
 
-                return result.TotalPrice;
-            }
+            return result.TotalPrice;
         }
     }
 }

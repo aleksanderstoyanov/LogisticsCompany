@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using LogisticsCompany.Data;
+using LogisticsCompany.Data.Contracts;
 using LogisticsCompany.Data.Helpers;
 using LogisticsCompany.Entity;
 using LogisticsCompany.Services.Offices.Queries;
@@ -20,25 +21,27 @@ namespace LogisticsCompany.Services.Users.Commands
         private readonly IRoleQueryService _roleQueryService;
         private readonly IOfficeQueryService _officeQueryService;
         private readonly IPackageQueryService _packageQueryService;
-        
+
         /// <summary>
         /// Creates a <see cref="UserCommandService"/> instance
-        /// with the injected <paramref name="dbContext"/>, <paramref name="userQueryService"/>,
+        /// with the injected <paramref name="dbContext"/>, <paramref name="dbAdapter"/>, <paramref name="userQueryService"/>,
         /// <paramref name="roleQueryService"/>, <paramref name="officeQueryService"/>, and
         /// <paramref name="packageQueryService"/> arguments.
         /// </summary>
         /// <param name="dbContext">The Database context</param>
+        /// <param name="dbAdapter">The DataBase adapter that will instantiate a connection and process the constructed command.</param>
         /// <param name="userQueryService">Service used for performing query operations for Users</param>
         /// <param name="roleQueryService">Service used for performing query operations for Roles</param>
         /// <param name="officeQueryService">Service used for performing query operations for Offices</param>
         /// <param name="packageQueryService">Service used for performing query operations for Packages</param>
         public UserCommandService(
             LogisticsCompanyContext dbContext,
+            IDbAdapter dbAdapter,
             IUserQueryService userQueryService,
             IRoleQueryService roleQueryService,
             IOfficeQueryService officeQueryService,
             IPackageQueryService packageQueryService)
-            : base(dbContext)
+            : base(dbContext, dbAdapter)
         {
             _userQueryService = userQueryService;
             _roleQueryService = roleQueryService;
@@ -71,17 +74,15 @@ namespace LogisticsCompany.Services.Users.Commands
                 { "OfficeId", officeId != null ? officeId.ToString() : "NULL"},
             };
 
-            var updateCommand = SqlCommandHelper.UpdateCommand(
+            var command = SqlCommandHelper.UpdateCommand(
                     table: "Users",
                     entityType: typeof(User),
                     entityValues: keyValuePairs,
                     primaryKey: userDto.Id
             );
 
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                await connection.ExecuteAsync(updateCommand);
-            }
+            await this._dbAdapter
+                .ExecuteCommand(command);
         }
 
         /// <summary>
@@ -96,37 +97,37 @@ namespace LogisticsCompany.Services.Users.Commands
 
             if (user == null) return;
 
-            using (var connection = new SqlConnection(_connectionString))
+            
+            var keyValuePairs = new Dictionary<string, string>()
             {
-                var keyValuePairs = new Dictionary<string, string>()
+                {"FromId", "NULL"},
+                {"ToId", "NULL"}
+            };
+
+            var packages = await _packageQueryService.GetPackagesByUserId(id);
+
+            if (packages.Count() > 0)
+            {
+                foreach (var package in packages)
                 {
-                    {"FromId", "NULL"},
-                    {"ToId", "NULL"}
-                };
+                    var updatePackageCommand = SqlCommandHelper
+                        .UpdateCommand
+                        (
+                            table: "Packages",
+                            entityType: typeof(Data.Entity.Package),
+                            entityValues: keyValuePairs,
+                            primaryKey: package.Id
+                        );
 
-
-                var packages = await _packageQueryService.GetPackagesByUserId(id);
-
-                if (packages.Count() > 0)
-                {
-                    foreach (var package in packages)
-                    {
-                        var updatePackageCommand = SqlCommandHelper
-                            .UpdateCommand
-                            (
-                                table: "Packages",
-                                entityType: typeof(LogisticsCompany.Data.Entity.Package),
-                                entityValues: keyValuePairs,
-                                primaryKey: package.Id
-                            );
-
-                        await connection.ExecuteAsync(updatePackageCommand);
-                    }
+                    await this._dbAdapter
+                        .ExecuteCommand(updatePackageCommand);
                 }
-
-                var query = SqlCommandHelper.DeleteCommand(table: "Users", primaryKey: "Id");
-                await connection.ExecuteAsync(query, new { criteriaValue = id });
             }
+
+            var command = SqlCommandHelper.DeleteCommand(table: "Users", primaryKey: "Id");
+            
+            await this._dbAdapter
+                .ExecuteCommand(command, new { criteriaValue = id });
         }
     }
 }

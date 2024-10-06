@@ -9,6 +9,7 @@ using System.Security.Claims;
 using LogisticsCompany.Services.Roles.Queries;
 using LogisticsCompany.Services.Users.Queries;
 using LogisticsCompany.Services.Authorization.Dto;
+using LogisticsCompany.Data.Contracts;
 
 namespace LogisticsCompany.Services.Authorization
 {
@@ -22,17 +23,19 @@ namespace LogisticsCompany.Services.Authorization
 
         /// <summary>
         /// Creates a <see cref="AuthorizationService"/> with the injected
-        /// <paramref name="dbContext"/>, <paramref name="roleQueryService"/>, and <paramref name="userQueryService"/>
+        /// <paramref name="dbContext"/>, <paramref name="dbAdapter"/> ,<paramref name="roleQueryService"/>, and <paramref name="userQueryService"/>
         /// arguments.
         /// </summary>
         /// <param name="dbContext">The Database Context</param>
+        /// <param name="dbAdapter">The Database adapter that will instantiate a connection and execute the constructed queries and commands.</param>
         /// <param name="userQueryService">Service used for User Query operations.</param>
         /// <param name="roleQueryService">Service used for Role Query operations.</param>
         public AuthorizationService(
             LogisticsCompanyContext dbContext,
+            IDbAdapter dbAdapter,
             IUserQueryService userQueryService,
             IRoleQueryService roleQueryService)
-            : base(dbContext)
+            : base(dbContext, dbAdapter)
         {
             _userQueryService = userQueryService;
             _roleQueryService = roleQueryService;
@@ -99,11 +102,21 @@ namespace LogisticsCompany.Services.Authorization
 
                 if (string.IsNullOrEmpty(registerEmail))
                 {
-                    using (var sqlConnection = new SqlConnection(_connectionString))
-                    {
-                        var insertCommand = SqlCommandHelper.InsertCommand("Users", $"'{dto.Username}'", $"'{dto.FirstName}'", $"'{dto.LastName}'", $"'{dto.Email}'", $"{roleId}", "NULL", $"'{dto.Password}'");
-                        await sqlConnection.ExecuteAsync(insertCommand);
-                    }
+                        var insertCommand = SqlCommandHelper
+                            .InsertCommand(
+                                table: "Users",
+                                values: new string[] {
+                                    $"'{dto.Username}'", 
+                                    $"'{dto.FirstName}'", 
+                                    $"'{dto.LastName}'", 
+                                    $"'{dto.Email}'", 
+                                    $"{roleId}", 
+                                    "NULL", 
+                                    $"'{dto.Password}'" 
+                                }
+                            );
+
+                        await this._dbAdapter.ExecuteCommand(insertCommand);
                 }
 
                 // TO DO: Add descriptive exception.
