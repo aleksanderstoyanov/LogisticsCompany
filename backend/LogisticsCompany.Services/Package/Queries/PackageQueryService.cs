@@ -4,6 +4,7 @@ using LogisticsCompany.Data.Builders;
 using LogisticsCompany.Data.Common;
 using LogisticsCompany.Data.Common.Descriptors;
 using LogisticsCompany.Data.Common.Operators;
+using LogisticsCompany.Data.Contracts;
 using LogisticsCompany.Services.Package.Dto;
 using Microsoft.Data.SqlClient;
 
@@ -16,13 +17,15 @@ namespace LogisticsCompany.Services.Package.Queries
     {
         /// <summary>
         /// Creates a <see cref="PackageQueryService"/> with the 
-        /// injected <paramref name="dbContext"/> argument.
+        /// injected <paramref name="dbContext"/> and <paramref name="dbAdapter"/> 
+        /// arguments.
         /// </summary>
         /// <param name="dbContext">The Database context.</param>
-        public PackageQueryService(LogisticsCompanyContext dbContext) :
-            base(dbContext)
+        /// <param name="dbAdapter">The Database adapter that will instantiate a connection and execute the constructed query.</param>
+        public PackageQueryService(LogisticsCompanyContext dbContext,
+            IDbAdapter dbAdapter) :
+            base(dbContext, dbAdapter)
         {
-
         }
 
         /// <summary>
@@ -54,20 +57,16 @@ namespace LogisticsCompany.Services.Package.Queries
                     );
                 });
 
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var query = new SqlQueryBuilder()
-                    .Select(columns: "*")
-                    .From(table: "Packages")
-                    .Where(clauseDescriptorContainer)
-                    .ToQuery();
+            var query = new SqlQueryBuilder()
+                   .Select(columns: "*")
+                   .From(table: "Packages")
+                   .Where(clauseDescriptorContainer)
+                   .ToQuery();
 
-                var result = await connection.QueryAsync<PackageDto>(query);
+            var result = await this._dbAdapter
+                .QueryAll<PackageDto>(query);
 
-                return result;
-            }
-
-
+            return result;
         }
 
         /// <summary>
@@ -103,13 +102,11 @@ namespace LogisticsCompany.Services.Package.Queries
                 );
             });
 
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var query = new SqlQueryBuilder()
-                   .Select(
-                        columns:
-                        new string[]
-                        {
+            var query = new SqlQueryBuilder()
+                  .Select(
+                       columns:
+                       new string[]
+                       {
                             "package.Id",
                             "package.Address",
                             "package.FromId",
@@ -119,23 +116,23 @@ namespace LogisticsCompany.Services.Package.Queries
                             "package.Weight",
                             "package.PackageStatusId",
                             "status.Name as PackageStatusName"
-                        }
-                     )
-                    .From(table: "Packages", @as: "package")
-                    .Join(
-                        joinOperator: JoinOperator.INNER,
-                        table: "PackageStatuses",
-                        container: joinClauseDescriptorContainer,
-                        @as: "status"
+                       }
                     )
-                    .Where(clauseDescriptorContainer)
-                    .ToQuery();
+                   .From(table: "Packages", @as: "package")
+                   .Join(
+                       joinOperator: JoinOperator.INNER,
+                       table: "PackageStatuses",
+                       container: joinClauseDescriptorContainer,
+                       @as: "status"
+                   )
+                   .Where(clauseDescriptorContainer)
+                   .ToQuery();
 
-                var result = await connection.QuerySingleOrDefaultAsync<PackageDto>(query);
 
-                return result;
-            }
+            var result = await this._dbAdapter
+                    .QuerySingle<PackageDto>(query);
 
+            return result;
         }
 
         /// <summary>
@@ -184,11 +181,10 @@ namespace LogisticsCompany.Services.Package.Queries
                 )
                 .ToQuery();
 
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var result = await connection.QueryAsync<PackageDto>(query);
-                return result;
-            }
+            var result = await this._dbAdapter
+                .QueryAll<PackageDto>(query);
+
+            return result;
         }
 
         /// <summary>
@@ -245,13 +241,11 @@ namespace LogisticsCompany.Services.Package.Queries
                     );
                 });
 
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var query = new SqlQueryBuilder()
-                .Select(
-                    columns:
-                    new string[]
-                    {
+            var query = new SqlQueryBuilder()
+               .Select(
+                   columns:
+                   new string[]
+                   {
                         "package.Id",
                         "package.Address",
                         "package.Weight",
@@ -259,35 +253,35 @@ namespace LogisticsCompany.Services.Package.Queries
                         "CONCAT(toUser.FirstName,' ',toUser.LastName) AS ToUser",
                         "CONCAT(fromUser.FirstName, ' ', fromUser.LastName) AS FromUser",
                         "status.Name as PackageStatusName"
-                    }
+                   }
+               )
+               .From(table: "Packages", @as: "package")
+               .Join
+               (
+                   joinOperator: JoinOperator.INNER,
+                   table: "PackageStatuses",
+                   container: packageStatusClauseContainer,
+                   @as: "status"
+               )
+               .Join(
+                   joinOperator: JoinOperator.INNER,
+                   table: "Users",
+                   container: toClauseContainer,
+                   @as: "toUser"
                 )
-                .From(table: "Packages", @as: "package")
-                .Join
-                (
-                    joinOperator: JoinOperator.INNER,
-                    table: "PackageStatuses",
-                    container: packageStatusClauseContainer,
-                    @as: "status"
-                )
-                .Join(
-                    joinOperator: JoinOperator.INNER,
-                    table: "Users",
-                    container: toClauseContainer,
-                    @as: "toUser"
-                 )
-                .Join(
-                    joinOperator: JoinOperator.INNER,
-                    table: "Users",
-                    container: fromClauseContainer,
-                    @as: "fromUser"
-                )
-                .Where(clauseDescriptorContainer)
-                .ToQuery();
+               .Join(
+                   joinOperator: JoinOperator.INNER,
+                   table: "Users",
+                   container: fromClauseContainer,
+                   @as: "fromUser"
+               )
+               .Where(clauseDescriptorContainer)
+               .ToQuery();
 
-                var result = await connection.QueryAsync<SentReceivedPackageDto>(query);
+            var result = await this._dbAdapter
+                .QueryAll<SentReceivedPackageDto>(query);
 
-                return result;
-            }
+            return result;
         }
 
         /// <summary>
@@ -342,9 +336,8 @@ namespace LogisticsCompany.Services.Package.Queries
                     );
                 });
 
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var query = new SqlQueryBuilder()
+
+            var query = new SqlQueryBuilder()
                 .Select(
                     columns:
                     new string[]
@@ -381,10 +374,10 @@ namespace LogisticsCompany.Services.Package.Queries
                 .Where(clauseDescriptorContainer)
                 .ToQuery();
 
-                var result = await connection.QueryAsync<SentReceivedPackageDto>(query);
+            var result = await this._dbAdapter
+                .QueryAll<SentReceivedPackageDto>(query);
 
-                return result;
-            }
+            return result;
         }
 
         /// <summary>
@@ -423,12 +416,10 @@ namespace LogisticsCompany.Services.Package.Queries
                 .Where(clauseDescriptorContainer)
                 .ToQuery();
 
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var result = await connection.QuerySingleAsync<int>(query);
+            var result = await this._dbAdapter
+                .QuerySingle<int>(query);
 
-                return result;
-            }
+            return result;
         }
     }
 }

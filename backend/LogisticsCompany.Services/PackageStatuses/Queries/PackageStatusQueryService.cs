@@ -3,6 +3,7 @@ using LogisticsCompany.Data;
 using LogisticsCompany.Data.Builders;
 using LogisticsCompany.Data.Common.Descriptors;
 using LogisticsCompany.Data.Common.Operators;
+using LogisticsCompany.Data.Contracts;
 using Microsoft.Data.SqlClient;
 
 namespace LogisticsCompany.Services.PackageStatuses.Queries
@@ -14,13 +15,15 @@ namespace LogisticsCompany.Services.PackageStatuses.Queries
     {
         /// <summary>
         /// Creates a <see cref="PackageStatusQueryService"/> instance 
-        /// with the injected <paramref name="dbContext"/>
+        /// with the injected <paramref name="dbContext"/> and <paramref name="dbAdapter"/>
+        /// arguments
         /// </summary>
         /// <param name="dbContext">The Database context</param>
-        public PackageStatusQueryService(LogisticsCompanyContext dbContext)
-            : base(dbContext)
+        /// <param name="dbAdapter">The Database adapter that will instantiate a connection and execute the constructed query.</param>
+        public PackageStatusQueryService(LogisticsCompanyContext dbContext
+            , IDbAdapter dbAdapter)
+            : base(dbContext, dbAdapter)
         {
-
         }
 
         /// <summary>
@@ -47,18 +50,16 @@ namespace LogisticsCompany.Services.PackageStatuses.Queries
                 }
             };
 
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var query = new SqlQueryBuilder()
-                    .Select(columns: "Id")
-                    .From("PackageStatuses")
-                    .Where(clauseDescriptorContainer)
-                    .ToQuery();
+            var query = new SqlQueryBuilder()
+                   .Select(columns: "Id")
+                   .From("PackageStatuses")
+                   .Where(clauseDescriptorContainer)
+                   .ToQuery();
 
-                var result = await connection.QuerySingleOrDefaultAsync<int>(query);
+            var result = await this._dbAdapter
+                .QuerySingle<int>(query);
 
-                return result;
-            }
+            return result;
         }
     }
 }

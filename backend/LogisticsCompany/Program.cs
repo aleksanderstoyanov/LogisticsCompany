@@ -1,5 +1,7 @@
 using System.Text;
 using LogisticsCompany.Data;
+using LogisticsCompany.Data.Common.Adapters;
+using LogisticsCompany.Data.Contracts;
 using LogisticsCompany.Data.Factory;
 using LogisticsCompany.Mapping.Profiles;
 using LogisticsCompany.Services.Authorization;
@@ -30,9 +32,13 @@ builder.Services.AddAutoMapper(mapper =>
 });
 
 
+var connectionString = builder.Configuration
+    .GetConnectionString("DefaultConnectionString");
+
 // Register Context and Database Factory
 builder.Services.AddSingleton<LogisticsCompanyContext>();
 builder.Services.AddSingleton<SqlDbFactory>();
+builder.Services.AddSingleton<IDbAdapter, SqlDbAdapter>(_ => new SqlDbAdapter(connectionString));
 
 // Register Authorization Services
 

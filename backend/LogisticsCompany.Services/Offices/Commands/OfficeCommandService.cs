@@ -1,5 +1,7 @@
 ﻿using Dapper;
 using LogisticsCompany.Data;
+using LogisticsCompany.Data.Common.Adapters;
+using LogisticsCompany.Data.Contracts;
 using LogisticsCompany.Data.Helpers;
 using LogisticsCompany.Entity;
 using LogisticsCompany.Services.Offices.Dto;
@@ -17,13 +19,16 @@ namespace LogisticsCompany.Services.Offices.Commands
 
         /// <summary>
         /// Creates an <see cref="OfficeCommandService"/> with the injected
-        /// <paramref name="dbContext"/> and <paramref name="officeQueryService"/>
+        /// <paramref name="dbContext"/>, <paramref name="dbAdapter"/> and <paramref name="officeQueryService"/>
         /// arguments.
         /// </summary>
         /// <param name="dbContext">The Database Context.</param>
         /// <param name="officeQueryService">The Service used for performing Query operations for Offices.</param>
-        public OfficeCommandService(LogisticsCompanyContext dbContext, IOfficeQueryService officeQueryService)
-            : base(dbContext)
+        /// <param name="dbAdapter">The DataBase adapter that will instantiate a connection and process the constructed command.</param>
+        public OfficeCommandService(LogisticsCompanyContext dbContext,
+            IOfficeQueryService officeQueryService,
+            IDbAdapter adapter)
+            : base(dbContext, adapter)
         {
             _officeQueryService = officeQueryService;
         }
@@ -35,20 +40,17 @@ namespace LogisticsCompany.Services.Offices.Commands
         /// <param name="dto"></param>
         public async Task<OfficeDto?> Create(OfficeDto dto)
         {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var command = SqlCommandHelper.InsertCommand
-                (
-                    table: "Offices",
-                    values: new[] { $"'{dto.Address}'", $"'{dto.PricePerWeight.ToString().Replace(",", ".")}'" }
-                );
+            var entityValues = new[] { $"'{dto.Address}'", $"'{dto.PricePerWeight.ToString().Replace(",", ".")}'" };
 
-                await connection.ExecuteAsync(command);
+            var command = SqlCommandHelper.InsertCommand("Offices", entityValues);
 
-                var office = await _officeQueryService.GetByAddress(dto.Address);
+            await _dbAdapter
+                .ExecuteCommand(command);
 
-                return office ?? null;
-            }
+            var office = await _officeQueryService
+                .GetByAddress(dto.Address);
+
+            return office ?? null;
         }
 
         /// <summary>
@@ -64,17 +66,15 @@ namespace LogisticsCompany.Services.Offices.Commands
                 { "PricePerWeight", $"{dto.PricePerWeight.ToString().Replace(",", ".")}"},
             };
 
-            using (var connection = new SqlConnection(this._connectionString))
-            {
-                var command = SqlCommandHelper.UpdateCommand(
-                    table: "Offices",
-                    entityType: typeof(Office),
-                    entityValues: entityValues,
-                    dto.Id
-                );
+            var command = SqlCommandHelper.UpdateCommand(
+                   table: "Offices",
+                   entityType: typeof(Office),
+                   entityValues: entityValues,
+                   dto.Id
+               );
 
-                await connection.ExecuteAsync(command);
-            }
+            await _dbAdapter
+                .ExecuteCommand(command);
         }
 
         /// <summary>
@@ -89,12 +89,10 @@ namespace LogisticsCompany.Services.Offices.Commands
             if (office == null)
                 return;
 
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var command = SqlCommandHelper.DeleteCommand("Offices", "Id");
-
-                await connection.ExecuteAsync(command, new { criteriaValue = id });
-            }
+            var command = SqlCommandHelper.DeleteCommand("Offices", "Id");
+            
+            await _dbAdapter
+                .ExecuteCommand(command, new { criteriaValue = id });
         }
     }
 }

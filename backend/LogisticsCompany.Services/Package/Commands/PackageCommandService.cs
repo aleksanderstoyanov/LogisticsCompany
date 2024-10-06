@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using LogisticsCompany.Data;
+using LogisticsCompany.Data.Contracts;
 using LogisticsCompany.Services.Package.Dto;
 using LogisticsCompany.Services.Package.Queries;
 using LogisticsCompany.Services.PackageStatuses.Queries;
@@ -19,16 +20,19 @@ namespace LogisticsCompany.Services.Package.Commands
 
         /// <summary>
         /// Creates an <see cref="PackageCommandService"/> instance 
-        /// with the injected <paramref name="dbContext"/>, <paramref name="packageQueryService"/>,
+        /// with the injected <paramref name="dbContext"/>, 
+        /// <paramref name="dbAdapter"/>, <paramref name="packageQueryService"/>
         /// and <paramref name="packageStatusQueryService"/> arguments.
         /// </summary>
         /// <param name="dbContext">The Database Context</param>
         /// <param name="packageQueryService">The Service used for performing Query operations for Packages.</param>
         /// <param name="packageStatusQueryService">The Service used for performing Query operations for PackageStatuses.</param>
+        /// <param name="dbAdapter">The DataBase adapter that will instantiate a connection and execute the constructed command.</param>
         public PackageCommandService(LogisticsCompanyContext dbContext,
             IPackageQueryService packageQueryService,
-            IPackageStatusQueryService packageStatusQueryService)
-            : base(dbContext)
+            IPackageStatusQueryService packageStatusQueryService,
+            IDbAdapter dbAdapter)
+            : base(dbContext, dbAdapter)
         {
             _packageQueryService = packageQueryService;
             _packageStatusQueryService = packageStatusQueryService;
@@ -41,9 +45,7 @@ namespace LogisticsCompany.Services.Package.Commands
         /// <param name="dto">The DTO object containing the fields for creation.</param>
         public async Task Create(PackageDto dto)
         {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var command = InsertCommand(
+            var command = InsertCommand(
                     table: "Packages",
                     values: new string[]
                     {
@@ -56,10 +58,9 @@ namespace LogisticsCompany.Services.Package.Commands
                         dto.ToOffice ? "1" : "0",
                         dto.Weight.ToString().Replace(",", ".")
                     }
-                );
+             );
 
-                await connection.ExecuteAsync(command);
-            }
+            await this._dbAdapter.ExecuteCommand(command);
         }
 
         /// <summary>
@@ -82,18 +83,15 @@ namespace LogisticsCompany.Services.Package.Commands
                 {"Weight", dto.Weight.ToString()},
             };
 
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var command = UpdateCommand
-                (
-                    table: "Packages",
-                    entityType: typeof(Data.Entity.Package),
-                    entityValues: keyValuePairs,
-                    primaryKey: dto.Id
-                );
+            var command = UpdateCommand
+            (
+                table: "Packages",
+                entityType: typeof(Data.Entity.Package),
+                entityValues: keyValuePairs,
+                primaryKey: dto.Id
+            );
 
-                await connection.ExecuteAsync(command);
-            }
+            await this._dbAdapter.ExecuteCommand(command);
         }
 
         /// <summary>
@@ -110,11 +108,9 @@ namespace LogisticsCompany.Services.Package.Commands
                 return;
             }
 
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var command = DeleteCommand(table: "Packages", primaryKey: "Id");
-                await connection.ExecuteAsync(command, new { criteriaValue = id });
-            }
+            var command = DeleteCommand(table: "Packages", primaryKey: "Id");
+
+            await this._dbAdapter.ExecuteCommand(command);
         }
     }
 }

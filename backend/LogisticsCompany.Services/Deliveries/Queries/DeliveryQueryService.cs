@@ -3,6 +3,7 @@ using LogisticsCompany.Data;
 using LogisticsCompany.Data.Builders;
 using LogisticsCompany.Data.Common.Descriptors;
 using LogisticsCompany.Data.Common.Operators;
+using LogisticsCompany.Data.Contracts;
 using LogisticsCompany.Services.Dto;
 using Microsoft.Data.SqlClient;
 
@@ -15,11 +16,14 @@ namespace LogisticsCompany.Services.Deliveries.Queries
     {
         /// <summary>
         /// Creates a <see cref="DeliveryQueryService"/> instance 
-        /// with the injected <paramref name="dbContext"/>
+        /// with the injected <paramref name="dbContext"/> and <paramref name="dbAdapter"/>
+        /// arguments.
         /// </summary>
         /// <param name="dbContext">The Database context.</param>
-        public DeliveryQueryService(LogisticsCompanyContext dbContext)
-            : base(dbContext)
+        /// <param name="dbAdapter">The Database adapter that will instantiate a connection and execute the constructed query.</param>
+        public DeliveryQueryService(LogisticsCompanyContext dbContext
+            , IDbAdapter dbAdapter)
+            : base(dbContext, dbAdapter)
         {
         }
 
@@ -36,12 +40,10 @@ namespace LogisticsCompany.Services.Deliveries.Queries
                 .From(table: "Deliveries")
                 .ToQuery();
 
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var result = await connection.QueryAsync<DeliveryDto>(query);
+            var result = await this._dbAdapter
+                .QueryAll<DeliveryDto>(query);
 
-                return result;
-            }
+            return result;
         }
 
         /// <summary>
@@ -63,18 +65,15 @@ namespace LogisticsCompany.Services.Deliveries.Queries
                     );
                 });
 
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var query = new SqlQueryBuilder()
-                    .Select(columns: "*")
-                    .From(table: "Deliveries")
-                    .Where(clauseDescriptorContainer)
-                    .ToQuery();
+            var query = new SqlQueryBuilder()
+                .Select(columns: "*")
+                .From(table: "Deliveries")
+                .Where(clauseDescriptorContainer)
+                .ToQuery();
 
-                var result = await connection.QuerySingleOrDefaultAsync<DeliveryDto>(query);
+            var result = await this._dbAdapter.QuerySingle<DeliveryDto>(query);
 
-                return result;
-            }
+            return result;
         }
     }
 }

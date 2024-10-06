@@ -1,8 +1,10 @@
 ﻿using Dapper;
 using LogisticsCompany.Data;
 using LogisticsCompany.Data.Builders;
+using LogisticsCompany.Data.Common.Adapters;
 using LogisticsCompany.Data.Common.Descriptors;
 using LogisticsCompany.Data.Common.Operators;
+using LogisticsCompany.Data.Contracts;
 using LogisticsCompany.Services.Offices.Dto;
 using Microsoft.Data.SqlClient;
 
@@ -15,13 +17,15 @@ namespace LogisticsCompany.Services.Offices.Queries
     {
         /// <summary>
         /// Creates a <see cref="OfficeQueryService"/> instance 
-        /// with the injected <paramref name="dbContext"/>
+        /// with the injected <paramref name="dbContext"/> and <paramref name="dbAdapter"/>
+        /// arguments.
         /// </summary>
-        /// <param name="dbContext"></param>
-        public OfficeQueryService(LogisticsCompanyContext dbContext)
-            : base(dbContext)
+        /// <param name="dbContext">The Database context.</param>
+        /// <param name="dbAdapter">The Database adapter that will instantiate a connection and execute the constructed query.</param>
+        public OfficeQueryService(LogisticsCompanyContext dbContext, 
+            IDbAdapter dbAdapter)
+            : base(dbContext, dbAdapter)
         {
-
         }
 
         /// <summary>
@@ -50,6 +54,7 @@ namespace LogisticsCompany.Services.Offices.Queries
                 .From(table: "Offices")
                 .Where(clauseContainer)
                 .ToQuery();
+
 
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -81,18 +86,16 @@ namespace LogisticsCompany.Services.Offices.Queries
                     );
                 });
 
-            using (var connection = new SqlConnection(this._connectionString))
-            {
-                var query = new SqlQueryBuilder()
-                        .Select(columns: "*")
-                        .Where(clauseContainer)
-                        .From(table: "Offices")
-                        .ToQuery();
+            var query = new SqlQueryBuilder()
+                       .Select(columns: "*")
+                       .Where(clauseContainer)
+                       .From(table: "Offices")
+                       .ToQuery();
 
-                var office = await connection.QuerySingleOrDefaultAsync<OfficeDto>(query);
+            var office = await _dbAdapter
+                .QuerySingle<OfficeDto>(query);
 
-                return office;
-            }
+            return office;
         }
 
         /// <summary>
@@ -123,11 +126,9 @@ namespace LogisticsCompany.Services.Offices.Queries
                 .Where(clauseDescriptorContainer)
                 .ToQuery();
 
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var office = await connection.QuerySingleOrDefaultAsync<OfficeDto>(query);
-                return office;
-            }
+            var office = await _dbAdapter.QuerySingle<OfficeDto>(query);
+
+            return office;
         }
 
         /// <summary>
