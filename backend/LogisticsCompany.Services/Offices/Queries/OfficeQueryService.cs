@@ -56,12 +56,9 @@ namespace LogisticsCompany.Services.Offices.Queries
                 .ToQuery();
 
 
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var result = await connection.QueryFirstAsync<int?>(query);
+            var result = await _dbAdapter.QuerySingle<int?>(query);
 
-                return result ?? null;
-            }
+            return result ?? null;
         }
 
         /// <summary>
@@ -88,8 +85,8 @@ namespace LogisticsCompany.Services.Offices.Queries
 
             var query = new SqlQueryBuilder()
                        .Select(columns: "*")
-                       .Where(clauseContainer)
                        .From(table: "Offices")
+                       .Where(clauseContainer)
                        .ToQuery();
 
             var office = await _dbAdapter
@@ -139,16 +136,13 @@ namespace LogisticsCompany.Services.Offices.Queries
         /// </returns>
         public async Task<IEnumerable<OfficeDto>> GetAll()
         {
-            using (var connection = new SqlConnection(this._connectionString))
-            {
-                var query = new SqlQueryBuilder()
-                    .Select(columns: "*")
-                    .From(table: "Offices")
-                    .ToQuery();
+            var query = new SqlQueryBuilder()
+                   .Select(columns: "*")
+                   .From(table: "Offices")
+                   .ToQuery();
 
-                var offices = await connection.QueryAsync<OfficeDto>(query);
-                return offices;
-            }
+            var offices = await _dbAdapter.QueryAll<OfficeDto>(query);
+            return offices;
         }
     }
 }
