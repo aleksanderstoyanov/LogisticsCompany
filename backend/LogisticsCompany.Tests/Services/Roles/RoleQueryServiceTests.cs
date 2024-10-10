@@ -5,6 +5,7 @@ using LogisticsCompany.Data;
 using LogisticsCompany.Data.Contracts;
 using LogisticsCompany.Entity;
 using LogisticsCompany.Services.Roles.Queries;
+using LogisticsCompany.Tests.Common;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -22,38 +23,6 @@ namespace LogisticsCompany.Tests.Services.Roles
         {
         }
 
-        private IEnumerable<Role> Get_Roles()
-        {
-            return new List<Role>()
-            {
-                new Role
-                {
-                    Id = 1,
-                    Name = "None"
-                },
-                new Role
-                {
-                    Id = 2,
-                    Name = "OfficeEmployee"
-                },
-                new Role
-                {
-                    Id = 3,
-                    Name = "Courier"
-                },
-                new Role
-                {
-                    Id = 4,
-                    Name = "Client"
-                },
-                new Role
-                {
-                    Id = 5,
-                    Name = "Admin"
-                }
-            };
-        }
-
         [Theory]
         [InlineData("None")]
         [InlineData("OfficeEmployee")]
@@ -65,17 +34,16 @@ namespace LogisticsCompany.Tests.Services.Roles
             using (var mock = AutoMock.GetLoose())
             {
                 // Arrange
-                var role = Get_Roles()
+                var id = MockDataRepository.GetRoles()
                     .SingleOrDefault(role => role.Name == name)
                     .Id;
 
-                var task = Task.FromResult(role);
+                var task = Task.FromResult(id);
 
-                _dbAdapter
-                    .Setup(method => method
-                        .QuerySingle<int>($"SELECT Id FROM Roles\r\n WHERE Name = '{name}'")
-                    )
-                    .Returns(task);
+                _dbAdapter.Setup(method => method
+                    .QuerySingle<int>($"SELECT Id FROM Roles\r\n WHERE Name = '{name}'")
+                )
+                .Returns(task);
 
                 var dbContext = mock.Create<LogisticsCompanyContext>(_dbParameters);
 
@@ -88,7 +56,7 @@ namespace LogisticsCompany.Tests.Services.Roles
                 var service = mock.Create<RoleQueryService>(serviceParamaters);
 
                 // Act
-                var id = await service.GetIdByName(name);
+                var result = await service.GetIdByName(name);
 
                 // Assert
                 _dbAdapter.Verify(method => method
@@ -97,6 +65,9 @@ namespace LogisticsCompany.Tests.Services.Roles
                     ),
                     Times.Once
                 );
+
+                Assert.NotNull(result);
+                Assert.Equal(id, result);
             }
         }
 
@@ -111,7 +82,7 @@ namespace LogisticsCompany.Tests.Services.Roles
             using (var mock = AutoMock.GetLoose())
             {
                 // Arrange
-                var role = Get_Roles()
+                var role = MockDataRepository.GetRoles()
                     .SingleOrDefault(role => role.Id == identifier)
                     .Name;
 
@@ -134,7 +105,7 @@ namespace LogisticsCompany.Tests.Services.Roles
                 var service = mock.Create<RoleQueryService>(serviceParamaters);
 
                 // Act
-                var id = await service.GetRoleNameById(identifier);
+                var result = await service.GetRoleNameById(identifier);
 
                 // Assert
                 _dbAdapter.Verify(method => method
@@ -143,6 +114,9 @@ namespace LogisticsCompany.Tests.Services.Roles
                     ),
                     Times.Once
                 );
+
+                Assert.NotNull(result);
+                Assert.Equal(result, role);
             }
         }
     }

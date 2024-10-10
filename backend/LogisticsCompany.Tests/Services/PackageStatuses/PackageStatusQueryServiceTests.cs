@@ -5,6 +5,7 @@ using LogisticsCompany.Data;
 using LogisticsCompany.Data.Contracts;
 using LogisticsCompany.Data.Entity;
 using LogisticsCompany.Services.PackageStatuses.Queries;
+using LogisticsCompany.Tests.Common;
 using Moq;
 using Xunit;
 
@@ -17,34 +18,6 @@ namespace LogisticsCompany.Tests.Services.PackageStatuses
         {
         }
 
-        private IEnumerable<PackageStatus> GetPackageStatuses()
-        {
-            return new List<PackageStatus>()
-            {
-                new PackageStatus
-                {
-                    Id = 1,
-                    Name = "NonRegistered"
-                },
-                new PackageStatus
-                {
-                    Id = 2,
-                    Name = "Registered"
-                },
-                new PackageStatus
-                {
-                    Id = 3,
-                    Name = "InDelivery"
-                },
-                new PackageStatus
-                {
-                    Id = 4,
-                    Name = "Delivered"
-                }
-
-            };
-        }
-
         [Theory]
         [InlineData("NonRegistered")]
         [InlineData("Registered")]
@@ -55,7 +28,7 @@ namespace LogisticsCompany.Tests.Services.PackageStatuses
             using (var mock = AutoMock.GetLoose())
             {
                 // Arrange
-                var packageStatus = GetPackageStatuses()
+                var packageStatus = MockDataRepository.GetPackageStatuses()
                        .SingleOrDefault(package => package.Name == name)
                        .Id;
 
@@ -88,6 +61,8 @@ namespace LogisticsCompany.Tests.Services.PackageStatuses
                         ),
                         Times.Once
                    );
+
+                Assert.NotNull(result);
             }
         }
     }

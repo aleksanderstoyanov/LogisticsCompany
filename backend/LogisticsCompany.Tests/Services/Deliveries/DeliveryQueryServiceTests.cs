@@ -5,6 +5,7 @@ using LogisticsCompany.Data;
 using LogisticsCompany.Data.Contracts;
 using LogisticsCompany.Services.Deliveries.Queries;
 using LogisticsCompany.Services.Dto;
+using LogisticsCompany.Tests.Common;
 using Moq;
 using Xunit;
 
@@ -17,26 +18,13 @@ namespace LogisticsCompany.Tests.Services.Deliveries
         {
         }
 
-        private IEnumerable<DeliveryDto> GetAllDeliveries()
-        {
-            return Enumerable.Range(1, 10)
-            .Select(i => new DeliveryDto
-            {
-                Id = i,
-                StartDate = DateTime.Now.AddDays(i),
-                EndDate = DateTime.Now.AddDays(i),
-                SelectedIds = new int[] { i }
-            });
-        }
-
-
         [Fact]
         public async void Get_All_Method_Should_Return_Entries()
         {
             using (var mock = AutoMock.GetLoose())
             {
                 // Arrange 
-                var task = Task.FromResult(GetAllDeliveries());
+                var task = Task.FromResult(MockDataRepository.GetAllDeliveries());
 
                 var dbContext = mock.Create<LogisticsCompanyContext>(_dbParameters);
 
@@ -57,7 +45,6 @@ namespace LogisticsCompany.Tests.Services.Deliveries
                 var result = await service.GetAll();
 
                 // Assert
-
                 _dbAdapter
                    .Verify(x => x
                         .QueryAll<DeliveryDto>(It.Is<string>(sql => sql == "SELECT * FROM Deliveries"))
@@ -77,7 +64,7 @@ namespace LogisticsCompany.Tests.Services.Deliveries
             using (var mock = AutoMock.GetLoose())
             {
                 // Arrange 
-                var delivery = GetAllDeliveries().SingleOrDefault(delivery => delivery.Id == id);
+                var delivery = MockDataRepository.GetAllDeliveries().SingleOrDefault(delivery => delivery.Id == id);
                 var task = Task.FromResult<DeliveryDto>(delivery);
 
                 var dbContext = mock.Create<LogisticsCompanyContext>(_dbParameters);
@@ -105,6 +92,9 @@ namespace LogisticsCompany.Tests.Services.Deliveries
                         )
                         , Times.Exactly(1)
                    );
+
+                Assert.NotNull(result);
+                Assert.Equal(result, delivery);
             }
         }
     }
