@@ -1,8 +1,10 @@
 ﻿using LogisticsCompany.Data.Entity;
 using LogisticsCompany.Entity;
+using LogisticsCompany.Services.Authorization.Dto;
 using LogisticsCompany.Services.Dto;
 using LogisticsCompany.Services.Offices.Dto;
 using LogisticsCompany.Services.Package.Dto;
+using LogisticsCompany.Services.Users.Dto;
 
 namespace LogisticsCompany.Tests.Common
 {
@@ -18,6 +20,54 @@ namespace LogisticsCompany.Tests.Common
                 EndDate = DateTime.Now.AddDays(i),
                 SelectedIds = new int[] { i }
             });
+        }
+
+        public static IEnumerable<LoginDto> GetAllLogins()
+        {
+            return new List<LoginDto>()
+            {
+                new LoginDto
+                {
+                    Id = 1,
+                    Email = "admin@gmail.com",
+                    PasswordHash = "HASH123",
+                    RoleId = 1
+                },
+                new LoginDto
+                {
+                    Id = 2,
+                    Email = "test@gmail.com",
+                    PasswordHash = "HASH123",
+                    RoleId = 2
+                }
+            };
+        }
+
+        public static IEnumerable<UserDto> GetAllUsers()
+        {
+            return new List<UserDto>()
+            {
+                new UserDto
+                {
+                    Id = 1,
+                    Email = "admin@gmail.com",
+                    FirstName = "FirstName1",
+                    LastName = "LastName1",
+                    OfficeName = "OfficeName1",
+                    RoleName = "Admin",
+                    Username ="admin123"
+                },
+                new UserDto
+                {
+                    Id = 2,
+                    Email = "client@gmail.com",
+                    FirstName = "FirstName1",
+                    LastName = "LastName1",
+                    OfficeName = "OfficeName2",
+                    RoleName = "Client",
+                    Username = "client123"
+                }
+            };
         }
 
         public static IEnumerable<SentReceivedPackageDto> GetAllSentReceivedPackages()
