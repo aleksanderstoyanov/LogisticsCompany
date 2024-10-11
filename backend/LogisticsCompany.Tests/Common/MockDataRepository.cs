@@ -2,6 +2,7 @@
 using LogisticsCompany.Entity;
 using LogisticsCompany.Services.Dto;
 using LogisticsCompany.Services.Offices.Dto;
+using LogisticsCompany.Services.Package.Dto;
 
 namespace LogisticsCompany.Tests.Common
 {
@@ -17,6 +18,53 @@ namespace LogisticsCompany.Tests.Common
                 EndDate = DateTime.Now.AddDays(i),
                 SelectedIds = new int[] { i }
             });
+        }
+
+        public static IEnumerable<SentReceivedPackageDto> GetAllSentReceivedPackages()
+        {
+            return new List<SentReceivedPackageDto>()
+            {
+                new SentReceivedPackageDto
+                {
+                    Id = 1,
+                    Address = "ul.Geo Milev",
+                    FromUser = "From",
+                    PackageStatusName = "Delivered",
+                    ToOffice =  true,
+                    ToUser = "To",
+                    Weight = 125
+                }
+            };
+        }
+
+        public static IEnumerable<PackageDto> GetAllPackages()
+        {
+            return new List<PackageDto>()
+            {
+                new PackageDto
+                {
+                    Id = 1,
+                    DeliveryId = 1,
+                    Address = "ul.Geo Milev",
+                    FromId = 2,
+                    ToId = 2,
+                    OfficeId = 1,
+                    ToOffice = true,
+                    Weight = 125
+                },
+                new PackageDto
+                {
+                    Id = 2,
+                    DeliveryId = 2,
+                    Address = "ul.Geo Milev 2",
+                    FromId = 2,
+                    ToId = 1,
+                    OfficeId = 2,
+                    ToOffice = true,
+                    Weight = 125
+                }
+
+            };
         }
 
         public static IEnumerable<OfficeDto> GetOffices()
