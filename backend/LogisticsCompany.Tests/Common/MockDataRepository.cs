@@ -4,6 +4,7 @@ using LogisticsCompany.Services.Authorization.Dto;
 using LogisticsCompany.Services.Dto;
 using LogisticsCompany.Services.Offices.Dto;
 using LogisticsCompany.Services.Package.Dto;
+using LogisticsCompany.Services.Reports.Dto;
 using LogisticsCompany.Services.Users.Dto;
 
 namespace LogisticsCompany.Tests.Common
@@ -20,6 +21,37 @@ namespace LogisticsCompany.Tests.Common
                 EndDate = DateTime.Now.AddDays(i),
                 SelectedIds = new int[] { i }
             });
+        }
+
+        public static IncomeAggregateModel GetIncome()
+        {
+            return new IncomeAggregateModel
+            {
+                TotalPrice = 125M
+            };
+        }
+
+        public static IEnumerable<PackageReportDto> GetAllPackageReports()
+        {
+            return new List<PackageReportDto>()
+            {
+                new PackageReportDto
+                {
+                    FromUser = "Bai Ivan",
+                    ToUser = "Bai Pesho",
+                    Address = "ul. Geo Milev 1",
+                    PackageStatusName = "Registered",
+                    ToOffice = true,
+                    Weight = 125
+                },
+                new PackageReportDto
+                {
+                    FromUser = "Bai Pesho",
+                    ToUser = "Bai Pesho",
+                    Address = "ul. Geo Milev 2",
+                    PackageStatusName = "InDelivery"
+                }
+            };
         }
 
         public static IEnumerable<LoginDto> GetAllLogins()
@@ -66,6 +98,16 @@ namespace LogisticsCompany.Tests.Common
                     OfficeName = "OfficeName2",
                     RoleName = "Client",
                     Username = "client123"
+                },
+                  new UserDto
+                {
+                    Id = 3,
+                    Email = "employee@gmail.com",
+                    FirstName = "FirstName1",
+                    LastName = "LastName1",
+                    OfficeName = "OfficeName2",
+                    RoleName = "Employee",
+                    Username = "employee123"
                 }
             };
         }
