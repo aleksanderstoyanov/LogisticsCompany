@@ -104,9 +104,7 @@ namespace LogisticsCompany.Services.Package.Commands
             var package = _packageQueryService.GetById(id);
 
             if (package == null)
-            {
                 return;
-            }
 
             var command = DeleteCommand(table: "Packages", primaryKey: "Id");
 
