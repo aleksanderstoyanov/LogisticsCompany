@@ -66,6 +66,11 @@ namespace LogisticsCompany.Services.Offices.Commands
                 { "PricePerWeight", $"{dto.PricePerWeight.ToString().Replace(",", ".")}"},
             };
 
+            var office = await _officeQueryService.GetById(dto.Id);
+
+            if (office == null)
+                return;
+
             var command = SqlCommandHelper.UpdateCommand(
                    table: "Offices",
                    entityType: typeof(Office),
@@ -84,7 +89,7 @@ namespace LogisticsCompany.Services.Offices.Commands
         /// <param name="id"></param>
         public async Task Delete(int id)
         {
-            var office = _officeQueryService.GetById(id);
+            var office = await _officeQueryService.GetById(id);
 
             if (office == null)
                 return;
