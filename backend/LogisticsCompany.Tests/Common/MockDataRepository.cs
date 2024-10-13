@@ -139,6 +139,7 @@ namespace LogisticsCompany.Tests.Common
                     Address = "ul.Geo Milev",
                     FromId = 2,
                     ToId = 2,
+                    PackageStatusName = "NonRegistered",
                     OfficeId = 1,
                     ToOffice = true,
                     Weight = 125
