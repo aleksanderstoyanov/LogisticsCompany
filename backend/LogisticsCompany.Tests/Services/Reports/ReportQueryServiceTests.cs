@@ -1,7 +1,6 @@
 ﻿using Autofac;
 using Autofac.Core;
 using Autofac.Extras.Moq;
-using Dapper;
 using LogisticsCompany.Data;
 using LogisticsCompany.Data.Contracts;
 using LogisticsCompany.Data.Entity;
@@ -10,9 +9,7 @@ using LogisticsCompany.Services.Reports.Queries;
 using LogisticsCompany.Services.Users.Dto;
 using LogisticsCompany.Services.Users.Queries;
 using LogisticsCompany.Tests.Common;
-using Microsoft.Identity.Client;
 using Moq;
-using System.Linq.Expressions;
 using System.Reflection;
 using Xunit;
 
@@ -245,7 +242,10 @@ namespace LogisticsCompany.Tests.Services.Reports
             using (var mock = AutoMock.GetLoose())
             {
                 // Arrange
-                var query = "SELECT SUM(office.PricePerWeight * package.Weight) AS TotalPrice FROM Packages AS package \r\n\r\nINNER JOIN Offices AS office ON package.OfficeId = office.Id  \r\n\r\nINNER JOIN Deliveries AS delivery ON package.DeliveryId = delivery.Id  \r\n WHERE delivery.EndDate >= '2024-10-12' AND delivery.EndDate <= '2024-10-13'";
+                var startPeriodParsed = DateOnly.FromDateTime(DateTime.Now);
+                var endPeriodParsed = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
+
+                var query = $"SELECT SUM(office.PricePerWeight * package.Weight) AS TotalPrice FROM Packages AS package \r\n\r\nINNER JOIN Offices AS office ON package.OfficeId = office.Id  \r\n\r\nINNER JOIN Deliveries AS delivery ON package.DeliveryId = delivery.Id  \r\n WHERE delivery.EndDate >= '{startPeriodParsed.Year}-{startPeriodParsed.Month}-{startPeriodParsed.Day}' AND delivery.EndDate <= '{endPeriodParsed.Year}-{endPeriodParsed.Month}-{endPeriodParsed.Day}'";
 
                 var income = MockDataRepository.GetIncome();
 
