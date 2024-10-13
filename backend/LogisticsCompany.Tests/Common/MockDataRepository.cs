@@ -136,7 +136,6 @@ namespace LogisticsCompany.Tests.Common
                 new PackageDto
                 {
                     Id = 1,
-                    DeliveryId = 1,
                     Address = "ul.Geo Milev",
                     FromId = 2,
                     ToId = 2,
