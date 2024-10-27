@@ -1,7 +1,7 @@
 
-import { jwtDecode } from 'jwt-decode';
 import { render, screen } from '@testing-library/react';
 import { Home } from '../Home';
+import mockJwtDecode from '../../__mocks__/jwtDecode';
 
 jest.mock("jwt-decode");
 
@@ -12,11 +12,7 @@ test('Home Page is rendered with anonymous message if not authenticated', () => 
 });
 
 test('Home Page is rendered with username if authenticated', () => {
-
-  (jwtDecode as jest.Mock).mockReturnValue({
-      Email: "test@gmail.com",
-      Role: "Admin"
-  });
+  mockJwtDecode("Admin");
 
   sessionStorage["jwt"] = "Test";
   render(<Home />)

@@ -29,7 +29,7 @@ export function Navigation() {
             setLogoutVisible(true);
 
 
-            const { Email, Role } = jwtDecode(jwt) as any;
+            const { Email, Role } = jwtDecode(jwt.toString()) as any;
 
             switch (Role) {
                 case "Admin":
